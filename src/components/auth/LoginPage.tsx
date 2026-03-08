@@ -93,17 +93,21 @@ export function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    // profiles table requires auth — anonymous users get 0 rows due to RLS.
-    // get_user_count() is SECURITY DEFINER so it works without authentication.
+    // get_user_count() is SECURITY DEFINER — works without authentication.
+    // Always resolves: on any error defaults to false (show login form).
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.rpc as any)('get_user_count')
-      .then(({ data, error }: { data: number | null; error: unknown }) => {
-        if (error) {
-          // RPC failed — default to login (safe fallback)
+      .then(({ data, error }: { data: number | null; error: { message: string } | null }) => {
+        console.log('[Bootstrap check] data:', data, 'error:', error);
+        if (error || data === null) {
           setIsBootstrap(false);
           return;
         }
-        setIsBootstrap((data ?? 1) === 0);
+        setIsBootstrap(data === 0);
+      })
+      .catch(() => {
+        // Network error — default to login
+        setIsBootstrap(false);
       });
   }, []);
 
