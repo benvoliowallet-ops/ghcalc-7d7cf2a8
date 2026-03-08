@@ -106,7 +106,107 @@ export default function App() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="bg-navy text-white border-b border-white/10 sticky top-0 z-50">
-...
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+          {/* Logo */}
+          <div className="flex items-center gap-3 shrink-0">
+            <img src={sanfogLogoWhite} alt="Sanfog" className="h-7 w-auto" />
+            <div className="hidden sm:block border-l border-white/20 pl-3">
+              <p className="text-xs font-semibold text-white/90 leading-tight tracking-wide uppercase">Greenhouse Projekt</p>
+              <p className="text-xs text-white/40">Interný BOM kalkulátor</p>
+            </div>
+          </div>
+
+          {/* Nav */}
+          <nav className="flex items-center gap-1 overflow-x-auto">
+            <NavBtn target="dashboard" icon="📂" label="Projekty" />
+            <NavBtn target="stock" icon="📦" label="Sklad" />
+            <NavBtn target="changelog" icon="📋" label="Zmeny" />
+            {currentUser.role === 'admin' && <NavBtn target="users" icon="👥" label="Používatelia" />}
+          </nav>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2 shrink-0">
+            {view === 'project' && (
+              <>
+                {project.quoteNumber && (
+                  <div className="hidden md:flex items-center gap-2 px-3 py-1.5 border border-teal/40 bg-teal/10" style={{ borderRadius: 'var(--radius)' }}>
+                    <span className="text-xs text-teal font-semibold font-mono">{project.quoteNumber}</span>
+                    {project.customerName && <span className="text-xs text-white/50">· {project.customerName}</span>}
+                  </div>
+                )}
+                <button
+                  onClick={handleSaveAndClose}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal hover:bg-teal/90 text-white transition-colors"
+                  style={{ borderRadius: 'var(--radius)' }}
+                >
+                  💾 Uložiť
+                </button>
+                <button
+                  onClick={handleNewProject}
+                  className="text-xs text-white/40 hover:text-white px-2 py-1 transition-colors"
+                >
+                  ↺ Nový
+                </button>
+              </>
+            )}
+            {view === 'dashboard' && (
+              <button
+                onClick={handleNewProject}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal hover:bg-teal/90 text-white transition-colors"
+                style={{ borderRadius: 'var(--radius)' }}
+              >
+                ＋ Nový projekt
+              </button>
+            )}
+            <div className="flex items-center gap-2 ml-1 pl-2 border-l border-white/20">
+              <span className="hidden md:block text-xs text-white/50 font-medium">
+                {currentUser.name.split(' ')[0]}
+                {currentUser.role === 'admin' && <span className="ml-1 text-orange">★</span>}
+              </span>
+              <button
+                onClick={() => { if (window.confirm('Odhlásiť sa?')) logout(); }}
+                className="flex items-center gap-1 px-2 py-1.5 text-xs text-white/40 hover:text-white transition-colors"
+              >
+                🚪
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Step tabs */}
+        {view === 'project' && (
+          <div className="max-w-7xl mx-auto px-4 pb-2 overflow-x-auto border-t border-white/10">
+            <div className="flex gap-1 min-w-max pt-2">
+              {STEPS.map(step => {
+                const isDone = step.num < currentStep;
+                const isActive = step.num === currentStep;
+                return (
+                  <button
+                    key={step.num}
+                    onClick={() => setStep(step.num)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap border ${
+                      isActive
+                        ? 'bg-teal text-white border-teal'
+                        : isDone
+                        ? 'bg-white/10 text-teal border-teal/30 hover:bg-teal/20'
+                        : 'text-white/30 border-transparent hover:text-white/60 hover:bg-white/5'
+                    }`}
+                    style={{ borderRadius: 'var(--radius)' }}
+                  >
+                    <span className={`w-4 h-4 flex items-center justify-center text-xs font-bold ${
+                      isActive ? 'text-white' : isDone ? 'text-teal' : 'text-white/30'
+                    }`}>
+                      {isDone ? '✓' : step.num}
+                    </span>
+                    <span>{step.icon} {step.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </header>
+
       <main className="flex-1">{renderContent()}</main>
 
       <footer className="border-t border-border bg-navy">
