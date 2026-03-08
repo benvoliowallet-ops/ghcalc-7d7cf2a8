@@ -433,9 +433,9 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
         <div className="mt-1 border-t pt-2 flex flex-col gap-1">
           <button
             onClick={fitToView}
-            className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700"
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700"
           >
-            ⊡ Fit to view
+            <Maximize2 className="w-3.5 h-3.5" /> Fit to view
           </button>
 
           <button
