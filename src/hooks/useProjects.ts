@@ -64,7 +64,7 @@ export function useProjectSaver() {
           num_zones: snapshot.zones.length,
           snapshot: snapshot as unknown as Record<string, unknown>,
           saved_at: new Date().toISOString(),
-        });
+        }]);
 
       if (error) {
         console.error('[Projects] Save error:', error.message);
