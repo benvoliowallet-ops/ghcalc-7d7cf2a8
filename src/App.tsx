@@ -204,9 +204,6 @@ function AppInner() {
     }
   };
 
-  // Show comments panel only when viewing a project (wizard or summary)
-  const showComments = view === 'project' || view === 'summary';
-
   return (
     <div className="min-h-screen bg-background flex" style={{ position: 'relative' }}>
       <AutoSaveSubscriber view={view} />
