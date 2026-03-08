@@ -94,11 +94,13 @@ export function LoginPage() {
 
   useEffect(() => {
     // get_user_count() is SECURITY DEFINER — works without authentication.
-    // Always resolves: on any error defaults to false (show login form).
+    // Timeout ensures we never stay stuck on "Načítavam..." forever.
+    const timeout = setTimeout(() => setIsBootstrap(false), 5000);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.rpc as any)('get_user_count')
       .then(({ data, error }: { data: number | null; error: { message: string } | null }) => {
-        console.log('[Bootstrap check] data:', data, 'error:', error);
+        clearTimeout(timeout);
         if (error || data === null) {
           setIsBootstrap(false);
           return;
@@ -106,9 +108,11 @@ export function LoginPage() {
         setIsBootstrap(data === 0);
       })
       .catch(() => {
-        // Network error — default to login
+        clearTimeout(timeout);
         setIsBootstrap(false);
       });
+
+    return () => clearTimeout(timeout);
   }, []);
 
   const isRegister = isBootstrap || mode === 'register';
