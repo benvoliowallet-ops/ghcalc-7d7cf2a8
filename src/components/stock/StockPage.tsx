@@ -19,9 +19,10 @@ export function StockPage() {
   const [sortBy, setSortBy] = useState<'code' | 'name' | 'group' | 'price'>('group');
   const [sortAsc, setSortAsc] = useState(true);
 
-  const groups = Array.from(new Set(items.map((i) => i.group))).sort();
+  const groups = useMemo(() => Array.from(new Set(items.map((i) => i.group))).sort(), [items]);
 
-  const filtered = (() => {
+  // P2 FIX: memoize filtered list to avoid O(n log n) sort on every render
+  const filtered = useMemo(() => {
     const q = search.toLowerCase();
     let result = items.filter((item) => {
       const matchGroup = groupFilter === 'all' || item.group === groupFilter;
@@ -40,7 +41,7 @@ export function StockPage() {
       return sortAsc ? cmp : -cmp;
     });
     return result;
-  })();
+  }, [items, search, groupFilter, sortBy, sortAsc]);
 
   const handleSort = (col: typeof sortBy) => {
     if (sortBy === col) setSortAsc(!sortAsc);
