@@ -62,7 +62,7 @@ export function useProjectSaver() {
           country: snapshot.project.country,
           current_step: snapshot.currentStep,
           num_zones: snapshot.zones.length,
-          snapshot: snapshot as unknown as Record<string, unknown>,
+          snapshot: JSON.parse(JSON.stringify(snapshot)),
           saved_at: new Date().toISOString(),
         }]);
 
