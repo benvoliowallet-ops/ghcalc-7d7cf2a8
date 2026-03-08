@@ -169,7 +169,7 @@ export function Step9_PreOrderCheck() {
             </div>
             <div className="flex items-center justify-between py-2 border-b border-border">
               <span className="text-sm text-foreground">Príslušenstvo k ETNA ({etnaDistance}m)</span>
-              <Badge variant="green">{etnaAccessoryCost} € ✓</Badge>
+              <Badge variant="green"><span className="flex items-center gap-1">{etnaAccessoryCost} € <Check className="w-3 h-3" /></span></Badge>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-sm text-foreground">Lano celkom</span>
