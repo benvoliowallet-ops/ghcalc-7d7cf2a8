@@ -74,13 +74,14 @@ export function useStockMutations(reload: () => void) {
       if (itemErr) return { ok: false, error: itemErr.message };
 
       // Log the change
-      await supabase.from('change_log').insert({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any).from('change_log').insert({
         user_id: currentUser.id,
         user_name: currentUser.name,
         action: 'create',
         item_code: item.code,
         item_name: item.name,
-        after_data: item as unknown as Record<string, unknown>,
+        after_data: item,
       });
 
       reload();

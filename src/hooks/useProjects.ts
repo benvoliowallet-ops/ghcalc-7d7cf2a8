@@ -51,7 +51,8 @@ export function useProjectSaver() {
       if (!currentUser) return;
       setSaveStatus('saving');
 
-      const { error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
         .from('projects')
         .upsert({
           id: snapshot.project.id,
@@ -62,7 +63,7 @@ export function useProjectSaver() {
           country: snapshot.project.country,
           current_step: snapshot.currentStep,
           num_zones: snapshot.zones.length,
-          snapshot: snapshot as unknown as Record<string, unknown>,
+          snapshot: snapshot,
           saved_at: new Date().toISOString(),
         });
 
