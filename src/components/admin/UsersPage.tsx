@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Trash2, Users, Mail, Crown, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '../../store/authStore';
 import { useConfirm } from '../../hooks/useConfirm';
@@ -41,6 +42,7 @@ export function UsersPage() {
   const [inviteRole, setInviteRole] = useState<'admin' | 'user'>('user');
   const [copied, setCopied] = useState<string | null>(null);
   const [newInvCode, setNewInvCode] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const loadUsers = async () => {
     const { data } = await supabase.from('profiles').select('*').order('created_at');
@@ -99,22 +101,19 @@ export function UsersPage() {
     });
     if (!ok) return;
 
-    // H1 FIX: call edge function to delete auth user (not just profile)
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token;
-    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-    const res = await fetch(`https://${projectId}.supabase.co/functions/v1/delete-user`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ userId: id }),
+    setDeleteError(null);
+
+    // S1 FIX: use supabase.functions.invoke instead of raw fetch
+    const { error } = await supabase.functions.invoke('delete-user', {
+      body: { userId: id },
     });
-    if (!res.ok) {
-      const err = await res.json();
-      console.error('[UsersPage] Delete user error:', err);
+
+    if (error) {
+      // U1 FIX: show error message to user in UI
+      setDeleteError(`Chyba: ${error.message ?? 'Nepodarilo sa vymazať používateľa'}`);
+      return;
     }
+
     loadUsers();
   };
 
@@ -132,9 +131,19 @@ export function UsersPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-foreground uppercase tracking-wide">👥 Správa používateľov</h1>
+        <div className="flex items-center gap-2 mb-1">
+          <Users className="w-5 h-5 text-foreground" />
+          <h1 className="text-xl font-bold text-foreground uppercase tracking-wide">Správa používateľov</h1>
+        </div>
         <p className="text-sm text-muted-foreground">Pozvania, prístupy a roly</p>
       </div>
+
+      {deleteError && (
+        <div className="mb-4 px-4 py-3 bg-destructive/10 border border-destructive/30 text-destructive text-sm rounded-lg flex items-center justify-between">
+          <span>{deleteError}</span>
+          <button onClick={() => setDeleteError(null)} className="text-destructive/60 hover:text-destructive ml-4">✕</button>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 border border-border bg-muted p-1 w-fit" style={{ borderRadius: 'var(--radius)' }}>
@@ -142,7 +151,7 @@ export function UsersPage() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className="px-4 py-2 text-sm font-semibold transition-colors"
+            className="px-4 py-2 text-sm font-semibold transition-colors flex items-center gap-1.5"
             style={{
               borderRadius: 'var(--radius)',
               backgroundColor: tab === t ? 'hsl(var(--card))' : 'transparent',
@@ -150,7 +159,11 @@ export function UsersPage() {
               boxShadow: tab === t ? '0 1px 3px hsl(var(--navy) / 0.08)' : 'none',
             }}
           >
-            {t === 'users' ? `👤 Používatelia (${users.length})` : `📩 Pozvánky (${pending.length} aktívnych)`}
+            {t === 'users' ? (
+              <><User className="w-3.5 h-3.5" /> Používatelia ({users.length})</>
+            ) : (
+              <><Mail className="w-3.5 h-3.5" /> Pozvánky ({pending.length} aktívnych)</>
+            )}
           </button>
         ))}
       </div>
@@ -177,8 +190,8 @@ export function UsersPage() {
                   </td>
                   <td className="px-4 py-3 text-muted-foreground text-sm">{user.email}</td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-orange/10 text-orange' : 'bg-primary/10 text-primary'}`}>
-                      {user.role === 'admin' ? '👑 Admin' : '👤 User'}
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-orange/10 text-orange' : 'bg-primary/10 text-primary'}`}>
+                      {user.role === 'admin' ? <><Crown className="w-3 h-3" /> Admin</> : <><User className="w-3 h-3" /> User</>}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(user.created_at).toLocaleDateString('sk-SK')}</td>
@@ -188,8 +201,9 @@ export function UsersPage() {
                         onClick={() => handleDeleteUser(user.id, user.name)}
                         className="p-1.5 hover:bg-destructive/10 text-destructive/40 hover:text-destructive transition-colors"
                         style={{ borderRadius: 'var(--radius)' }}
+                        title="Vymazať používateľa"
                       >
-                        🗑
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     )}
                   </td>
@@ -213,8 +227,8 @@ export function UsersPage() {
               <div>
                 <label className="block text-xs font-semibold text-muted-foreground mb-1">Rola</label>
                 <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value as 'admin' | 'user')} className="px-3 py-2 border border-border bg-background text-foreground text-sm focus:outline-none" style={{ borderRadius: 'var(--radius)' }}>
-                  <option value="user">👤 User</option>
-                  <option value="admin">👑 Admin</option>
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
                 </select>
               </div>
               <button type="submit" className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors shadow-sm" style={{ borderRadius: 'var(--radius)' }}>
@@ -228,7 +242,7 @@ export function UsersPage() {
                 <div className="flex items-center gap-4">
                   <code className="text-2xl font-mono font-bold text-foreground tracking-[0.3em]">{newInvCode}</code>
                   <button onClick={() => copyCode(newInvCode)} className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold transition-colors" style={{ borderRadius: 'var(--radius)' }}>
-                    {copied === newInvCode ? '✓ Skopírované' : '📋 Kopírovať'}
+                    {copied === newInvCode ? '✓ Skopírované' : 'Kopírovať'}
                   </button>
                   <button onClick={() => setNewInvCode(null)} className="text-muted-foreground hover:text-foreground text-xs">Zavrieť</button>
                 </div>
@@ -258,7 +272,7 @@ export function UsersPage() {
                         <div className="flex items-center gap-2">
                           <code className="font-mono font-bold text-foreground tracking-wider">{inv.code}</code>
                           <button onClick={() => copyCode(inv.code)} className="text-xs text-muted-foreground hover:text-foreground">
-                            {copied === inv.code ? '✓' : '📋'}
+                            {copied === inv.code ? '✓' : '⎘'}
                           </button>
                         </div>
                       </td>
