@@ -139,8 +139,12 @@ export function StockPage() {
                   <td className="px-4 py-2.5 text-right font-mono font-semibold text-foreground whitespace-nowrap">{item.price.toFixed(3)}</td>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center justify-center gap-1">
-                      <button onClick={() => setEditItem(item)} className="p-1.5 hover:bg-primary/10 text-primary/60 hover:text-primary transition-colors" style={{ borderRadius: 'var(--radius)' }} title="Upraviť">✏️</button>
-                      <button onClick={() => handleDelete(item.code, item)} className="p-1.5 hover:bg-destructive/10 text-destructive/40 hover:text-destructive transition-colors" style={{ borderRadius: 'var(--radius)' }} title="Vymazať">🗑</button>
+                      <button onClick={() => setEditItem(item)} className="p-1.5 hover:bg-primary/10 text-primary/60 hover:text-primary transition-colors" style={{ borderRadius: 'var(--radius)' }} title="Upraviť">
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => handleDelete(item.code, item)} className="p-1.5 hover:bg-destructive/10 text-destructive/40 hover:text-destructive transition-colors" style={{ borderRadius: 'var(--radius)' }} title="Vymazať">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </td>
                 </tr>
