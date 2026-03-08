@@ -70,7 +70,7 @@ export function ChangeLogPage() {
             >
               {af === 'all' ? 'Všetky' : ACTION_META[af].label}
               {af !== 'all' && (
-                <span className="ml-1 opacity-50">({changelog.filter((e) => e.action === af).length})</span>
+                <span className="ml-1 opacity-50">({actionCounts[af as keyof typeof actionCounts]})</span>
               )}
             </button>
           ))}
