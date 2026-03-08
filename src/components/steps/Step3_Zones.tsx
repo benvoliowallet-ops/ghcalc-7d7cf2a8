@@ -137,7 +137,7 @@ export function Step3_Zones() {
             <ZoneResultsTab calc={currentCalc} zone={currentZone} globalParams={globalParams} />
           )}
           {activeTab === 'results' && !currentCalc && (
-            <div className="text-center py-12 text-muted-foreground"><p className="text-3xl mb-2">📊</p><p>Výsledky sa vypočítajú po zadaní parametrov</p></div>
+            <div className="text-center py-12 text-muted-foreground"><BarChart2 className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" /><p>Výsledky sa vypočítajú po zadaní parametrov</p></div>
           )}
         </div>
       </div>
