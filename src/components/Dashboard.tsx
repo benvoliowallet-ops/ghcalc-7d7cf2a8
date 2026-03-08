@@ -1,4 +1,5 @@
 import { useProjectStore } from '../store/projectStore';
+import { useConfirm } from '../hooks/useConfirm';
 import type { SavedProject } from '../types';
 
 const COUNTRY_FLAG: Record<string, string> = { SK: '🇸🇰', CZ: '🇨🇿', HU: '🇭🇺' };
@@ -19,6 +20,40 @@ function formatDate(iso: string) {
   }
 }
 
+/** Simple vector greenhouse icon */
+function GreenhouseIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      {/* Roof ridge */}
+      <polyline points="8,26 32,6 56,26" />
+      {/* Side walls */}
+      <line x1="8" y1="26" x2="8" y2="56" />
+      <line x1="56" y1="26" x2="56" y2="56" />
+      {/* Floor */}
+      <line x1="8" y1="56" x2="56" y2="56" />
+      {/* Door */}
+      <rect x="26" y="40" width="12" height="16" rx="1" />
+      {/* Left window panel */}
+      <rect x="12" y="30" width="10" height="8" rx="1" />
+      {/* Right window panel */}
+      <rect x="42" y="30" width="10" height="8" rx="1" />
+      {/* Roof left pane */}
+      <line x1="14" y1="45" x2="14" y2="45" />
+      {/* Ridge line down center */}
+      <line x1="32" y1="6" x2="32" y2="40" strokeDasharray="3 3" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
 function StepProgress({ step }: { step: number }) {
   const pct = Math.round((step / 10) * 100);
   return (
@@ -30,7 +65,7 @@ function StepProgress({ step }: { step: number }) {
       <div className="h-1 bg-muted overflow-hidden" style={{ borderRadius: 'var(--radius)' }}>
         <div
           className="h-full transition-all"
-          style={{ width: `${pct}%`, backgroundColor: step === 10 ? 'hsl(var(--teal))' : 'hsl(var(--teal))' }}
+          style={{ width: `${pct}%`, backgroundColor: 'hsl(var(--teal))' }}
         />
       </div>
     </div>
@@ -44,7 +79,20 @@ interface ProjectCardProps {
 }
 
 function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
+  const confirm = useConfirm();
   const done = project.currentStep === 10;
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const ok = await confirm({
+      title: `Zmazať projekt ${project.quoteNumber}?`,
+      description: 'Táto akcia je nevratná. Projekt bude trvalo vymazaný.',
+      confirmLabel: 'Zmazať',
+      variant: 'destructive',
+    });
+    if (ok) onDelete();
+  };
+
   return (
     <div
       className={`bg-card border transition-shadow hover:shadow-sm p-5 flex flex-col gap-3 ${
@@ -52,7 +100,6 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
       }`}
       style={{ borderRadius: 'var(--radius)' }}
     >
-      {/* Header */}
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
@@ -77,10 +124,7 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
           )}
         </div>
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (window.confirm(`Naozaj zmazať projekt ${project.quoteNumber}?`)) onDelete();
-          }}
+          onClick={handleDelete}
           className="text-muted-foreground/30 hover:text-destructive transition-colors text-lg leading-none p-1"
           title="Zmazať projekt"
         >
@@ -88,15 +132,16 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
         </button>
       </div>
 
-      {/* Stats */}
       <div className="flex gap-4 text-xs text-muted-foreground">
-        <span>🌿 {project.numZones} {project.numZones === 1 ? 'zóna' : 'zóny'}</span>
+        <span className="flex items-center gap-1.5">
+          <GreenhouseIcon className="w-3.5 h-3.5 text-teal/70" />
+          {project.numZones} {project.numZones === 1 ? 'zóna' : 'zóny'}
+        </span>
         <span>🕒 {formatDate(project.savedAt)}</span>
       </div>
 
       <StepProgress step={project.currentStep} />
 
-      {/* Actions */}
       <button
         onClick={onOpen}
         className="mt-1 w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold uppercase tracking-wide transition-colors"
@@ -121,12 +166,11 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
     (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
   );
 
-  const done = sorted.filter((p) => p.currentStep === 10);
+  const done       = sorted.filter((p) => p.currentStep === 10);
   const inProgress = sorted.filter((p) => p.currentStep < 10);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground uppercase tracking-wide">Projekty</h1>
@@ -145,13 +189,14 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
         </button>
       </div>
 
-      {/* Empty state */}
       {sorted.length === 0 && (
         <div
           className="text-center py-24 bg-card border border-dashed border-border"
           style={{ borderRadius: 'var(--radius)' }}
         >
-          <div className="text-6xl mb-4">🌿</div>
+          <div className="flex justify-center mb-4">
+            <GreenhouseIcon className="w-16 h-16 text-teal/40" />
+          </div>
           <p className="text-xl font-semibold text-foreground mb-2">Zatiaľ žiadne projekty</p>
           <p className="text-muted-foreground mb-6">Začni tým, že vytvoríš nový projekt</p>
           <button
@@ -164,7 +209,6 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
         </div>
       )}
 
-      {/* In-progress */}
       {inProgress.length > 0 && (
         <section className="mb-8">
           <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 border-b border-border pb-2">
@@ -183,7 +227,6 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
         </section>
       )}
 
-      {/* Completed */}
       {done.length > 0 && (
         <section>
           <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 border-b border-border pb-2">

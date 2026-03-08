@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useStockItems, useStockMutations } from '../../hooks/useStockDB';
 import { useAuthStore } from '../../store/authStore';
+import { useConfirm } from '../../hooks/useConfirm';
 import { StockItemModal } from './StockItemModal';
 import type { StockItem } from '../../types';
 
