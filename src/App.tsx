@@ -219,7 +219,7 @@ export default function App() {
       <footer className="border-t border-border bg-navy">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-white/30">
-            <span>Greenhouse Projekt · 2026 · v12</span>
+            <span>GreenHouse Calc · 2026 · v12</span>
           </div>
           <div className="flex items-center gap-2 text-xs text-white/30">
             <span>made by</span>
