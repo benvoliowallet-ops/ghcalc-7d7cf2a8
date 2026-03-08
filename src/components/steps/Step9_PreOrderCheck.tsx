@@ -109,7 +109,7 @@ export function Step9_PreOrderCheck() {
         </Card>
 
         {/* Card 3 – Rope lengths */}
-        <Card variant="info" title="🔍 Kontrola 3 – Dĺžky lana">
+        <Card variant="info" title="Kontrola 3 – Dĺžky lana">
           <p className="text-sm text-muted-foreground mb-4">
             Lano sa objednáva v cievkach po <strong>500 m</strong>. Systém vypočítal potrebu per zóna.
             Upravte množstvo ak chcete objednať inak (napr. spojiť viaceré zóny).
