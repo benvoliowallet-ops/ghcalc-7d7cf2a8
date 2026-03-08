@@ -259,7 +259,7 @@ export function VoraAIChat() {
               transition-[border-color,box-shadow,transform] duration-200
               hover:scale-105 active:scale-95 bg-white select-none
               ${isDragging ? 'cursor-grabbing scale-105 shadow-xl' : 'cursor-grab'}
-              ${open ? 'border-navy ring-2 ring-navy/30' : 'border-navy hover:border-teal'}
+              ${open ? 'border-navy ring-2 ring-navy/30' : 'border-navy hover:border-orange'}
             `}>
 
             {/* Drag hint dots — visible on hover */}
