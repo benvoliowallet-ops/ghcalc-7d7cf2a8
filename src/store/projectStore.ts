@@ -311,6 +311,7 @@ export const useProjectStore = create<ProjectStore>()(
           uvSystemCode: null,
           ssFilter30: false,
           activeZoneIndex: 0,
+          ropeOverrides: [],
         }),
     }),
     { name: 'greenhouse-project' }
