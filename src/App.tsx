@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import sanfogLogoWhite from './assets/sanfog-logo-white.svg';
 import { useProjectStore } from './store/projectStore';
 import { useAuthStore } from './store/authStore';
 import { Dashboard } from './components/Dashboard';
@@ -107,10 +108,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           {/* Logo */}
           <div className="flex items-center gap-3 shrink-0">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-teal flex items-center justify-center text-white font-bold text-xs" style={{ borderRadius: 'var(--radius)' }}>S</div>
-              <span className="text-white font-bold text-base tracking-widest uppercase">Sanfog</span>
-            </div>
+            <img src={sanfogLogoWhite} alt="Sanfog" className="h-7 w-auto" />
             <div className="hidden sm:block border-l border-white/20 pl-3">
               <p className="text-xs font-semibold text-white/90 leading-tight tracking-wide uppercase">Greenhouse Projekt</p>
               <p className="text-xs text-white/40">Interný BOM kalkulátor</p>
