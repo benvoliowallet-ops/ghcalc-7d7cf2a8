@@ -209,12 +209,15 @@ export default function App() {
 
       <main>{renderContent()}</main>
 
-      <footer className="border-t border-border bg-card mt-8">
+      <footer className="border-t border-border bg-navy mt-8">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-white/30">
             <span>Greenhouse Projekt · 2026 · v12</span>
           </div>
-          <div className="text-xs text-muted-foreground/50">made by VORA</div>
+          <div className="flex items-center gap-2 text-xs text-white/30">
+            <span>made by</span>
+            <img src={voraLogo} alt="VORA" className="h-5 w-auto opacity-50" />
+          </div>
         </div>
       </footer>
     </div>
