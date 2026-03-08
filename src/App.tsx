@@ -1,8 +1,10 @@
+import { useEffect } from 'react';
 import { useState } from 'react';
 import sanfogLogoWhite from './assets/sanfog-logo-white.svg';
 import voraLogo from './assets/vora-logo.png';
 import { useProjectStore } from './store/projectStore';
 import { useAuthStore } from './store/authStore';
+import { supabase } from '@/integrations/supabase/client';
 import { Dashboard } from './components/Dashboard';
 import { LoginPage } from './components/auth/LoginPage';
 import { StockPage } from './components/stock/StockPage';
@@ -19,6 +21,7 @@ import { Step8_Documents } from './components/steps/Step8_Documents';
 import { Step9_PreOrderCheck } from './components/steps/Step9_PreOrderCheck';
 import { Step10_OrderForm } from './components/steps/Step10_OrderForm';
 import { ProjectSummary } from './components/ProjectSummary';
+import { useLoadProjects, useAutoSave } from './hooks/useProjects';
 
 type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary';
 
@@ -35,10 +38,107 @@ const STEPS = [
   { num: 10, label: 'Objednávka', icon: '🛒' },
 ];
 
+/** Small save-status indicator shown in the header */
+function SaveIndicator() {
+  const saveStatus = useProjectStore((s) => s.saveStatus);
+  if (saveStatus === 'idle') return null;
+  return (
+    <div
+      className="hidden md:flex items-center gap-1.5 px-2 py-1 text-xs font-medium transition-all"
+      style={{
+        color:
+          saveStatus === 'saving' ? 'hsl(var(--white) / 0.5)' :
+          saveStatus === 'saved' ? 'hsl(var(--teal))' :
+          'hsl(0 80% 65%)',
+      }}
+    >
+      {saveStatus === 'saving' && <span className="animate-spin inline-block">⟳</span>}
+      {saveStatus === 'saved' && '✓'}
+      {saveStatus === 'error' && '⚠'}
+      <span>
+        {saveStatus === 'saving' ? 'Ukladám...' :
+         saveStatus === 'saved' ? 'Uložené' :
+         'Chyba ukladania'}
+      </span>
+    </div>
+  );
+}
+
+/** Subscribes to project store changes and auto-saves debounced (2s) */
+function AutoSaveSubscriber({ view }: { view: AppView }) {
+  const { debouncedSave } = useAutoSave();
+  const store = useProjectStore();
+
+  useEffect(() => {
+    if (view !== 'project') return;
+    // Capture current snapshot and debounce-save
+    const snapshot = {
+      currentStep: store.currentStep,
+      project: store.project,
+      globalParams: store.globalParams,
+      zones: store.zones,
+      zoneCalcs: store.zoneCalcs,
+      cad: store.cad,
+      pumpSelection: store.pumpSelection,
+      etnaConfig: store.etnaConfig,
+      normistPrice: store.normistPrice,
+      costInputs: store.costInputs,
+      uvSystemCode: store.uvSystemCode,
+      ssFilter30: store.ssFilter30,
+      activeZoneIndex: store.activeZoneIndex,
+      ropeOverrides: store.ropeOverrides,
+    };
+    debouncedSave(snapshot);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    store.currentStep, store.project, store.globalParams, store.zones,
+    store.zoneCalcs, store.cad, store.pumpSelection, store.etnaConfig,
+    store.normistPrice, store.costInputs, store.uvSystemCode, store.ssFilter30,
+    store.activeZoneIndex, store.ropeOverrides, view,
+  ]);
+
+  return null;
+}
+
 export default function App() {
   const { currentStep, setStep, project, resetProject, saveCurrentProject, loadProject } = useProjectStore();
-  const { currentUser, logout } = useAuthStore();
+  const { currentUser, loading, setCurrentUser, setLoading, loadProfile } = useAuthStore();
   const [view, setView] = useState<AppView>('dashboard');
+
+  // Load projects into store when user is logged in
+  useLoadProjects();
+
+  // Auth session listener — runs once on mount
+  useEffect(() => {
+    // First set up the listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        await loadProfile(session.user);
+      } else {
+        setCurrentUser(null);
+        setLoading(false);
+      }
+    });
+
+    // Then check current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        loadProfile(session.user);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-muted-foreground text-sm">Načítavam...</div>
+      </div>
+    );
+  }
 
   if (!currentUser) return <LoginPage />;
 
@@ -111,6 +211,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      {/* Auto-save subscriber (invisible) */}
+      <AutoSaveSubscriber view={view} />
+
       {/* Header */}
       <header className="bg-navy text-white border-b border-white/10 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
@@ -141,6 +244,8 @@ export default function App() {
                     {project.customerName && <span className="text-xs text-white/50">· {project.customerName}</span>}
                   </div>
                 )}
+                {/* Save status indicator */}
+                <SaveIndicator />
                 <button
                   onClick={handleSaveAndClose}
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal hover:bg-teal/90 text-white transition-colors"
@@ -171,7 +276,11 @@ export default function App() {
                 {currentUser.role === 'admin' && <span className="ml-1 text-orange">★</span>}
               </span>
               <button
-                onClick={() => { if (window.confirm('Odhlásiť sa?')) logout(); }}
+                onClick={async () => {
+                  if (window.confirm('Odhlásiť sa?')) {
+                    await useAuthStore.getState().logout();
+                  }
+                }}
                 className="flex items-center gap-1 px-2 py-1.5 text-xs text-white/40 hover:text-white transition-colors"
               >
                 🚪
@@ -219,7 +328,7 @@ export default function App() {
       <footer className="border-t border-border bg-navy">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-white/30">
-            <span>GreenHouse Calc · 2026 · v12</span>
+            <span>GreenHouse Calc · 2026 · v13</span>
           </div>
           <div className="flex items-center gap-2 text-xs text-white/30">
             <span>made by</span>
