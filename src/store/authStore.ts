@@ -29,13 +29,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
   setLoading: (loading) => set({ loading }),
 
   loadProfile: async (user: SupabaseUser) => {
-    set({ loading: true });
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, email, name, role')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error || !data) {
         console.error('[Auth] Failed to load profile:', error?.message);
