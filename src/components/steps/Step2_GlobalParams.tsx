@@ -97,7 +97,7 @@ export function Step2_GlobalParams() {
                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                     }`}
                   >
-                    {v === 'SS_NEREZ' ? '⚡ SS NEREZ' : '🔩 OCEĽ'}
+                    {v === 'SS_NEREZ' ? 'SS NEREZ' : '🔩 OCEĽ'}
                   </button>
                 ))}
               </div>
