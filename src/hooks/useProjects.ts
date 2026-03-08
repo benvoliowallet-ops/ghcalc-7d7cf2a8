@@ -53,7 +53,7 @@ export function useProjectSaver() {
 
       const { error } = await supabase
         .from('projects')
-        .upsert({
+        .upsert([{
           id: snapshot.project.id,
           owner_id: currentUser.id,
           quote_number: snapshot.project.quoteNumber,
