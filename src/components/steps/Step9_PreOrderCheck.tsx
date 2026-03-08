@@ -74,7 +74,7 @@ export function Step9_PreOrderCheck() {
         </Card>
 
         {/* Card 2 – ETNA accessories */}
-        <Card variant="warning" title="🔍 Kontrola 2 – Príslušenstvo k ETNA">
+        <Card variant="warning" title="Kontrola 2 – Príslušenstvo k ETNA">
           <p className="text-sm text-muted-foreground mb-4">
             Fixný náklad <strong>200 €</strong> platí len do 10 m.
             Ak je vzdialenosť od čerpadla k ETNA nad 10 m, zadajte skutočný náklad.
