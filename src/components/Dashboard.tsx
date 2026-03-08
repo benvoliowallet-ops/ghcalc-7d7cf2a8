@@ -194,7 +194,7 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
               <ProjectCard
                 key={p.id}
                 project={p}
-                onOpen={() => onOpenProject(p.id)}
+                onOpen={() => onOpenSummary(p.id)}
                 onDelete={() => deleteSavedProject(p.id)}
               />
             ))}
