@@ -102,7 +102,7 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
         className="mt-1 w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold uppercase tracking-wide transition-colors"
         style={{ borderRadius: 'var(--radius)' }}
       >
-        {done ? '📄 Otvoriť / Tlačiť' : '▶ Pokračovať'}
+        {done ? '📄 Prehľad projektu' : '▶ Pokračovať'}
       </button>
     </div>
   );
