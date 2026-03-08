@@ -210,7 +210,7 @@ function AppInner() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex" style={{ position: 'relative' }}>
       <AutoSaveSubscriber view={view} />
 
       {/* Sidebar */}
