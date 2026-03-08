@@ -164,7 +164,7 @@ export function Step9_PreOrderCheck() {
             <div className="flex items-center justify-between py-2 border-b border-border">
               <span className="text-sm text-foreground">Prepoj čerpadlo → vedenie DN25</span>
               <Badge variant={allGood ? 'green' : 'amber'}>
-                {allGood ? '✓ Skontrolované' : '⚠ Chýba'}
+                {allGood ? <span className="flex items-center gap-1"><Check className="w-3 h-3" />Skontrolované</span> : <span className="flex items-center gap-1"><AlertTriangle className="w-3 h-3" />Chýba</span>}
               </Badge>
             </div>
             <div className="flex items-center justify-between py-2 border-b border-border">
