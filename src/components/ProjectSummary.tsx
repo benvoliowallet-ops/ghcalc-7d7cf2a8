@@ -8,6 +8,7 @@ import { getPipe10mmForSpacing } from '../data/stockItems';
 import { useNormistChecker } from '../hooks/useSupabaseItems';
 import { usePortal } from '../hooks/usePortal';
 import { ProjectPDF } from './pdf/ProjectPDF';
+import { InlineProjectComments } from './comments/ProjectComments';
 
 interface ProjectSummaryProps {
   onOpenWizard: () => void;
