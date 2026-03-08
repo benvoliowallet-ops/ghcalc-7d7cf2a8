@@ -146,7 +146,7 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
           <GreenhouseIcon className="w-3.5 h-3.5 text-teal/70" />
           {project.numZones} {project.numZones === 1 ? 'zóna' : 'zóny'}
         </span>
-        <span>🕒 {formatDate(project.savedAt)}</span>
+        <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDate(project.savedAt)}</span>
       </div>
 
       <StepProgress step={project.currentStep} />
