@@ -52,17 +52,15 @@ function SaveIndicator() {
         saveStatus === 'saved' ? 'hsl(var(--teal))' :
         'hsl(0 80% 65%)'
       }}>
-      
-      {saveStatus === 'saving' && <span className="animate-spin inline-block">⟳</span>}
-      {saveStatus === 'saved' && '✓'}
-      {saveStatus === 'error' && '⚠'}
+      {saveStatus === 'saving' && <Loader2 className="w-3 h-3 animate-spin" />}
+      {saveStatus === 'saved' && <Check className="w-3 h-3" />}
+      {saveStatus === 'error' && <AlertTriangle className="w-3 h-3" />}
       <span>
         {saveStatus === 'saving' ? 'Ukladám...' :
         saveStatus === 'saved' ? 'Uložené' :
         'Chyba ukladania'}
       </span>
     </div>);
-
 }
 
 function AutoSaveSubscriber({ view }: {view: AppView;}) {
