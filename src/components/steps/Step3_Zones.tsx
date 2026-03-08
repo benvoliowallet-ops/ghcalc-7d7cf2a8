@@ -52,7 +52,8 @@ export function Step3_Zones() {
     value: o,
     label: `${o.toFixed(2).replace('.', ',')} mm — ${getNozzleFlowLpm(o, pressure).toFixed(3)} l/min @ ${pressure} bar`,
   }));
-  const spacingOptions = [200, 250, 300, 350, 400, 450, 500].map((v) => ({ value: v, label: `${v} mm` }));
+  // NC4 FIX: values are in cm (200cm=2m spacing), label correctly shows cm
+  const spacingOptions = [200, 250, 300, 350, 400, 450, 500].map((v) => ({ value: v, label: `${v} cm` }));
   const controlOptions = [{ value: 'Snímač', label: 'Snímač (senzor teploty/vlhkosti)' }, { value: 'Priva', label: 'Priva (externý riadiaci systém)' }];
   const connectionOptions = [{ value: 'T-kus', label: 'T-kus' }, { value: 'rovny-spoj', label: 'Rovný spoj' }];
 
