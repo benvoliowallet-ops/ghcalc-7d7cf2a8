@@ -102,8 +102,8 @@ export function Step9_PreOrderCheck() {
               <Badge variant="amber">Vlastná suma: {fmtE(etnaCustomCost)}</Badge>
             </div>
           ) : (
-            <div className="p-3 bg-teal/5 border border-teal/20 rounded-md mt-2">
-              <p className="text-sm text-teal font-semibold">✓ Fixná sadzba 200 € (≤ 10m)</p>
+          <div className="p-3 bg-teal/5 border border-teal/20 rounded-md mt-2">
+              <p className="text-sm text-teal font-semibold flex items-center gap-1"><Check className="w-3 h-3" />Fixná sadzba 200 € (≤ 10m)</p>
             </div>
           )}
         </Card>
