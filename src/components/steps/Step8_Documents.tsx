@@ -64,7 +64,9 @@ export function Step8_Documents() {
     add(`Zóna ${i+1}: ${zName}`, 'NORMIST 0311001SS', 'Drziak trysky 1 tryska SS', calc.numNozzles - calc.numFitting180, 'ks', 3.78);
     const ropeCode = globalParams.steelRope === 'SS_NEREZ' ? 'SVX_SS_NEREZ' : 'SVX 201143';
     const ropeName = globalParams.steelRope === 'SS_NEREZ' ? 'Nerezové lano 3mm' : 'Oceľové lano 3mm';
-    add(`Zóna ${i+1}: ${zName}`, ropeCode, ropeName, calc.ropeLength, 'm', 0.15);
+    // C4 FIX: use ropeOverrides from Step9 if set, otherwise fall back to calculated ropeLength
+    const ropeQty = ropeOverrides[i] ?? calc.ropeLength;
+    add(`Zóna ${i+1}: ${zName}`, ropeCode, ropeName, ropeQty, 'm', 0.15);
     add(`Zóna ${i+1}: ${zName}`, 'MVUZTLN400MMAKNS', 'Závesný diel 400mm AK NS', calc.numHangers, 'ks', 0.23);
     add(`Zóna ${i+1}: ${zName}`, 'Gripple Plus Medium', 'GRIPPLE stredný', calc.numGripple, 'ks', 1.18);
     add(`Zóna ${i+1}: ${zName}`, 'NORMIST 201142', 'Záves drziak trysky D10', calc.numNozzleHangers, 'ks', 0.15);
