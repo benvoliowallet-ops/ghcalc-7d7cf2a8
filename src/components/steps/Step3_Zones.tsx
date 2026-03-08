@@ -39,6 +39,7 @@ const FLOW_PRESSURES = [50, 60, 70, 80, 90, 100, 110];
 export function Step3_Zones() {
   const { zones, zoneCalcs, globalParams, updateZone, activeZoneIndex, setActiveZone, recalcAllZones, initCADZones, cad } = useProjectStore();
   const [activeTab, setActiveTab] = useState<'params' | 'cad' | 'results'>('params');
+  const confirm = useConfirm();
 
   useEffect(() => { recalcAllZones(); }, []);
 
