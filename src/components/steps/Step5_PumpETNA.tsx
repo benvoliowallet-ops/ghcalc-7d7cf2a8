@@ -94,7 +94,7 @@ export function Step5_PumpETNA() {
                   ))}
                 </select>
                 {uvSystemCode && (
-                  <p className="text-xs text-teal mt-1">✓ Vybrané: {uvSystemCode}</p>
+                  <p className="text-xs text-teal mt-1 flex items-center gap-1"><Check className="w-3 h-3" />Vybrané: {uvSystemCode}</p>
                 )}
               </div>
 
