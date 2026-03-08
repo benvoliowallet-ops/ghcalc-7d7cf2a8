@@ -301,9 +301,6 @@ function AppInner() {
       </div>
 
       <VoraAIChat />
-
-      {/* Comments floating panel — only during project/summary views */}
-      {showComments && <ProjectCommentsPanel projectId={openProjectId ?? null} />}
     </div>);
 }
 
