@@ -154,12 +154,12 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
       const snapshot = {
         currentStep: 10,
         project, globalParams, zones, zoneCalcs, normistPrice,
-        costInputs, ropeOverrides, uvSystemCode, ssFilter30, cad, preOrderState,
+        costInputs, ropeOverrides, uvSystemCode: uvSystemCode ?? null, ssFilter30, cad, preOrderState,
         pumpSelection: null, etnaConfig: {}, activeZoneIndex: 0,
       };
       const blob = await pdf(
         <ProjectPDF
-          snapshot={snapshot as Parameters<typeof ProjectPDF>[0]['snapshot']}
+          snapshot={snapshot}
           quoteNumber={project.quoteNumber}
           customerName={project.customerName}
           projectAddress={project.projectAddress}
