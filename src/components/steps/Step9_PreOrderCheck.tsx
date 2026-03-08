@@ -1,36 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Input, Card, Badge } from '../ui/FormField';
 import { fmtE, fmtN } from '../../utils/calculations';
 
 export function Step9_PreOrderCheck() {
-  const { globalParams, zones, zoneCalcs, ropeOverrides, setRopeOverrides } = useProjectStore();
-  const [pumpConnectorMeters, setPumpConnectorMeters] = useState<number[]>(
-    Array(globalParams.numberOfZones).fill(3)
-  );
-  const [etnaDistance, setEtnaDistance] = useState(8);
-  const [etnaCustomCost, setEtnaCustomCost] = useState(200);
+  const { globalParams, zones, zoneCalcs, ropeOverrides, setRopeOverrides, preOrderState, updatePreOrderState } = useProjectStore();
 
-  // Rope overrides — initialise from store (or from zoneCalcs defaults)
-  const [localRopeOverrides, setLocalRopeOverrides] = useState<number[]>(() => {
-    if (ropeOverrides.length === globalParams.numberOfZones) return [...ropeOverrides];
-    return zoneCalcs.map(c => c?.ropeLength ?? 0);
-  });
+  const { pumpConnectorMeters, etnaDistance, etnaCustomCost } = preOrderState;
 
-  // Keep local state in sync when zoneCalcs changes
+  // Ensure pumpConnectorMeters length matches zone count (C5 fix)
   useEffect(() => {
-    if (localRopeOverrides.length !== globalParams.numberOfZones) {
+    const count = globalParams.numberOfZones;
+    if (pumpConnectorMeters.length !== count) {
+      const arr = Array(count).fill(3).map((v, i) => pumpConnectorMeters[i] ?? v);
+      updatePreOrderState({ pumpConnectorMeters: arr });
+    }
+    // Sync rope overrides if needed
+    if (ropeOverrides.length !== count) {
       const defaults = zoneCalcs.map(c => c?.ropeLength ?? 0);
-      setLocalRopeOverrides(defaults);
       setRopeOverrides(defaults);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalParams.numberOfZones]);
 
   const handleRopeChange = (i: number, val: number) => {
-    const arr = [...localRopeOverrides];
+    const arr = [...ropeOverrides];
     arr[i] = val;
-    setLocalRopeOverrides(arr);
     setRopeOverrides(arr);
   };
 
@@ -61,15 +57,15 @@ export function Step9_PreOrderCheck() {
                   min={1}
                   step={0.5}
                   unit="m"
-                  value={pumpConnectorMeters[i]}
+                  value={pumpConnectorMeters[i] ?? 3}
                   onChange={(e) => {
                     const arr = [...pumpConnectorMeters];
                     arr[i] = Number(e.target.value);
-                    setPumpConnectorMeters(arr);
+                    updatePreOrderState({ pumpConnectorMeters: arr });
                   }}
                 />
-                <Badge variant={pumpConnectorMeters[i] === 3 ? 'gray' : 'amber'}>
-                  {pumpConnectorMeters[i] === 3 ? 'štandard' : 'upravené'}
+                <Badge variant={(pumpConnectorMeters[i] ?? 3) === 3 ? 'gray' : 'amber'}>
+                  {(pumpConnectorMeters[i] ?? 3) === 3 ? 'štandard' : 'upravené'}
                 </Badge>
               </div>
             ))}
@@ -89,7 +85,7 @@ export function Step9_PreOrderCheck() {
             min={1}
             step={1}
             value={etnaDistance}
-            onChange={(e) => setEtnaDistance(Number(e.target.value))}
+            onChange={(e) => updatePreOrderState({ etnaDistance: Number(e.target.value) })}
           />
           {etnaDistance > 10 ? (
             <div className="mt-3">
@@ -100,7 +96,7 @@ export function Step9_PreOrderCheck() {
                 min={0}
                 step={50}
                 value={etnaCustomCost}
-                onChange={(e) => setEtnaCustomCost(Number(e.target.value))}
+                onChange={(e) => updatePreOrderState({ etnaCustomCost: Number(e.target.value) })}
               />
               <Badge variant="amber">Vlastná suma: {fmtE(etnaCustomCost)}</Badge>
             </div>
@@ -124,7 +120,7 @@ export function Step9_PreOrderCheck() {
               const ropeRaw = calc.ropeLength - calc.ropeWaste; // = (L+10)*N
               const ropeRounded = calc.ropeLength;               // ceil to 500
               const waste = calc.ropeWaste;
-              const override = localRopeOverrides[i] ?? ropeRounded;
+              const override = ropeOverrides[i] ?? ropeRounded;
               return (
                 <div key={i} className="border border-border rounded-md p-3 space-y-2">
                   <div className="flex items-center justify-between">
@@ -156,7 +152,7 @@ export function Step9_PreOrderCheck() {
           <div className="mt-3 pt-3 border-t border-border flex items-center justify-between">
             <span className="text-sm font-semibold text-foreground">Celkom lano</span>
             <span className="text-sm font-bold text-teal">
-              {fmtN(localRopeOverrides.reduce((s, v) => s + (v || 0), 0), 0)} m
+              {fmtN(ropeOverrides.reduce((s, v) => s + (v || 0), 0), 0)} m
             </span>
           </div>
         </Card>
@@ -177,7 +173,7 @@ export function Step9_PreOrderCheck() {
             <div className="flex items-center justify-between py-2">
               <span className="text-sm text-foreground">Lano celkom</span>
               <Badge variant="green">
-                {fmtN(localRopeOverrides.reduce((s, v) => s + (v || 0), 0), 0)} m ✓
+                {fmtN(ropeOverrides.reduce((s, v) => s + (v || 0), 0), 0)} m ✓
               </Badge>
             </div>
           </div>
