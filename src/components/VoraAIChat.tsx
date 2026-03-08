@@ -168,8 +168,8 @@ export function VoraAIChat() {
           {/* Hover label */}
           <div className="absolute bottom-full right-0 mb-2 pointer-events-none">
             <div className={`
-              text-xs font-semibold px-2.5 py-1 rounded-full border border-teal/40 bg-navy text-teal
-              whitespace-nowrap transition-all duration-200
+              text-xs font-semibold px-2.5 py-1 rounded-full border border-navy bg-white text-navy
+              shadow whitespace-nowrap transition-all duration-200
               opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0
               ${open ? '!opacity-0' : ''}
             `}>
@@ -182,10 +182,10 @@ export function VoraAIChat() {
             aria-label="VORA AI Asistent"
             className={`
               w-12 h-12 rounded-full shadow-lg border-2 flex items-center justify-center
-              transition-all duration-200 hover:scale-105 active:scale-95
+              transition-all duration-200 hover:scale-105 active:scale-95 bg-white
               ${open
-                ? 'border-teal bg-teal/20 ring-2 ring-teal/40'
-                : 'border-teal/40 bg-navy hover:border-teal'}
+                ? 'border-navy ring-2 ring-navy/30'
+                : 'border-navy hover:border-teal'}
             `}
           >
             <img
@@ -201,26 +201,26 @@ export function VoraAIChat() {
       <div
         className={`
           fixed bottom-36 right-4 z-50 w-[360px] flex flex-col
-          rounded-xl border border-white/10 shadow-2xl bg-navy
+          rounded-xl border-2 border-navy shadow-2xl bg-white
           transition-all duration-300 origin-bottom-right
           ${open ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}
         `}
         style={{ maxHeight: '520px' }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
+        {/* Header — navy background */}
+        <div className="flex items-center justify-between px-4 py-3 bg-navy rounded-t-[10px] shrink-0">
           <div className="flex items-center gap-2">
             <img
               src="/lovable-uploads/029f5085-4877-4e0f-902e-565d9bab748c.png"
               alt="VORA"
               className="w-6 h-6 object-contain"
             />
-            <span className="text-sm font-semibold text-foreground">VORA AI Asistent</span>
+            <span className="text-sm font-semibold text-white">VORA AI Asistent</span>
             <span className="w-2 h-2 rounded-full bg-teal animate-pulse" />
           </div>
           <button
             onClick={() => setOpen(false)}
-            className="text-muted-foreground hover:text-foreground transition-colors text-lg leading-none"
+            className="text-white/60 hover:text-white transition-colors text-xl leading-none"
             aria-label="Zatvoriť"
           >
             ×
@@ -228,7 +228,7 @@ export function VoraAIChat() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-2" style={{ minHeight: 0 }}>
+        <div className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-2 bg-white" style={{ minHeight: 0 }}>
           {messages.map((msg, i) => (
             <div
               key={i}
@@ -239,7 +239,7 @@ export function VoraAIChat() {
                   max-w-[85%] text-sm px-3 py-2 rounded-xl leading-relaxed
                   ${msg.role === 'user'
                     ? 'bg-teal text-white rounded-br-sm'
-                    : 'bg-white/8 text-foreground rounded-bl-sm border border-white/10'}
+                    : 'bg-slate-100 text-navy rounded-bl-sm border border-navy/20'}
                 `}
                 style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
               >
@@ -251,14 +251,14 @@ export function VoraAIChat() {
             </div>
           ))}
 
-          {/* Suggested questions (show only when just the greeting is visible) */}
+          {/* Suggested questions */}
           {messages.length === 1 && !loading && (
             <div className="flex flex-col gap-1.5 mt-1">
               {SUGGESTED.map((q) => (
                 <button
                   key={q}
                   onClick={() => send(q)}
-                  className="text-left text-xs px-3 py-2 rounded-lg border border-teal/30 text-teal hover:bg-teal/10 transition-colors"
+                  className="text-left text-xs px-3 py-2 rounded-lg border border-navy/30 text-navy hover:bg-navy/5 transition-colors"
                 >
                   {q}
                 </button>
@@ -267,7 +267,7 @@ export function VoraAIChat() {
           )}
 
           {error && (
-            <div className="text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
+            <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
               ⚠ {error}
             </div>
           )}
@@ -276,7 +276,7 @@ export function VoraAIChat() {
         </div>
 
         {/* Input */}
-        <div className="border-t border-white/10 px-3 py-2.5 flex gap-2 items-center shrink-0">
+        <div className="border-t-2 border-navy/20 px-3 py-2.5 flex gap-2 items-center shrink-0 bg-white rounded-b-[10px]">
           <input
             ref={inputRef}
             value={input}
@@ -286,12 +286,12 @@ export function VoraAIChat() {
             }}
             placeholder="Spýtaj sa na softvér..."
             disabled={loading}
-            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-teal/50 disabled:opacity-50 transition-colors"
+            className="flex-1 bg-slate-50 border border-navy/30 rounded-lg px-3 py-1.5 text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:border-teal disabled:opacity-50 transition-colors"
           />
           <button
             onClick={() => send(input)}
             disabled={loading || !input.trim()}
-            className="px-3 py-1.5 rounded-lg bg-teal hover:bg-teal/90 text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+            className="px-3 py-1.5 rounded-lg bg-navy hover:bg-navy/90 text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
           >
             {loading ? '...' : '→'}
           </button>
