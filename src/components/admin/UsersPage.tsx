@@ -33,6 +33,7 @@ function generateCode(): string {
 
 export function UsersPage() {
   const { currentUser } = useAuthStore();
+  const confirm = useConfirm();
   const [tab, setTab] = useState<Tab>('users');
   const [users, setUsers] = useState<ProfileRow[]>([]);
   const [invitations, setInvitations] = useState<InviteRow[]>([]);
@@ -78,14 +79,25 @@ export function UsersPage() {
   };
 
   const handleRevokeInvitation = async (id: string) => {
-    if (!window.confirm('Zrušiť túto pozvánku?')) return;
+    const ok = await confirm({
+      title: 'Zrušiť pozvánku?',
+      description: 'Pozvánka bude deaktivovaná.',
+      confirmLabel: 'Zrušiť pozvánku',
+      variant: 'destructive',
+    });
+    if (!ok) return;
     await supabase.from('invitations').delete().eq('id', id);
     loadInvitations();
   };
 
   const handleDeleteUser = async (id: string, name: string) => {
-    if (!window.confirm(`Vymazať používateľa „${name}"?\nTáto akcia je nevratná.`)) return;
-    // Cannot delete auth user directly from client; just remove profile
+    const ok = await confirm({
+      title: `Vymazať používateľa „${name}"?`,
+      description: 'Táto akcia je nevratná.',
+      confirmLabel: 'Vymazať',
+      variant: 'destructive',
+    });
+    if (!ok) return;
     await supabase.from('profiles').delete().eq('id', id);
     loadUsers();
   };
