@@ -14,8 +14,8 @@ interface Props {
 export function StockItemModal({ mode, item, groups, allItems, onClose }: Props) {
   const { currentUser } = useAuthStore();
 
-  // These are used as a stable reload no-op since StockPage passes reload already
-  const { addItem, updateItem } = useStockMutations(() => {});
+  // NC1 FIX: pass onClose as the reload callback so parent list refreshes after mutation
+  const { addItem, updateItem } = useStockMutations(onClose);
 
   const [code, setCode] = useState(item?.code ?? '');
   const [name, setName] = useState(item?.name ?? '');

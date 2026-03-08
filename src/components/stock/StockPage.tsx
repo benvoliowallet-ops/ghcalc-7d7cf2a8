@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { Pencil, Trash2, Package } from 'lucide-react';
 import { useStockItems, useStockMutations } from '../../hooks/useStockDB';
 import { useAuthStore } from '../../store/authStore';
 import { useConfirm } from '../../hooks/useConfirm';
