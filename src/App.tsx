@@ -18,8 +18,9 @@ import { Step7_Normist } from './components/steps/Step7_Normist';
 import { Step8_Documents } from './components/steps/Step8_Documents';
 import { Step9_PreOrderCheck } from './components/steps/Step9_PreOrderCheck';
 import { Step10_OrderForm } from './components/steps/Step10_OrderForm';
+import { ProjectSummary } from './components/ProjectSummary';
 
-type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users';
+type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary';
 
 const STEPS = [
   { num: 1, label: 'Nový projekt', icon: '📋' },
