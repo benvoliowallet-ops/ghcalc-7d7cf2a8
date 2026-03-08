@@ -6,7 +6,7 @@ import { NOZZLE_BY_ORIFICE, calcETNACapacity, getTransportCost, getPMCost, PUMP_
 import { getPipe10mmForSpacing } from '../../data/stockItems';
 
 export function Step10_OrderForm() {
-  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad } = useProjectStore();
+  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad, ropeOverrides } = useProjectStore();
 
   const totalFlowMlH = zoneCalcs.reduce((sum, c) => sum + (c?.zoneFlow ?? 0), 0);
   const transpCost = getTransportCost(project.country);

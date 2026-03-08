@@ -8,7 +8,7 @@ import { getPipe10mmForSpacing } from '../../data/stockItems';
 import { useNormistChecker } from '../../hooks/useSupabaseItems';
 
 export function Step8_Documents() {
-  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad } = useProjectStore();
+  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad, ropeOverrides, preOrderState } = useProjectStore();
   const { isNormist } = useNormistChecker();
   const bomRef = useRef<HTMLDivElement>(null);
   const orderRef = useRef<HTMLDivElement>(null);
