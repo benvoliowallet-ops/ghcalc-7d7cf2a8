@@ -84,7 +84,7 @@ export function StockPage() {
           className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors shadow-sm"
           style={{ borderRadius: 'var(--radius)' }}
         >
-          ＋ Pridať položku
+          <Plus className="w-4 h-4" /> Pridať položku
         </button>
       </div>
 
