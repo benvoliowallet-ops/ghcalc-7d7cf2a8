@@ -111,6 +111,7 @@ interface ProjectStore extends ProjectState {
   setUVSystemCode: (v: string | null) => void;
   setSSFilter: (v: boolean) => void;
   toggleCADZoneLock: (zoneIndex: number) => void;
+  setRopeOverrides: (overrides: number[]) => void;
   resetProject: () => void;
 }
 
