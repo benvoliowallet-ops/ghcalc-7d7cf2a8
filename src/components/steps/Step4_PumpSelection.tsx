@@ -19,11 +19,11 @@ export function Step4_PumpSelection() {
       canContinue={true}
     >
       {overCapacityZones.length > 0 && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 border-l-4 border-l-red-500 rounded-r-lg flex items-start gap-3">
-          <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center bg-red-500 rounded-full text-white text-xs font-bold mt-0.5">!</div>
+        <div className="mb-4 p-4 bg-destructive/10 border border-destructive/30 border-l-4 border-l-destructive rounded-r-lg flex items-start gap-3">
+          <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center bg-destructive rounded-full text-destructive-foreground text-xs font-bold mt-0.5">!</div>
           <div>
-            <p className="font-semibold text-red-700 text-sm">Kapacita presahuje dostupné čerpadlá</p>
-            <p className="text-sm text-red-600 mt-1">
+            <p className="font-semibold text-destructive text-sm">Kapacita presahuje dostupné čerpadlá</p>
+            <p className="text-sm text-destructive/80 mt-1">
               {overCapacityZones.length === 1
                 ? `Jedna zóna má prietok > ${MAX_PUMP_LPM} lpm.`
                 : `${overCapacityZones.length} zóny majú prietok > ${MAX_PUMP_LPM} lpm.`}
@@ -76,29 +76,29 @@ export function Step4_PumpSelection() {
                   key={i}
                   className={`p-3 border rounded-xl ${
                     overCap
-                      ? 'bg-red-50 border-red-300'
-                      : 'bg-green-50 border-green-200'
+                      ? 'bg-destructive/5 border-destructive/30'
+                      : 'bg-teal/5 border-teal/20'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-semibold text-gray-800 text-sm">
+                      <p className="font-semibold text-foreground text-sm">
                         {zones[i]?.name ?? `Zóna ${i + 1}`}
                       </p>
                       {overCap ? (
-                        <p className="text-xs text-red-600 mt-0.5 font-semibold">
+                        <p className="text-xs text-destructive mt-0.5 font-semibold">
                           Prietok presahuje max. čerpadlo ({MAX_PUMP_LPM} lpm)
                         </p>
                       ) : (
                         <>
-                          <p className="text-xs text-gray-600 mt-0.5">{pump!.name}</p>
-                          <p className="text-xs text-gray-400 font-mono">{pump!.code}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{pump!.name}</p>
+                          <p className="text-xs text-muted-foreground/60 font-mono">{pump!.code}</p>
                         </>
                       )}
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="text-xs text-gray-500">Prietok</p>
-                      <p className={`font-mono font-bold ${overCap ? 'text-red-600' : 'text-green-700'}`}>
+                      <p className="text-xs text-muted-foreground">Prietok</p>
+                      <p className={`font-mono font-bold ${overCap ? 'text-destructive' : 'text-teal'}`}>
                         {fmtN(flowLpm, 2)} lpm
                       </p>
                       {!overCap && <Badge variant="green">Max: {pump!.maxFlow} lpm</Badge>}
@@ -114,7 +114,7 @@ export function Step4_PumpSelection() {
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="bg-blue-50 text-blue-700">
+                <tr className="bg-primary/10 text-primary">
                   <th className="text-left p-2">Model</th>
                   <th className="text-right p-2">Max Q [lpm]</th>
                   <th className="text-right p-2">Tlak [bar]</th>
@@ -122,7 +122,7 @@ export function Step4_PumpSelection() {
               </thead>
               <tbody>
                 {PUMP_TABLE.map((p) => (
-                  <tr key={p.code} className="border-t border-gray-100">
+                  <tr key={p.code} className="border-t border-border">
                     <td className="p-2 font-mono">{p.name.split(' ')[0]}</td>
                     <td className="p-2 text-right">{p.maxFlow}</td>
                     <td className="p-2 text-right">{p.pressure}</td>
