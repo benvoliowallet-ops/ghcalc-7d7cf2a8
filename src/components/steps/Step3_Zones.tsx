@@ -142,12 +142,12 @@ export function Step3_Zones() {
       </div>
 
       {zoneCalcs.length > 0 && (
-        <div className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="p-4 border-b border-gray-100"><h3 className="font-bold text-gray-800">📋 Súhrnná tabuľka zón</h3></div>
+        <div className="mt-6 bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-border"><h3 className="font-bold text-foreground">Súhrnná tabuľka zón</h3></div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 text-gray-600 text-xs">
+                <tr className="bg-muted text-muted-foreground text-xs">
                   <th className="text-left p-3">Zóna</th><th className="text-right p-3">Plocha</th>
                   <th className="text-right p-3">Prietok</th><th className="text-right p-3">Trysky</th>
                   <th className="text-right p-3">Rúry 10mm</th><th className="text-right p-3">Lano</th>
