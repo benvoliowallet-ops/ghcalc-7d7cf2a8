@@ -83,9 +83,14 @@ const defaultCostInputs: CostInputs = {
   mountingMaterialStation: 500,
 };
 
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
 interface ProjectStore extends ProjectState {
   savedProjects: SavedProject[];
+  saveStatus: SaveStatus;
   saveCurrentProject: () => void;
+  setSavedProjects: (projects: SavedProject[]) => void;
+  setSaveStatus: (status: SaveStatus) => void;
   loadProject: (id: string) => void;
   deleteSavedProject: (id: string) => void;
   setStep: (step: number) => void;
@@ -137,7 +142,7 @@ function captureSnapshot(s: ProjectStore): ProjectState {
 export const useProjectStore = create<ProjectStore>()(
   persist(
     (set, get) => ({
-  currentStep: 1,
+      currentStep: 1,
       project: defaultProject,
       globalParams: defaultGlobalParams,
       zones: [defaultZone],
@@ -152,6 +157,10 @@ export const useProjectStore = create<ProjectStore>()(
       activeZoneIndex: 0,
       savedProjects: [],
       ropeOverrides: [],
+      saveStatus: 'idle' as const,
+
+      setSavedProjects: (projects) => set({ savedProjects: projects }),
+      setSaveStatus: (status) => set({ saveStatus: status }),
 
       saveCurrentProject: () => {
         const s = get();

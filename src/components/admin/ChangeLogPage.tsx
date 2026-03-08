@@ -1,16 +1,17 @@
 import { useState, useMemo } from 'react';
-import { useStockStore } from '../../store/stockStore';
+import { useChangeLog } from '../../hooks/useStockDB';
+import type { ChangeLogEntry } from '../../types';
 
 type ActionFilter = 'all' | 'create' | 'update' | 'delete';
 
-const ACTION_META: Record<string, { label: string; className: string; icon: string }> = {
-  create: { label: 'Pridané', className: 'bg-primary/10 text-primary', icon: '＋' },
-  update: { label: 'Upravené', className: 'bg-orange/10 text-orange', icon: '✏️' },
-  delete: { label: 'Vymazané', className: 'bg-destructive/10 text-destructive', icon: '🗑' },
+const ACTION_META: Record<string, { label: string; className: string }> = {
+  create: { label: 'Pridané', className: 'bg-primary/10 text-primary' },
+  update: { label: 'Upravené', className: 'bg-orange/10 text-orange' },
+  delete: { label: 'Vymazané', className: 'bg-destructive/10 text-destructive' },
 };
 
 export function ChangeLogPage() {
-  const { changelog } = useStockStore();
+  const changelog = useChangeLog();
   const [search, setSearch] = useState('');
   const [actionFilter, setActionFilter] = useState<ActionFilter>('all');
 
@@ -29,8 +30,6 @@ export function ChangeLogPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
-
-      {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl font-bold text-foreground uppercase tracking-wide">📋 Log zmien</h1>
         <p className="text-sm text-muted-foreground">
@@ -38,7 +37,6 @@ export function ChangeLogPage() {
         </p>
       </div>
 
-      {/* Filters */}
       <div className="flex gap-3 mb-4 flex-wrap">
         <input
           value={search}
@@ -52,42 +50,26 @@ export function ChangeLogPage() {
             <button
               key={af}
               onClick={() => setActionFilter(af)}
-              className={`px-3 py-1.5 text-xs font-semibold transition-colors`}
+              className="px-3 py-1.5 text-xs font-semibold transition-colors"
               style={{
                 borderRadius: 'var(--radius)',
                 backgroundColor: actionFilter === af ? 'hsl(var(--card))' : 'transparent',
                 color: actionFilter === af ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
-                boxShadow: actionFilter === af ? '0 1px 3px hsl(var(--navy) / 0.08)' : 'none',
               }}
             >
               {af === 'all' ? 'Všetky' : ACTION_META[af].label}
               {af !== 'all' && (
-                <span className="ml-1 opacity-50">
-                  ({changelog.filter((e) => e.action === af).length})
-                </span>
+                <span className="ml-1 opacity-50">({changelog.filter((e) => e.action === af).length})</span>
               )}
             </button>
           ))}
         </div>
-        {(search || actionFilter !== 'all') && (
-          <button
-            onClick={() => { setSearch(''); setActionFilter('all'); }}
-            className="px-3 py-2 border border-border text-sm text-muted-foreground hover:bg-muted transition-colors"
-            style={{ borderRadius: 'var(--radius)' }}
-          >
-            ✕ Zrušiť filter
-          </button>
-        )}
       </div>
 
-      {/* Table */}
       {changelog.length === 0 ? (
         <div className="bg-card border border-border p-16 text-center" style={{ borderRadius: 'var(--radius)' }}>
           <div className="text-4xl mb-3">📋</div>
           <p className="text-muted-foreground font-medium">Zatiaľ žiadne zmeny</p>
-          <p className="text-muted-foreground/50 text-sm mt-1">
-            Každá zmena skladovej položky (pridanie, úprava, zmazanie) sa zobrazí tu
-          </p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-card border border-border p-12 text-center" style={{ borderRadius: 'var(--radius)' }}>
@@ -104,7 +86,6 @@ export function ChangeLogPage() {
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Akcia</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Kód</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Názov</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Skupina</th>
                   <th className="text-right px-4 py-3 text-xs font-semibold text-muted-foreground">Zmena ceny</th>
                 </tr>
               </thead>
@@ -114,15 +95,15 @@ export function ChangeLogPage() {
 
                   let priceCell: React.ReactNode = null;
                   if (entry.action === 'create' && entry.after?.price !== undefined) {
-                    priceCell = <span className="text-primary font-mono">+{entry.after.price.toFixed(3)} €</span>;
+                    priceCell = <span className="text-primary font-mono">+{Number(entry.after.price).toFixed(3)} €</span>;
                   } else if (entry.action === 'delete' && entry.before?.price !== undefined) {
-                    priceCell = <span className="text-destructive/60 font-mono line-through">{entry.before.price.toFixed(3)} €</span>;
+                    priceCell = <span className="text-destructive/60 font-mono line-through">{Number(entry.before.price).toFixed(3)} €</span>;
                   } else if (entry.action === 'update' && entry.before?.price !== undefined && entry.after?.price !== undefined) {
-                    const diff = entry.after.price - entry.before.price;
+                    const diff = Number(entry.after.price) - Number(entry.before.price);
                     if (Math.abs(diff) > 0.0005) {
                       priceCell = (
                         <span className={`font-mono ${diff > 0 ? 'text-destructive' : 'text-primary'}`}>
-                          {entry.before.price.toFixed(3)} → {entry.after.price.toFixed(3)}
+                          {Number(entry.before.price).toFixed(3)} → {Number(entry.after.price).toFixed(3)}
                           <span className="ml-1 text-xs opacity-60">({diff > 0 ? '+' : ''}{diff.toFixed(3)})</span>
                         </span>
                       );
@@ -130,8 +111,6 @@ export function ChangeLogPage() {
                       priceCell = <span className="text-muted-foreground/40 text-xs">bez zmeny</span>;
                     }
                   }
-
-                  const group = entry.after?.group ?? entry.before?.group ?? '';
 
                   return (
                     <tr
@@ -149,9 +128,6 @@ export function ChangeLogPage() {
                       </td>
                       <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{entry.itemCode}</td>
                       <td className="px-4 py-2.5 text-foreground max-w-xs"><span className="line-clamp-1">{entry.itemName}</span></td>
-                      <td className="px-4 py-2.5">
-                        {group && <span className="px-2 py-0.5 bg-muted text-muted-foreground rounded-full text-xs">{group}</span>}
-                      </td>
                       <td className="px-4 py-2.5 text-right text-xs whitespace-nowrap">{priceCell}</td>
                     </tr>
                   );
