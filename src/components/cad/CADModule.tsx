@@ -407,7 +407,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
           { key: 'pipe', icon: '—', label: 'Potrubie' },
           { key: 'cable_cysy', icon: '~', label: 'CYSY kábel' },
           { key: 'cable_ftp', icon: '·', label: 'FTP kábel' },
-          { key: 'pump', icon: '⚙', label: 'Čerpadlo' },
+          { key: 'pump', icon: <Settings size={16} />, label: 'Čerpadlo' },
           { key: 'drain_magnet', icon: '⊕', label: 'Drain Mag.' },
           { key: 'sensor', icon: '◈', label: 'Snímač' },
         ] as const).map((t) => (
