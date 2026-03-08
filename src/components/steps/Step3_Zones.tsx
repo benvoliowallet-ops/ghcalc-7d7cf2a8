@@ -106,10 +106,10 @@ export function Step3_Zones() {
 
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="flex border-b border-border">
-          {([{ key: 'params', label: '📋 3A–3D Parametre' }, { key: 'cad', label: '✏️ 3G Výkres (CAD)' }, { key: 'results', label: '📊 3E–3L Výsledky' }] as const).map((tab) => (
+          {([{ key: 'params', label: '3A–3D Parametre', icon: <List className="w-3.5 h-3.5" /> }, { key: 'cad', label: '3G Výkres (CAD)', icon: <PenLine className="w-3.5 h-3.5" /> }, { key: 'results', label: '3E–3L Výsledky', icon: <BarChart2 className="w-3.5 h-3.5" /> }] as const).map((tab) => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 py-3 px-4 text-sm font-semibold transition-colors ${activeTab === tab.key ? 'bg-teal/10 text-teal border-b-2 border-teal' : 'text-muted-foreground hover:bg-muted'}`}>
-              {tab.label}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-3 px-4 text-sm font-semibold transition-colors ${activeTab === tab.key ? 'bg-teal/10 text-teal border-b-2 border-teal' : 'text-muted-foreground hover:bg-muted'}`}>
+              {tab.icon}{tab.label}
             </button>
           ))}
         </div>
