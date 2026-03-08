@@ -174,7 +174,7 @@ export function Step9_PreOrderCheck() {
             <div className="flex items-center justify-between py-2">
               <span className="text-sm text-foreground">Lano celkom</span>
               <Badge variant="green">
-                {fmtN(ropeOverrides.reduce((s, v) => s + (v || 0), 0), 0)} m ✓
+                <span className="flex items-center gap-1">{fmtN(ropeOverrides.reduce((s, v) => s + (v || 0), 0), 0)} m <Check className="w-3 h-3" /></span>
               </Badge>
             </div>
           </div>

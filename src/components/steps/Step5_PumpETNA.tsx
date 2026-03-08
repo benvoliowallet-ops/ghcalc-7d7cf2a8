@@ -173,7 +173,7 @@ export function Step5_PumpETNA() {
                 <div>
                   <p className="text-sm font-medium">{zones[i]?.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {pump ? pump.name : <span className="text-destructive">⚠ Nad kapacitou</span>}
+                    {pump ? pump.name : <span className="text-destructive flex items-center gap-1"><AlertTriangle className="w-3 h-3" />Nad kapacitou</span>}
                   </p>
                 </div>
                 <span className={`text-xs font-mono ${pump ? 'text-teal' : 'text-destructive'}`}>
