@@ -93,7 +93,7 @@ function AutoSaveSubscriber({ view }: { view: AppView }) {
     store.currentStep, store.project, store.globalParams, store.zones,
     store.zoneCalcs, store.cad, store.pumpSelection, store.etnaConfig,
     store.normistPrice, store.costInputs, store.uvSystemCode, store.ssFilter30,
-    store.activeZoneIndex, store.ropeOverrides, view,
+    store.activeZoneIndex, store.ropeOverrides, store.preOrderState, view,
   ]);
 
   return null;
