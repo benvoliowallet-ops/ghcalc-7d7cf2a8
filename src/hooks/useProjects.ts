@@ -12,12 +12,13 @@ export function useLoadProjects() {
   useEffect(() => {
     if (!currentUser) return;
 
-    supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any)
       .from('projects')
       .select('id, quote_number, customer_name, project_address, country, current_step, num_zones, snapshot, saved_at')
       .eq('owner_id', currentUser.id)
       .order('saved_at', { ascending: false })
-      .then(({ data, error }) => {
+      .then(({ data, error }: { data: any[] | null; error: any }) => {
         if (error) {
           console.error('[Projects] Load error:', error.message);
           return;
@@ -33,7 +34,7 @@ export function useLoadProjects() {
           country: row.country,
           currentStep: row.current_step,
           numZones: row.num_zones,
-          snapshot: row.snapshot as unknown as ProjectState,
+          snapshot: row.snapshot as ProjectState,
         }));
 
         setSavedProjects(saved);
@@ -82,7 +83,7 @@ export function useProjectSaver() {
   return save;
 }
 
-/** Returns a debounced auto-save function (2s debounce) */
+/** Returns a debounced auto-save function (2s debounce) and an immediate save */
 export function useAutoSave() {
   const save = useProjectSaver();
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
