@@ -23,6 +23,7 @@ import { ProjectSummary } from './components/ProjectSummary';
 import { Sidebar } from './components/Sidebar';
 import { useLoadProjects, useAutoSave } from './hooks/useProjects';
 import { ConfirmProvider, useConfirm } from './hooks/useConfirm';
+import { VoraAIChat } from './components/VoraAIChat';
 
 type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary';
 
