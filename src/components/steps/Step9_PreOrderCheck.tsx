@@ -43,7 +43,7 @@ export function Step9_PreOrderCheck() {
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Card 1 – Pump connector */}
-        <Card variant="warning" title="🔍 Kontrola 1 – Prepoj čerpadlo → hl. vedenie DN25">
+        <Card variant="warning" title="Kontrola 1 – Prepoj čerpadlo → hl. vedenie DN25">
           <p className="text-sm text-muted-foreground mb-4">
             Štandard je <strong>3 m</strong>. Overte skutočné metre pre konkrétny projekt.
           </p>
