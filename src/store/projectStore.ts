@@ -170,6 +170,7 @@ export const useProjectStore = create<ProjectStore>()(
       ropeOverrides: [],
       preOrderState: defaultPreOrderState,
       saveStatus: 'idle' as const,
+      openProjectId: null as string | null,
 
       setSavedProjects: (projects) => set({ savedProjects: projects }),
       setSaveStatus: (status) => set({ saveStatus: status }),
