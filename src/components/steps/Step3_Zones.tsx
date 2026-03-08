@@ -128,7 +128,7 @@ export function Step3_Zones() {
                   <h3 className="font-bold text-foreground">Krok 3G – Interaktívny CAD výkres</h3>
                   <p className="text-sm text-muted-foreground">Nakreslite napájacie vedenie pre zónu {currentZone.name}.</p>
                 </div>
-                <Button variant="secondary" size="sm" onClick={handleInitCADZones}>↺ Vygenerovať zóny</Button>
+                <Button variant="secondary" size="sm" onClick={handleInitCADZones} className="flex items-center gap-1.5"><RotateCcw className="w-3.5 h-3.5" /> Vygenerovať zóny</Button>
               </div>
               <CADModule activeZoneIndex={activeZoneIndex} />
             </div>
