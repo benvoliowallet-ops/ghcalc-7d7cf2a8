@@ -108,18 +108,35 @@ function AppInner() {
   useLoadProjects();
 
   useEffect(() => {
-    // onAuthStateChange is the SINGLE source of truth for auth state.
-    // It fires immediately with the current session on mount.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    let mounted = true;
+
+    // getSession() handles the case where onAuthStateChange doesn't fire the
+    // initial event (known issue on some Supabase JS versions).
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
       if (session?.user) {
-        await loadProfile(session.user);
+        loadProfile(session.user);
       } else {
         setCurrentUser(null);
         setLoading(false);
       }
     });
 
-    return () => subscription.unsubscribe();
+    // onAuthStateChange handles subsequent sign-in / sign-out events.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      if (session?.user) {
+        loadProfile(session.user);
+      } else {
+        setCurrentUser(null);
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
