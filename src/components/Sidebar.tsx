@@ -80,7 +80,7 @@ export function Sidebar({ view, setView, onNewProject, isAdmin }: SidebarProps) 
         {/* New project */}
         <button
           onClick={onNewProject}
-          className="flex items-center h-10 px-2 gap-3 text-teal hover:bg-teal/15 border-l-2 border-transparent hover:border-teal transition-colors w-full text-left"
+          className="flex items-center h-10 px-2 gap-3 hover:bg-teal/15 border-l-2 border-transparent hover:border-teal transition-colors w-full text-left text-orange"
           style={{ borderRadius: '2px' }}
           title="Nový projekt">
           
