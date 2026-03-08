@@ -14,11 +14,56 @@ interface Props {
 export function StockItemModal({ mode, item, groups, allItems, onClose }: Props) {
   const { currentUser } = useAuthStore();
 
-  // NC1 FIX: mutations call their reload() which IS onClose — triggers parent refresh + close
+  // NC1 FIX: pass onClose as reload so parent list refreshes immediately after mutation
   const { addItem, updateItem } = useStockMutations(onClose);
-...
+
+  const [code, setCode] = useState(item?.code ?? '');
+  const [name, setName] = useState(item?.name ?? '');
+  const [additionalText, setAdditionalText] = useState(item?.additionalText ?? '');
+  const [price, setPrice] = useState(item?.price?.toString() ?? '');
+  const [group, setGroup] = useState(item?.group ?? '');
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentUser) return;
+    setError('');
+
+    const trimmedCode = code.trim();
+    const priceNum = parseFloat(price);
+
+    if (!trimmedCode) return setError('Kód je povinný');
+    if (isNaN(priceNum) || priceNum < 0) return setError('Zadajte platnú cenu (≥ 0)');
+    if (!name.trim()) return setError('Názov je povinný');
+    if (!group.trim()) return setError('Skupina je povinná');
+
+    setSaving(true);
+
+    if (mode === 'add') {
+      if (allItems.some((i) => i.code === trimmedCode)) {
+        setSaving(false);
+        return setError('Položka s týmto kódom už existuje');
+      }
+      const result = await addItem({
+        code: trimmedCode,
+        name: name.trim(),
+        additionalText: additionalText.trim(),
+        price: priceNum,
+        group: group.trim(),
+      });
+      if (!result.ok) { setSaving(false); return setError(result.error ?? 'Chyba'); }
+    } else {
+      const result = await updateItem(
+        item!.code,
+        { name: name.trim(), additionalText: additionalText.trim(), price: priceNum, group: group.trim() },
+        item!
+      );
+      if (!result.ok) { setSaving(false); return setError(result.error ?? 'Chyba'); }
+    }
+
     setSaving(false);
-    // onClose is called by the mutation's reload() — no need to call again here
+    // onClose is invoked by the mutation's reload() callback — no explicit call needed
   };
 
   return (
@@ -29,7 +74,7 @@ export function StockItemModal({ mode, item, groups, allItems, onClose }: Props)
       <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg border border-border">
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="text-base font-bold text-foreground">
-            {mode === 'add' ? '＋ Pridať položku' : '✏️ Upraviť položku'}
+            {mode === 'add' ? '＋ Pridať položku' : 'Upraviť položku'}
           </h2>
           <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground text-2xl leading-none w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted">×</button>
         </div>
