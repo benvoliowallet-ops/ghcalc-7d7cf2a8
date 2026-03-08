@@ -54,6 +54,11 @@ export default function App() {
     setView('project');
   };
 
+  const handleOpenSummary = (id: string) => {
+    loadProject(id);
+    setView('summary');
+  };
+
   const handleSaveAndClose = () => {
     saveCurrentProject();
     setView('dashboard');
