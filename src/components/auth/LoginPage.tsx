@@ -37,7 +37,6 @@ export function LoginPage() {
       return;
     }
 
-    // login
     const ok = login(email.trim(), password);
     if (!ok) setError('Nesprávny email alebo heslo');
   };
@@ -48,89 +47,146 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="login-bg min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+
+      {/* Decorative blobs */}
+      <div
+        className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, hsl(var(--teal) / 0.18) 0%, transparent 70%)',
+          transform: 'translate(30%, -30%)',
+        }}
+      />
+      <div
+        className="absolute bottom-0 left-0 w-80 h-80 rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, hsl(var(--orange) / 0.12) 0%, transparent 70%)',
+          transform: 'translate(-30%, 30%)',
+        }}
+      />
+
+      <div className="w-full max-w-md relative z-10">
 
         {/* Brand */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <img src={sanfogLogoWhite} alt="Sanfog" className="h-24 w-auto" />
+          <div className="flex items-center justify-center mb-5 relative">
+            {/* Glow halo behind logo */}
+            <div
+              className="absolute inset-0 rounded-full pointer-events-none"
+              style={{
+                background: 'radial-gradient(ellipse 120px 60px at center, hsl(var(--teal) / 0.2) 0%, transparent 70%)',
+              }}
+            />
+            <img src={sanfogLogoWhite} alt="Sanfog" className="h-20 w-auto relative" />
           </div>
-          <h1 className="text-lg font-bold text-white uppercase tracking-widest">Greenhouse calc </h1>
-          <p className="text-sm text-white/40 mt-1">Interný BOM kalkulátor</p>
+          <h1
+            className="text-xl font-bold uppercase tracking-widest"
+            style={{ color: 'hsl(var(--white))' }}
+          >
+            Greenhouse Calc
+          </h1>
+          {/* Teal accent line */}
+          <div
+            className="mx-auto mt-2 mb-2 h-px w-16"
+            style={{ background: 'linear-gradient(90deg, transparent, hsl(var(--teal)), transparent)' }}
+          />
+          <p
+            className="text-xs tracking-wide uppercase font-medium"
+            style={{ color: 'hsl(var(--teal) / 0.8)' }}
+          >
+            Interný BOM kalkulátor
+          </p>
         </div>
 
         {/* Card */}
-        <div
-          className="bg-card border border-border overflow-hidden"
-          style={{ borderRadius: 'var(--radius)' }}>
-          
+        <div className="login-card overflow-hidden" style={{ borderRadius: 'calc(var(--radius) + 4px)' }}>
 
           {/* Bootstrap banner */}
-          {isBootstrap &&
-          <div className="px-6 py-4 bg-orange/10 border-b border-orange/30">
+          {isBootstrap && (
+            <div
+              className="px-6 py-4 border-b"
+              style={{
+                background: 'hsl(var(--orange) / 0.1)',
+                borderColor: 'hsl(var(--orange) / 0.25)',
+              }}
+            >
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-orange text-lg">★</span>
-                <p className="text-sm font-bold text-foreground">Prvotné nastavenie systému</p>
+                <span style={{ color: 'hsl(var(--orange))' }} className="text-lg">★</span>
+                <p className="text-sm font-bold" style={{ color: 'hsl(var(--white))' }}>
+                  Prvotné nastavenie systému
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className="text-xs leading-relaxed" style={{ color: 'hsl(var(--white) / 0.5)' }}>
                 Systém nemá žiadnych používateľov. Vytvorte prvý administrátorský účet.
               </p>
             </div>
-          }
+          )}
 
           {/* Tabs */}
-          {!isBootstrap &&
-          <div className="flex border-b border-border">
+          {!isBootstrap && (
+            <div
+              className="flex border-b"
+              style={{ borderColor: 'hsl(var(--teal) / 0.2)' }}
+            >
               <button
-              type="button"
-              onClick={() => switchMode('login')}
-              className={`flex-1 py-3 text-sm font-semibold uppercase tracking-wide transition-colors ${
-              mode === 'login' ?
-              'bg-card text-primary border-b-2 border-primary' :
-              'bg-muted text-muted-foreground hover:text-foreground'}`
-              }>
-              
+                type="button"
+                onClick={() => switchMode('login')}
+                className="flex-1 py-3 text-sm font-semibold uppercase tracking-wide transition-colors"
+                style={{
+                  color: mode === 'login' ? 'hsl(var(--teal))' : 'hsl(var(--white) / 0.4)',
+                  borderBottom: mode === 'login' ? '2px solid hsl(var(--teal))' : '2px solid transparent',
+                  background: 'transparent',
+                }}
+              >
                 Prihlásiť sa
               </button>
               <button
-              type="button"
-              onClick={() => switchMode('register')}
-              className={`flex-1 py-3 text-sm font-semibold uppercase tracking-wide transition-colors ${
-              mode === 'register' ?
-              'bg-card text-primary border-b-2 border-primary' :
-              'bg-muted text-muted-foreground hover:text-foreground'}`
-              }>
-              
+                type="button"
+                onClick={() => switchMode('register')}
+                className="flex-1 py-3 text-sm font-semibold uppercase tracking-wide transition-colors"
+                style={{
+                  color: mode === 'register' ? 'hsl(var(--teal))' : 'hsl(var(--white) / 0.4)',
+                  borderBottom: mode === 'register' ? '2px solid hsl(var(--teal))' : '2px solid transparent',
+                  background: 'transparent',
+                }}
+              >
                 Registrovať
               </button>
             </div>
-          }
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
 
             {/* Invite code */}
-            {!isBootstrap && mode === 'register' &&
-            <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+            {!isBootstrap && mode === 'register' && (
+              <div>
+                <label
+                  className="block text-xs font-semibold mb-1.5 uppercase tracking-wide"
+                  style={{ color: 'hsl(var(--teal) / 0.8)' }}
+                >
                   Kód pozvánky
                 </label>
                 <input
-                value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                placeholder="XXXXXXXX"
-                maxLength={8}
-                required
-                className="w-full px-3 py-2.5 border border-input bg-background text-foreground text-sm font-mono tracking-widest text-center uppercase focus:outline-none focus:ring-2 focus:ring-primary"
-                style={{ borderRadius: 'var(--radius)' }} />
-              
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                  placeholder="XXXXXXXX"
+                  maxLength={8}
+                  required
+                  className="login-input w-full px-3 py-2.5 text-sm font-mono tracking-widest text-center uppercase"
+                  style={{ borderRadius: 'var(--radius)' }}
+                />
               </div>
-            }
+            )}
 
             {/* Email */}
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">Email</label>
+              <label
+                className="block text-xs font-semibold mb-1.5 uppercase tracking-wide"
+                style={{ color: 'hsl(var(--teal) / 0.8)' }}
+              >
+                Email
+              </label>
               <input
                 type="email"
                 value={email}
@@ -138,32 +194,40 @@ export function LoginPage() {
                 placeholder="meno@sanfog.sk"
                 required
                 autoComplete="email"
-                className="w-full px-3 py-2.5 border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                style={{ borderRadius: 'var(--radius)' }} />
-              
+                className="login-input w-full px-3 py-2.5 text-sm"
+                style={{ borderRadius: 'var(--radius)' }}
+              />
             </div>
 
             {/* Name */}
-            {isRegister &&
-            <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+            {isRegister && (
+              <div>
+                <label
+                  className="block text-xs font-semibold mb-1.5 uppercase tracking-wide"
+                  style={{ color: 'hsl(var(--teal) / 0.8)' }}
+                >
                   Meno a priezvisko
                 </label>
                 <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ján Novák"
-                required
-                className="w-full px-3 py-2.5 border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                style={{ borderRadius: 'var(--radius)' }} />
-              
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ján Novák"
+                  required
+                  className="login-input w-full px-3 py-2.5 text-sm"
+                  style={{ borderRadius: 'var(--radius)' }}
+                />
               </div>
-            }
+            )}
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">Heslo</label>
+              <label
+                className="block text-xs font-semibold mb-1.5 uppercase tracking-wide"
+                style={{ color: 'hsl(var(--teal) / 0.8)' }}
+              >
+                Heslo
+              </label>
               <input
                 type="password"
                 value={password}
@@ -171,44 +235,67 @@ export function LoginPage() {
                 required
                 minLength={6}
                 autoComplete={isRegister ? 'new-password' : 'current-password'}
-                className="w-full px-3 py-2.5 border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                style={{ borderRadius: 'var(--radius)' }} />
-              
-              {isRegister &&
-              <p className="text-xs text-muted-foreground mt-1">Minimálne 6 znakov</p>
-              }
+                className="login-input w-full px-3 py-2.5 text-sm"
+                style={{ borderRadius: 'var(--radius)' }}
+              />
+              {isRegister && (
+                <p className="text-xs mt-1" style={{ color: 'hsl(var(--white) / 0.35)' }}>
+                  Minimálne 6 znakov
+                </p>
+              )}
             </div>
 
             {/* Error */}
-            {error &&
-            <div
-              className="px-3 py-2 bg-destructive/10 border border-destructive/30 text-xs text-destructive"
-              style={{ borderRadius: 'var(--radius)' }}>
-              
+            {error && (
+              <div
+                className="px-3 py-2 text-xs border"
+                style={{
+                  borderRadius: 'var(--radius)',
+                  background: 'hsl(var(--destructive) / 0.15)',
+                  borderColor: 'hsl(var(--destructive) / 0.4)',
+                  color: 'hsl(0 80% 75%)',
+                }}
+              >
                 ⚠️ {error}
               </div>
-            }
+            )}
 
             {/* Submit */}
             <button
               type="submit"
-              className="w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold uppercase tracking-widest transition-colors"
-              style={{ borderRadius: 'var(--radius)' }}>
-              
-              {isBootstrap ?
-              'Vytvoriť admin účet' :
-              mode === 'login' ?
-              'Prihlásiť sa →' :
-              'Zaregistrovať sa ✓'}
+              className="w-full py-2.5 text-sm font-bold uppercase tracking-widest transition-all"
+              style={{
+                borderRadius: 'var(--radius)',
+                background: 'linear-gradient(135deg, hsl(var(--teal)), hsl(190 100% 30%))',
+                color: 'hsl(var(--white))',
+                boxShadow: '0 4px 20px hsl(var(--teal) / 0.3)',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 28px hsl(var(--teal) / 0.5)';
+                (e.currentTarget as HTMLButtonElement).style.filter = 'brightness(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 20px hsl(var(--teal) / 0.3)';
+                (e.currentTarget as HTMLButtonElement).style.filter = 'brightness(1)';
+              }}
+            >
+              {isBootstrap
+                ? 'Vytvoriť admin účet'
+                : mode === 'login'
+                ? 'Prihlásiť sa →'
+                : 'Zaregistrovať sa ✓'}
             </button>
           </form>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-center gap-1.5 mt-6 text-xs text-white/20">
+        <div
+          className="flex items-center justify-center gap-1.5 mt-6 text-xs"
+          style={{ color: 'hsl(var(--white) / 0.2)' }}
+        >
           <span>made by VORA · v12</span>
         </div>
       </div>
-    </div>);
-
+    </div>
+  );
 }
