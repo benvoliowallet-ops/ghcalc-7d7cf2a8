@@ -159,7 +159,7 @@ export function Step9_PreOrderCheck() {
         </Card>
 
         {/* Summary card */}
-        <Card variant="success" title="✅ Zhrnutie kontroly">
+        <Card variant="success" title="Zhrnutie kontroly">
           <div className="space-y-3">
             <div className="flex items-center justify-between py-2 border-b border-border">
               <span className="text-sm text-foreground">Prepoj čerpadlo → vedenie DN25</span>
