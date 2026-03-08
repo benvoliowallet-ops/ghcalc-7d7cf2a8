@@ -108,16 +108,9 @@ function AppInner() {
   useLoadProjects();
 
   useEffect(() => {
-    // Safety timeout — if getSession never resolves (e.g. network issue),
-    // we must not stay stuck on the loading screen forever.
-    const safetyTimeout = setTimeout(() => {
-      setCurrentUser(null);
-      setLoading(false);
-    }, 6000);
-
-    // onAuthStateChange fires immediately with current session — set up FIRST
+    // onAuthStateChange is the SINGLE source of truth for auth state.
+    // It fires immediately with the current session on mount.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      clearTimeout(safetyTimeout);
       if (session?.user) {
         await loadProfile(session.user);
       } else {
@@ -126,21 +119,7 @@ function AppInner() {
       }
     });
 
-    // Also call getSession as a fallback in case onAuthStateChange doesn't fire
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      clearTimeout(safetyTimeout);
-      if (session?.user) {
-        loadProfile(session.user);
-      } else {
-        setCurrentUser(null);
-        setLoading(false);
-      }
-    });
-
-    return () => {
-      clearTimeout(safetyTimeout);
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
