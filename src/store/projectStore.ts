@@ -279,6 +279,7 @@ export const useProjectStore = create<ProjectStore>()(
       setNormistPrice: (price) => set({ normistPrice: price }),
       setUVSystemCode: (v) => set({ uvSystemCode: v }),
       setSSFilter: (v) => set({ ssFilter30: v }),
+      setRopeOverrides: (overrides) => set({ ropeOverrides: overrides }),
 
       toggleCADZoneLock: (zoneIndex) =>
         set(s => ({
