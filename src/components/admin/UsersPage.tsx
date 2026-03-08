@@ -93,12 +93,28 @@ export function UsersPage() {
   const handleDeleteUser = async (id: string, name: string) => {
     const ok = await confirm({
       title: `Vymazať používateľa „${name}"?`,
-      description: 'Táto akcia je nevratná.',
+      description: 'Táto akcia je nevratná. Používateľ stratí prístup do systému.',
       confirmLabel: 'Vymazať',
       variant: 'destructive',
     });
     if (!ok) return;
-    await supabase.from('profiles').delete().eq('id', id);
+
+    // H1 FIX: call edge function to delete auth user (not just profile)
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+    const res = await fetch(`https://${projectId}.supabase.co/functions/v1/delete-user`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ userId: id }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      console.error('[UsersPage] Delete user error:', err);
+    }
     loadUsers();
   };
 

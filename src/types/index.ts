@@ -77,6 +77,7 @@ export interface ZoneParams {
   connectionType: 'T-kus' | 'rovny-spoj';
   nozzleOrifice: 0.15 | 0.20 | 0.25 | 0.30;
   nozzleFlow: number;
+  /** Stored in mm internally */
   nozzleSpacing: 200 | 250 | 300 | 350 | 400 | 450 | 500;
 }
 
@@ -198,6 +199,13 @@ export interface CostInputs {
   mountingMaterialStation: 500 | 750 | 1000 | 1500;
 }
 
+// ─── Pre-order check state (persisted) ───────────────────────────────────────
+export interface PreOrderState {
+  pumpConnectorMeters: number[];
+  etnaDistance: number;
+  etnaCustomCost: number;
+}
+
 // ─── Saved Project (Dashboard) ───────────────────────────────────────────────
 export interface SavedProject {
   id: string;
@@ -217,7 +225,6 @@ export interface User {
   email: string;
   name: string;
   role: 'admin' | 'user';
-  passwordHash: string;
   createdAt: string;
 }
 
@@ -261,4 +268,5 @@ export interface ProjectState {
   ssFilter30: boolean;
   activeZoneIndex: number;
   ropeOverrides: number[];
+  preOrderState: PreOrderState;
 }

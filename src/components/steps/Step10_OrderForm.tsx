@@ -6,7 +6,7 @@ import { NOZZLE_BY_ORIFICE, calcETNACapacity, getTransportCost, getPMCost, PUMP_
 import { getPipe10mmForSpacing } from '../../data/stockItems';
 
 export function Step10_OrderForm() {
-  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad } = useProjectStore();
+  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad, ropeOverrides } = useProjectStore();
 
   const totalFlowMlH = zoneCalcs.reduce((sum, c) => sum + (c?.zoneFlow ?? 0), 0);
   const transpCost = getTransportCost(project.country);
@@ -52,7 +52,9 @@ export function Step10_OrderForm() {
     const existing = totalPipesByCode[pipe10mm.code];
     totalPipesByCode[pipe10mm.code] = { name: pipe10mm.name, qty: (existing?.qty ?? 0) + calc.numPipes10mmTotal, price: pipe10mm.price };
     totalFitting180 += calc.numFitting180; totalEndPlug += calc.numEndPlug;
-    if (globalParams.steelRope === 'SS_NEREZ') totalRopeSS += calc.ropeLength; else totalRopeOCEL += calc.ropeLength;
+    // C4 FIX: use ropeOverrides from Step9 if set, otherwise fall back to calculated ropeLength
+    const ropeQty = ropeOverrides[i] ?? calc.ropeLength;
+    if (globalParams.steelRope === 'SS_NEREZ') totalRopeSS += ropeQty; else totalRopeOCEL += ropeQty;
     totalHangers += calc.numHangers; totalGripple += calc.numGripple; totalNozzleHangers += calc.numNozzleHangers; totalPipeHangers += calc.numPipeHangers;
     totalInoxPipe += calc.inoxPipeLength; totalInoxConnectors += calc.numInoxConnectors; totalTJunctions += calc.numTJunctions;
     totalDilations += calc.numDilations; totalDrain += calc.numDrainAssemblies; totalNeedles += calc.numNeedleValves;

@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { supabase } from '@/integrations/supabase/client';
-import type { AppUser } from '../../store/authStore';
 import sanfogLogoWhite from '../../assets/sanfog-logo-white.svg';
 
 type Mode = 'login' | 'register';
@@ -93,15 +92,19 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Check if any profiles exist to determine bootstrap mode
-  useState(() => {
+  // C3 FIX: use useEffect (not useState) for async side effects
+  useEffect(() => {
     supabase
       .from('profiles')
       .select('id', { count: 'exact', head: true })
-      .then(({ count }) => {
+      .then(({ count, error }) => {
+        if (error) {
+          setIsBootstrap(false);
+          return;
+        }
         setIsBootstrap((count ?? 0) === 0);
       });
-  });
+  }, []);
 
   const isRegister = isBootstrap || mode === 'register';
 

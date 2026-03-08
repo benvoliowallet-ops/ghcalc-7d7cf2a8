@@ -11,6 +11,7 @@ import type {
   CADSymbol,
   CostInputs,
   SavedProject,
+  PreOrderState,
 } from '../types';
 import { calcZone, generateQuoteNumber } from '../utils/calculations';
 
@@ -83,6 +84,12 @@ const defaultCostInputs: CostInputs = {
   mountingMaterialStation: 500,
 };
 
+const defaultPreOrderState: PreOrderState = {
+  pumpConnectorMeters: [3],
+  etnaDistance: 8,
+  etnaCustomCost: 200,
+};
+
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 interface ProjectStore extends ProjectState {
@@ -117,6 +124,7 @@ interface ProjectStore extends ProjectState {
   setSSFilter: (v: boolean) => void;
   toggleCADZoneLock: (zoneIndex: number) => void;
   setRopeOverrides: (overrides: number[]) => void;
+  updatePreOrderState: (s: Partial<PreOrderState>) => void;
   resetProject: () => void;
 }
 
@@ -136,6 +144,7 @@ function captureSnapshot(s: ProjectStore): ProjectState {
     ssFilter30: s.ssFilter30,
     activeZoneIndex: s.activeZoneIndex,
     ropeOverrides: s.ropeOverrides,
+    preOrderState: s.preOrderState,
   };
 }
 
@@ -157,6 +166,7 @@ export const useProjectStore = create<ProjectStore>()(
       activeZoneIndex: 0,
       savedProjects: [],
       ropeOverrides: [],
+      preOrderState: defaultPreOrderState,
       saveStatus: 'idle' as const,
 
       setSavedProjects: (projects) => set({ savedProjects: projects }),
@@ -184,11 +194,21 @@ export const useProjectStore = create<ProjectStore>()(
       loadProject: (id) => {
         const saved = get().savedProjects.find(p => p.id === id);
         if (!saved) return;
-        set({ ...saved.snapshot });
+        set({
+          ...saved.snapshot,
+          // Ensure preOrderState exists for old snapshots without it
+          preOrderState: saved.snapshot.preOrderState ?? defaultPreOrderState,
+        });
       },
 
       deleteSavedProject: (id) => {
         set(s => ({ savedProjects: s.savedProjects.filter(p => p.id !== id) }));
+        // C1 FIX: Also delete from Supabase DB
+        import('@/integrations/supabase/client').then(({ supabase }) => {
+          supabase.from('projects').delete().eq('id', id).then(({ error }) => {
+            if (error) console.error('[Projects] Delete error:', error.message);
+          });
+        });
       },
 
       setStep: (step) => set({ currentStep: step }),
@@ -206,7 +226,15 @@ export const useProjectStore = create<ProjectStore>()(
             zones.push({ ...defaultZone, name: `Zóna ${zones.length + 1}` });
           }
           zones = zones.slice(0, count);
-          return { globalParams: newParams, zones };
+          // Resize preOrderState.pumpConnectorMeters to match zone count
+          const meters = [...(s.preOrderState.pumpConnectorMeters ?? [])];
+          while (meters.length < count) meters.push(3);
+          const pumpConnectorMeters = meters.slice(0, count);
+          return {
+            globalParams: newParams,
+            zones,
+            preOrderState: { ...s.preOrderState, pumpConnectorMeters },
+          };
         });
       },
 
@@ -289,6 +317,7 @@ export const useProjectStore = create<ProjectStore>()(
       setUVSystemCode: (v) => set({ uvSystemCode: v }),
       setSSFilter: (v) => set({ ssFilter30: v }),
       setRopeOverrides: (overrides) => set({ ropeOverrides: overrides }),
+      updatePreOrderState: (s) => set(prev => ({ preOrderState: { ...prev.preOrderState, ...s } })),
 
       toggleCADZoneLock: (zoneIndex) =>
         set(s => ({
@@ -321,6 +350,7 @@ export const useProjectStore = create<ProjectStore>()(
           ssFilter30: false,
           activeZoneIndex: 0,
           ropeOverrides: [],
+          preOrderState: defaultPreOrderState,
         }),
     }),
     { name: 'greenhouse-project' }
