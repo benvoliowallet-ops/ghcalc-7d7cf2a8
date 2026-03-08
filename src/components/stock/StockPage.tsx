@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useStockItems, useStockMutations } from '../../hooks/useStockDB';
 import { useAuthStore } from '../../store/authStore';
+import { useConfirm } from '../../hooks/useConfirm';
 import { StockItemModal } from './StockItemModal';
 import type { StockItem } from '../../types';
 
@@ -8,6 +9,7 @@ export function StockPage() {
   const { currentUser } = useAuthStore();
   const { items, loading, reload } = useStockItems();
   const { deleteItem } = useStockMutations(reload);
+  const confirm = useConfirm();
 
   const [search, setSearch] = useState('');
   const [groupFilter, setGroupFilter] = useState('all');
@@ -46,9 +48,13 @@ export function StockPage() {
 
   const handleDelete = async (code: string, item: StockItem) => {
     if (!currentUser) return;
-    if (window.confirm(`Vymazať položku „${item.name}"?\nTáto akcia je nevratná.`)) {
-      await deleteItem(code, item);
-    }
+    const ok = await confirm({
+      title: `Vymazať položku „${item.name}"?`,
+      description: 'Táto akcia je nevratná.',
+      confirmLabel: 'Vymazať',
+      variant: 'destructive',
+    });
+    if (ok) await deleteItem(code, item);
   };
 
   const SortIcon = ({ col }: { col: typeof sortBy }) =>

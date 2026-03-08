@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useConfirm } from '../../hooks/useConfirm';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Input, Select, Card, CalcRow, Toggle, Badge, Button } from '../ui/FormField';
@@ -38,6 +39,7 @@ const FLOW_PRESSURES = [50, 60, 70, 80, 90, 100, 110];
 export function Step3_Zones() {
   const { zones, zoneCalcs, globalParams, updateZone, activeZoneIndex, setActiveZone, recalcAllZones, initCADZones, cad } = useProjectStore();
   const [activeTab, setActiveTab] = useState<'params' | 'cad' | 'results'>('params');
+  const confirm = useConfirm();
 
   useEffect(() => { recalcAllZones(); }, []);
 
@@ -57,14 +59,26 @@ export function Step3_Zones() {
   const handleOrificeChange = (orifice: number) => {
     updateZone(activeZoneIndex, { nozzleOrifice: orifice as ZoneParams['nozzleOrifice'], nozzleFlow: getNozzleFlowLpm(orifice, globalParams.systemPressure) });
   };
-  const handleCopyZone = (sourceIndex: number) => {
+  const handleCopyZone = async (sourceIndex: number) => {
     if (sourceIndex === activeZoneIndex) return;
+    const ok = await confirm({
+      title: `Kopírovať parametre zo zóny "${zones[sourceIndex].name ?? `Zóna ${sourceIndex + 1}`}"?`,
+      description: 'Aktuálne parametre zóny budú prepísané.',
+      confirmLabel: 'Kopírovať',
+    });
+    if (!ok) return;
     const { name: _name, ...rest } = zones[sourceIndex];
     updateZone(activeZoneIndex, rest);
   };
-  const handleInitCADZones = () => {
+  const handleInitCADZones = async () => {
     if (cad.segments.length > 0 || cad.zones.length > 0) {
-      if (!window.confirm('Toto resetuje pozície zón v CAD náčrte. Pokračovať?')) return;
+      const ok = await confirm({
+        title: 'Resetovať CAD výkres?',
+        description: 'Toto resetuje pozície zón v CAD náčrte. Akcia je nevratná.',
+        confirmLabel: 'Resetovať',
+        variant: 'destructive',
+      });
+      if (!ok) return;
     }
     initCADZones();
   };
@@ -185,7 +199,7 @@ function ZoneParamsTab({ zone, zoneIndex, zones, globalParams, onUpdate, nozzleO
     <div>
       {zones.length > 1 && (
         <div className="mb-4 flex items-center gap-3 flex-wrap">
-          <select defaultValue="" onChange={(e) => { const idx = Number(e.target.value); if (!isNaN(idx) && idx !== zoneIndex) { if (window.confirm(`Kopírovať parametre zo zóny "${zones[idx].name ?? `Zóna ${idx + 1}`}"?`)) { onCopyZone(idx); } } e.target.value = ''; }}
+          <select defaultValue="" onChange={(e) => { const idx = Number(e.target.value); if (!isNaN(idx) && idx !== zoneIndex) { onCopyZone(idx); } e.target.value = ''; }}
             className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white">
             <option value="">📋 Kopírovať parametre zo zóny...</option>
             {zones.map((z, i) => i !== zoneIndex ? <option key={i} value={i}>Zóna {i + 1}: {z.name || `Zóna ${i + 1}`}</option> : null)}
