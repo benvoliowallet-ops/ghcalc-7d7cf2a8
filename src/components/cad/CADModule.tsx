@@ -402,15 +402,15 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
       <div className="flex flex-col gap-1.5 w-36 flex-shrink-0 overflow-y-auto">
         <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Nástroj</p>
         {([
-          { key: 'select', icon: '↖', label: 'Výber' },
-          { key: 'pan', icon: '✋', label: 'Pan' },
-          { key: 'pipe', icon: '—', label: 'Potrubie' },
-          { key: 'cable_cysy', icon: '~', label: 'CYSY kábel' },
-          { key: 'cable_ftp', icon: '·', label: 'FTP kábel' },
-          { key: 'pump', icon: <Settings size={16} />, label: 'Čerpadlo' },
-          { key: 'drain_magnet', icon: '⊕', label: 'Drain Mag.' },
-          { key: 'sensor', icon: '◈', label: 'Snímač' },
-        ] as const).map((t) => (
+          { key: 'select' as Tool, icon: '↖', label: 'Výber' },
+          { key: 'pan' as Tool, icon: '✋', label: 'Pan' },
+          { key: 'pipe' as Tool, icon: '—', label: 'Potrubie' },
+          { key: 'cable_cysy' as Tool, icon: '~', label: 'CYSY kábel' },
+          { key: 'cable_ftp' as Tool, icon: '·', label: 'FTP kábel' },
+          { key: 'pump' as Tool, icon: <Settings size={16} />, label: 'Čerpadlo' },
+          { key: 'drain_magnet' as Tool, icon: '⊕', label: 'Drain Mag.' },
+          { key: 'sensor' as Tool, icon: '◈', label: 'Snímač' },
+        ] as { key: Tool; icon: React.ReactNode; label: string }[]).map((t) => (
           <button
             key={t.key}
             onClick={() => {
