@@ -455,13 +455,13 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
           <button
             onClick={deleteSelected}
             disabled={!hasSelection}
-            className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+            className={`w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
               hasSelection
                 ? 'bg-red-500 text-white hover:bg-red-600'
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             }`}
           >
-            🗑 Zmazať
+            <Trash2 className="w-3.5 h-3.5" /> Zmazať
             {hasSelection && (
               <span className="block text-xs opacity-80">
                 {selectedType === 'segment' ? 'čiara' : 'symbol'}
@@ -471,9 +471,9 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
 
           <button
             onClick={toggleFullscreen}
-            className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700"
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700"
           >
-            {isFullscreen ? '✕ Ukončiť' : '⛶ Celá obrazovka'}
+            {isFullscreen ? <><Minimize2 className="w-3.5 h-3.5" /> Ukončiť</> : <><Maximize2 className="w-3.5 h-3.5" /> Celá obrazovka</>}
           </button>
         </div>
 
