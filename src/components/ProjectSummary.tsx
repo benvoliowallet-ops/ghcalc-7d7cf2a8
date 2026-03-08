@@ -301,34 +301,6 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
             📥 Export XLSX
           </button>
           <button
-            onClick={printOrderNazli}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded transition-colors"
-            style={{ borderRadius: 'var(--radius)' }}
-          >
-            📋 Order NAZLI
-          </button>
-          <button
-            onClick={exportNazliXLSX}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded transition-colors"
-            style={{ borderRadius: 'var(--radius)' }}
-          >
-            📥 NAZLI XLSX
-          </button>
-          <button
-            onClick={printBOM}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded transition-colors"
-            style={{ borderRadius: 'var(--radius)' }}
-          >
-            📄 BOM Atti
-          </button>
-          <button
-            onClick={exportAttiBOMXLSX}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded transition-colors"
-            style={{ borderRadius: 'var(--radius)' }}
-          >
-            📥 Atti XLSX
-          </button>
-          <button
             onClick={onOpenWizard}
             className="flex items-center gap-1.5 px-3 py-2 bg-teal hover:bg-teal/90 text-white text-sm font-semibold rounded transition-colors"
             style={{ borderRadius: 'var(--radius)' }}
