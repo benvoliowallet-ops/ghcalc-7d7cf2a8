@@ -422,14 +422,14 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
               className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground text-sm font-semibold rounded hover:opacity-90 transition-opacity"
               style={{ borderRadius: 'var(--radius)' }}
             >
-              🖨 Tlačiť
+              <Printer className="w-3.5 h-3.5" /> Tlačiť
             </button>
             <button
               onClick={exportNazliXLSX}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-muted text-foreground text-sm font-semibold rounded hover:bg-muted/80 transition-colors"
               style={{ borderRadius: 'var(--radius)' }}
             >
-              📥 XLSX
+              <Download className="w-3.5 h-3.5" /> XLSX
             </button>
           </div>
         </div>
