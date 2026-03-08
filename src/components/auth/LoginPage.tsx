@@ -93,18 +93,26 @@ export function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    // profiles table requires auth — anonymous users get 0 rows due to RLS.
-    // get_user_count() is SECURITY DEFINER so it works without authentication.
+    // get_user_count() is SECURITY DEFINER — works without authentication.
+    // Timeout ensures we never stay stuck on "Načítavam..." forever.
+    const timeout = setTimeout(() => setIsBootstrap(false), 5000);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.rpc as any)('get_user_count')
-      .then(({ data, error }: { data: number | null; error: unknown }) => {
-        if (error) {
-          // RPC failed — default to login (safe fallback)
+      .then(({ data, error }: { data: number | null; error: { message: string } | null }) => {
+        clearTimeout(timeout);
+        if (error || data === null) {
           setIsBootstrap(false);
           return;
         }
-        setIsBootstrap((data ?? 1) === 0);
+        setIsBootstrap(data === 0);
+      })
+      .catch(() => {
+        clearTimeout(timeout);
+        setIsBootstrap(false);
       });
+
+    return () => clearTimeout(timeout);
   }, []);
 
   const isRegister = isBootstrap || mode === 'register';
