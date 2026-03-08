@@ -92,17 +92,18 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // C3 FIX: use useEffect (not useState) for async side effects
   useEffect(() => {
-    supabase
-      .from('profiles')
-      .select('id', { count: 'exact', head: true })
-      .then(({ count, error }) => {
+    // profiles table requires auth — anonymous users get 0 rows due to RLS.
+    // get_user_count() is SECURITY DEFINER so it works without authentication.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase.rpc as any)('get_user_count')
+      .then(({ data, error }: { data: number | null; error: unknown }) => {
         if (error) {
+          // RPC failed — default to login (safe fallback)
           setIsBootstrap(false);
           return;
         }
-        setIsBootstrap((count ?? 0) === 0);
+        setIsBootstrap((data ?? 1) === 0);
       });
   }, []);
 
