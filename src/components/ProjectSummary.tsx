@@ -629,6 +629,13 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
           </div>
         </div>
       </div>
+
+      {/* Project Comments */}
+      {openProjectId && (
+        <div className="mt-6">
+          <InlineProjectComments projectId={openProjectId} />
+        </div>
+      )}
     </div>
   );
 }
