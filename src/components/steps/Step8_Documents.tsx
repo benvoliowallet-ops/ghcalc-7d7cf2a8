@@ -99,11 +99,11 @@ export function Step8_Documents() {
   if (dietsCost > 0) add('Montáž', 'SANFOG_DIETA', 'Diéty', dietsCost / 35, 'dní', 35);
   if (accommodationCost > 0) add('Montáž', 'SANFOG_UBYT', 'Ubytovanie', accommodationCost / 40, 'noc', 40);
   if (salesTripsCost > 0) add('Doprava', 'SANFOG_DOPRAVA', 'Doprava výjazdy', salesTripsCost / 150, 'výjazd', 150);
-  add('Doprava', 'SANFOG_PREPRAVA', `Preprava tovaru (${project.country})`, 1, 'psch.', transpCost);
-  add('Ostatné', 'SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'psch.', 400);
-  add('Ostatné', 'SANFOG_PM', 'Projektový manažér', 1, 'psch.', pmCost);
-  add('Ostatné', 'SANFOG_MAT', 'Montážny materiál', 1, 'psch.', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
-  add('Ostatné', 'SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'psch.', 1400);
+  add('Doprava', 'SANFOG_PREPRAVA', `Preprava tovaru (${project.country})`, 1, 'ks', transpCost);
+  add('Ostatné', 'SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'ks', 400);
+  add('Ostatné', 'SANFOG_PM', 'Projektový manažér', 1, 'ks', pmCost);
+  add('Ostatné', 'SANFOG_MAT', 'Montážny materiál', 1, 'ks', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
+  add('Ostatné', 'SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'ks', 1400);
 
   const processedBomLines = bomLines.map((l) => isNormist(l.code) && l.code !== 'NORMIST' ? { ...l, price: 0 } : l);
   const bomTotal = processedBomLines.reduce((s, l) => s + l.qty * l.price, 0);
