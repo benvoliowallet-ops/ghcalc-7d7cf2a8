@@ -147,17 +147,21 @@ export function CalcRow({ label, value, unit, formula, highlight }: CalcRowProps
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'gray' | 'teal' | 'orange' | 'red' | 'navy' | 'muted';
+  variant?: 'gray' | 'teal' | 'orange' | 'red' | 'navy' | 'muted' | 'green' | 'amber' | 'blue' | 'purple';
 }
 
 export function Badge({ children, variant = 'gray' }: BadgeProps) {
-  const variants = {
+  const variants: Record<string, string> = {
     gray:   'bg-muted text-muted-foreground',
+    muted:  'bg-muted text-muted-foreground',
     teal:   'bg-teal/10 text-teal',
+    green:  'bg-teal/10 text-teal',       // alias → teal
     orange: 'bg-orange/10 text-orange',
+    amber:  'bg-orange/10 text-orange',   // alias → orange
     red:    'bg-destructive/10 text-destructive',
     navy:   'bg-secondary/10 text-secondary',
-    muted:  'bg-muted text-muted-foreground',
+    blue:   'bg-primary/10 text-primary', // alias → primary/teal
+    purple: 'bg-orange/10 text-orange',   // alias → orange
   };
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${variants[variant]}`}>
