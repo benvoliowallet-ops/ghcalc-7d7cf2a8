@@ -124,8 +124,8 @@ export function Step3_Zones() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="font-bold text-gray-800">Krok 3G – Interaktívny CAD výkres</h3>
-                  <p className="text-sm text-gray-500">Nakreslite napájacie vedenie pre zónu {currentZone.name}.</p>
+                  <h3 className="font-bold text-foreground">Krok 3G – Interaktívny CAD výkres</h3>
+                  <p className="text-sm text-muted-foreground">Nakreslite napájacie vedenie pre zónu {currentZone.name}.</p>
                 </div>
                 <Button variant="secondary" size="sm" onClick={handleInitCADZones}>↺ Vygenerovať zóny</Button>
               </div>
