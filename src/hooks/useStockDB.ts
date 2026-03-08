@@ -138,13 +138,14 @@ export function useStockMutations(reload: () => void) {
 
       if (delErr) return { ok: false, error: delErr.message };
 
-      await supabase.from('change_log').insert({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any).from('change_log').insert({
         user_id: currentUser.id,
         user_name: currentUser.name,
         action: 'delete',
         item_code: code,
         item_name: item.name,
-        before_data: item as unknown as Record<string, unknown>,
+        before_data: item,
       });
 
       reload();
