@@ -140,7 +140,7 @@ export function Step5_PumpETNA() {
             </div>
 
             <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-              <p className="text-xs font-semibold text-amber-700 mb-1">⚠ FOGSYSTEM NORMIST</p>
+              <p className="text-xs font-semibold text-amber-700 mb-1 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />FOGSYSTEM NORMIST</p>
               <p className="text-xs text-muted-foreground">
                 Zadáva sa manuálne po prijatí cenovej ponuky od NAZLI (krok 7).
                 Variant: {osmoticSS ? 'SS' : 'ŠTANDARD'}
