@@ -272,14 +272,12 @@ function AppInner() {
                 onClick={handleSaveAndClose}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal hover:bg-teal/90 text-white transition-colors"
                 style={{ borderRadius: 'var(--radius)' }}>
-                
-                  💾 Uložiť
+                  <Save className="w-3.5 h-3.5" /> Uložiť
                 </button>
                 <button
                 onClick={handleNewProject}
-                className="text-xs text-white/40 hover:text-white px-2 py-1 transition-colors">
-                
-                  ↺ Nový
+                className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white px-2 py-1 transition-colors">
+                  <RotateCcw className="w-3.5 h-3.5" /> Nový
                 </button>
               </div>
             </div>

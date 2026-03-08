@@ -209,10 +209,9 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
           <p className="text-muted-foreground mb-6">Začni tým, že vytvoríš nový projekt</p>
           <button
           onClick={onNewProject}
-          className="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold uppercase tracking-wide transition-colors"
+          className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold uppercase tracking-wide transition-colors"
           style={{ borderRadius: 'var(--radius)' }}>
-          
-            ＋ Nový projekt
+            <Plus className="w-4 h-4" /> Nový projekt
           </button>
         </div>
       }
