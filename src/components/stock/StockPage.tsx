@@ -61,9 +61,9 @@ export function StockPage() {
 
   const SortIcon = ({ col }: { col: typeof sortBy }) =>
     sortBy === col ? (
-      <span className="ml-1 text-teal">{sortAsc ? '↑' : '↓'}</span>
+      sortAsc ? <ChevronUp className="w-3 h-3 ml-1 text-teal inline" /> : <ChevronDown className="w-3 h-3 ml-1 text-teal inline" />
     ) : (
-      <span className="ml-1 text-border">↕</span>
+      <ChevronsUpDown className="w-3 h-3 ml-1 text-border inline" />
     );
 
   return (
