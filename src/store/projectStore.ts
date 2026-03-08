@@ -130,6 +130,7 @@ function captureSnapshot(s: ProjectStore): ProjectState {
     uvSystemCode: s.uvSystemCode,
     ssFilter30: s.ssFilter30,
     activeZoneIndex: s.activeZoneIndex,
+    ropeOverrides: s.ropeOverrides,
   };
 }
 
