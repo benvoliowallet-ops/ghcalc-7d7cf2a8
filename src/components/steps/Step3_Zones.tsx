@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { List, PenLine, BarChart2, RotateCcw, Check, Circle, AlertTriangle } from 'lucide-react';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';

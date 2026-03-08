@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, MapPin, Clock, FileText, Play, Plus } from 'lucide-react';
 import { useProjectStore } from '../store/projectStore';
 import { useConfirm } from '../hooks/useConfirm';
 import type { SavedProject } from '../types';

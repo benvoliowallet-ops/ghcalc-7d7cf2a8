@@ -1,4 +1,5 @@
 import { useProjectStore } from '../../store/projectStore';
+import { Check, AlertTriangle } from 'lucide-react';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, CalcRow, Toggle } from '../ui/FormField';
 import { PUMP_TABLE, calcETNACapacity, fmtN } from '../../utils/calculations';

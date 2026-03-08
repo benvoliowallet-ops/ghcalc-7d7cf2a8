@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx';
+import { MapPin, Printer, Download, Pencil, Check } from 'lucide-react';
 import { useProjectStore } from '../store/projectStore';
 import { PUMP_TABLE, calcETNACapacity, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes, getTransportCost, getPMCost } from '../utils/calculations';
 import { getPipe10mmForSpacing } from '../data/stockItems';

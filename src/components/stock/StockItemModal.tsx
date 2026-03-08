@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import { useStockMutations } from '../../hooks/useStockDB';
 import { useAuthStore } from '../../store/authStore';
 import type { StockItem } from '../../types';

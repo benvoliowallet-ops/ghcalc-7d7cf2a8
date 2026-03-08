@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Search, CheckCircle, Check, AlertTriangle } from 'lucide-react';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Input, Card, Badge } from '../ui/FormField';
