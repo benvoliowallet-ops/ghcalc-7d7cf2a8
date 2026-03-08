@@ -2,6 +2,34 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
+function renderContent(text: string): React.ReactNode {
+  const lines = text.split('\n');
+  return lines.map((line, li) => {
+    // Parse inline bold/italic using regex
+    const parts: React.ReactNode[] = [];
+    const regex = /(\*\*(.+?)\*\*|\*(.+?)\*)/g;
+    let last = 0;
+    let match: RegExpExecArray | null;
+    let key = 0;
+    while ((match = regex.exec(line)) !== null) {
+      if (match.index > last) parts.push(<span key={key++}>{line.slice(last, match.index)}</span>);
+      if (match[0].startsWith('**')) {
+        parts.push(<strong key={key++}>{match[2]}</strong>);
+      } else {
+        parts.push(<em key={key++}>{match[3]}</em>);
+      }
+      last = match.index + match[0].length;
+    }
+    if (last < line.length) parts.push(<span key={key++}>{line.slice(last)}</span>);
+    return (
+      <span key={li}>
+        {parts.length > 0 ? parts : line}
+        {li < lines.length - 1 && <br />}
+      </span>
+    );
+  });
+}
+
 const SUGGESTED = [
   'Ako fungujú zóny v projekte?',
   'Čo je NORMIST a ako ho vyplniť?',
@@ -313,8 +341,8 @@ export function VoraAIChat() {
                     ? 'bg-teal text-white rounded-br-sm'
                     : 'bg-slate-100 text-navy rounded-bl-sm border border-navy/20'}
                 `}
-                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                {msg.content}
+                style={{ wordBreak: 'break-word' }}>
+                {renderContent(msg.content)}
                 {msg.role === 'assistant' && loading && i === messages.length - 1 &&
                   <span className="inline-block w-1.5 h-3.5 bg-teal ml-0.5 animate-pulse rounded-sm align-middle" />
                 }
