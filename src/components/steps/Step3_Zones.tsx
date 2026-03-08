@@ -290,7 +290,7 @@ function ZoneResultsTab({ calc, zone }: { calc: ZoneCalc; zone: ZoneParams; glob
   if (!calc.drawingComplete) {
     return (
       <div className="p-6 text-center">
-        <div className="text-4xl mb-3">✏️</div>
+        <PenLine className="w-8 h-8 text-muted-foreground/40 mx-auto mb-3" />
         <p className="font-semibold text-gray-700">Najprv dokončite výkres (krok 3G)</p>
         <p className="text-sm text-gray-500 mt-1">Výsledky krokov 3E a 3H závisia od výkresu napájacieho vedenia.</p>
       </div>
