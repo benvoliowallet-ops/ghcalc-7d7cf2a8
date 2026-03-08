@@ -123,7 +123,7 @@ export function Step2_GlobalParams() {
           </div>
         </Card>
 
-        <Card variant="calc" title="📊 Zhrnutie parametrov">
+        <Card variant="calc" title="Zhrnutie parametrov">
           <CalcRow label="Počet zón" value={globalParams.numberOfZones} />
           <CalcRow label="Počet čerpadiel" value={globalParams.numberOfZones} />
           <CalcRow label="Kapacita foggingu" value={globalParams.fogCapacity} unit="ml/hod/m²" />
