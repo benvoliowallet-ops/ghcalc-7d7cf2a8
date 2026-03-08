@@ -1,14 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Raleway', system-ui, sans-serif;
+
+  /* Sanfog Brand Colors */
+  --navy:        0 26% 15%;       /* #002a4c */
+  --teal:        190 100% 39%;    /* #00adc6 */
+  --orange:      36 90% 48%;      /* #f38f00 */
+  --white:       0 0% 100%;
+  --light-gray:  210 20% 96%;     /* #f4f6f8 */
+  --border-gray: 210 15% 88%;
+
+  /* shadcn semantic tokens */
+  --background:        210 20% 96%;
+  --foreground:        211 100% 15%;   /* #002a4c */
+
+  --card:              0 0% 100%;
+  --card-foreground:   211 100% 15%;
+
+  --popover:           0 0% 100%;
+  --popover-foreground: 211 100% 15%;
+
+  --primary:           190 100% 39%;  /* #00adc6 */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary:         211 100% 15%;  /* #002a4c */
+  --secondary-foreground: 0 0% 100%;
+
+  --muted:             210 20% 94%;
+  --muted-foreground:  211 20% 40%;
+
+  --accent:            190 100% 39%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive:       0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border:            210 15% 88%;
+  --input:             210 15% 88%;
+  --ring:              190 100% 39%;
+
+  --radius: 4px;
+
+  /* Sidebar */
+  --sidebar-background:          211 100% 15%;  /* #002a4c */
+  --sidebar-foreground:          0 0% 100%;
+  --sidebar-primary:             190 100% 39%;
+  --sidebar-primary-foreground:  0 0% 100%;
+  --sidebar-accent:              190 100% 39%;
+  --sidebar-accent-foreground:   0 0% 100%;
+  --sidebar-border:              211 60% 22%;
+  --sidebar-ring:                190 100% 39%;
 }
 
 body {
   margin: 0;
-  background-color: #f0f4f8;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: 'Raleway', system-ui, sans-serif;
 }
 
 * {
@@ -17,9 +70,9 @@ body {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #64748b; }
+::-webkit-scrollbar-track { background: hsl(var(--muted)); }
+::-webkit-scrollbar-thumb { background: hsl(var(--teal)); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--navy)); }
 
 /* CAD canvas cursor */
 .cad-canvas { cursor: crosshair; }
