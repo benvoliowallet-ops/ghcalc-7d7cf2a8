@@ -103,7 +103,7 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="bg-navy text-white border-b border-white/10 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
@@ -207,9 +207,9 @@ export default function App() {
         )}
       </header>
 
-      <main>{renderContent()}</main>
+      <main className="flex-1">{renderContent()}</main>
 
-      <footer className="border-t border-border bg-navy mt-8">
+      <footer className="border-t border-border bg-navy">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-white/30">
             <span>Greenhouse Projekt · 2026 · v12</span>

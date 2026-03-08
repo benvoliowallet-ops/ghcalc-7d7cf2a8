@@ -60,9 +60,9 @@ export function StockPage() {
 
   const SortIcon = ({ col }: { col: typeof sortBy }) =>
     sortBy === col ? (
-      <span className="ml-1 text-green-600">{sortAsc ? '↑' : '↓'}</span>
+      <span className="ml-1 text-teal">{sortAsc ? '↑' : '↓'}</span>
     ) : (
-      <span className="ml-1 text-gray-300">↕</span>
+      <span className="ml-1 text-border">↕</span>
     );
 
   return (
@@ -71,14 +71,15 @@ export function StockPage() {
       {/* Page header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-800">📦 Skladové karty</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-xl font-bold text-foreground uppercase tracking-wide">📦 Skladové karty</h1>
+          <p className="text-sm text-muted-foreground">
             {items.length} položiek · zobrazených {filtered.length}
           </p>
         </div>
         <button
           onClick={() => setAddNew(true)}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition-colors shadow-sm"
+          className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors shadow-sm"
+          style={{ borderRadius: 'var(--radius)' }}
         >
           ＋ Pridať položku
         </button>
@@ -90,12 +91,14 @@ export function StockPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="🔍 Hľadať podľa kódu, názvu, skupiny..."
-          className="flex-1 min-w-[220px] px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="flex-1 min-w-[220px] px-3 py-2 border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+          style={{ borderRadius: 'var(--radius)' }}
         />
         <select
           value={groupFilter}
           onChange={(e) => setGroupFilter(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="px-3 py-2 border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+          style={{ borderRadius: 'var(--radius)' }}
         >
           <option value="all">Všetky skupiny ({items.length})</option>
           {groups.map((g) => {
@@ -110,7 +113,8 @@ export function StockPage() {
         {(search || groupFilter !== 'all') && (
           <button
             onClick={() => { setSearch(''); setGroupFilter('all'); }}
-            className="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+            className="px-3 py-2 border border-border text-sm text-muted-foreground hover:bg-muted transition-colors"
+            style={{ borderRadius: 'var(--radius)' }}
           >
             ✕ Zrušiť filter
           </button>
@@ -118,39 +122,39 @@ export function StockPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+      <div className="bg-card border border-border overflow-hidden shadow-sm" style={{ borderRadius: 'var(--radius)' }}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
+              <tr className="bg-muted border-b border-border">
                 <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-gray-600 cursor-pointer select-none hover:text-gray-800"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
                   onClick={() => handleSort('code')}
                 >
                   Kód <SortIcon col="code" />
                 </th>
                 <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-gray-600 cursor-pointer select-none hover:text-gray-800"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
                   onClick={() => handleSort('name')}
                 >
                   Názov <SortIcon col="name" />
                 </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-600 hidden lg:table-cell">
+                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground hidden lg:table-cell">
                   Doplnkový text
                 </th>
                 <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-gray-600 cursor-pointer select-none hover:text-gray-800"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
                   onClick={() => handleSort('group')}
                 >
                   Skupina <SortIcon col="group" />
                 </th>
                 <th
-                  className="text-right px-4 py-3 text-xs font-semibold text-gray-600 cursor-pointer select-none hover:text-gray-800"
+                  className="text-right px-4 py-3 text-xs font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
                   onClick={() => handleSort('price')}
                 >
                   Cena € <SortIcon col="price" />
                 </th>
-                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-600 w-20">
+                <th className="text-center px-4 py-3 text-xs font-semibold text-muted-foreground w-20">
                   Akcie
                 </th>
               </tr>
@@ -159,39 +163,41 @@ export function StockPage() {
               {filtered.map((item, idx) => (
                 <tr
                   key={item.code}
-                  className={`border-b border-gray-100 hover:bg-green-50/40 transition-colors ${
-                    idx % 2 === 1 ? 'bg-gray-50/40' : ''
+                  className={`border-b border-border hover:bg-primary/5 transition-colors ${
+                    idx % 2 === 1 ? 'bg-muted/40' : ''
                   }`}
                 >
-                  <td className="px-4 py-2.5 font-mono text-xs text-gray-500 whitespace-nowrap">
+                  <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground whitespace-nowrap">
                     {item.code}
                   </td>
-                  <td className="px-4 py-2.5 text-gray-800 font-medium max-w-xs">
+                  <td className="px-4 py-2.5 text-foreground font-medium max-w-xs">
                     <span className="line-clamp-2">{item.name}</span>
                   </td>
-                  <td className="px-4 py-2.5 text-gray-400 text-xs hidden lg:table-cell max-w-xs">
+                  <td className="px-4 py-2.5 text-muted-foreground text-xs hidden lg:table-cell max-w-xs">
                     <span className="line-clamp-1">{item.additionalText}</span>
                   </td>
                   <td className="px-4 py-2.5">
-                    <span className="px-2 py-0.5 bg-green-50 text-green-700 rounded-full text-xs font-medium whitespace-nowrap">
+                    <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-medium whitespace-nowrap">
                       {item.group}
                     </span>
                   </td>
-                  <td className="px-4 py-2.5 text-right font-mono font-semibold text-gray-700 whitespace-nowrap">
+                  <td className="px-4 py-2.5 text-right font-mono font-semibold text-foreground whitespace-nowrap">
                     {item.price.toFixed(3)}
                   </td>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center justify-center gap-1">
                       <button
                         onClick={() => setEditItem(item)}
-                        className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-400 hover:text-blue-600 transition-colors"
+                        className="p-1.5 hover:bg-primary/10 text-primary/60 hover:text-primary transition-colors"
+                        style={{ borderRadius: 'var(--radius)' }}
                         title="Upraviť"
                       >
                         ✏️
                       </button>
                       <button
                         onClick={() => handleDelete(item.code, item.name)}
-                        className="p-1.5 rounded-lg hover:bg-red-50 text-red-300 hover:text-red-500 transition-colors"
+                        className="p-1.5 hover:bg-destructive/10 text-destructive/40 hover:text-destructive transition-colors"
+                        style={{ borderRadius: 'var(--radius)' }}
                         title="Vymazať"
                       >
                         🗑
@@ -204,9 +210,9 @@ export function StockPage() {
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-4 py-16 text-center">
-                    <p className="text-gray-400 text-sm">Žiadne položky nenájdené</p>
+                    <p className="text-muted-foreground text-sm">Žiadne položky nenájdené</p>
                     {(search || groupFilter !== 'all') && (
-                      <p className="text-gray-300 text-xs mt-1">
+                      <p className="text-muted-foreground/50 text-xs mt-1">
                         Skúste zmeniť filter alebo hľadaný výraz
                       </p>
                     )}
@@ -219,13 +225,13 @@ export function StockPage() {
 
         {/* Footer row */}
         {filtered.length > 0 && (
-          <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 text-xs text-gray-400 flex items-center justify-between">
+          <div className="px-4 py-2 bg-muted border-t border-border text-xs text-muted-foreground flex items-center justify-between">
             <span>
               Zobrazených {filtered.length} z {items.length} položiek
             </span>
             <span>
               Celková hodnota:{' '}
-              <span className="font-semibold text-gray-600">
+              <span className="font-semibold text-foreground">
                 {filtered.reduce((s, i) => s + i.price, 0).toFixed(2)} €
               </span>
             </span>
