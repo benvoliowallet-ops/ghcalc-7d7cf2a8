@@ -110,14 +110,15 @@ export function useStockMutations(reload: () => void) {
 
       const after = { ...before, ...changes };
 
-      await supabase.from('change_log').insert({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any).from('change_log').insert({
         user_id: currentUser.id,
         user_name: currentUser.name,
         action: 'update',
         item_code: code,
         item_name: after.name ?? before.name,
-        before_data: before as unknown as Record<string, unknown>,
-        after_data: after as unknown as Record<string, unknown>,
+        before_data: before,
+        after_data: after,
       });
 
       reload();
