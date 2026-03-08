@@ -170,7 +170,7 @@ export function Step3_Zones() {
                        <td className="p-3 text-right">{fmtN(calc.ropeLength)} m{calc.ropeWaste > 0 && <span className="text-muted-foreground text-xs block">odpad: {fmtN(calc.ropeWaste, 0)} m</span>}</td>
                        <td className="p-3 text-right font-mono">{fmtN(calc.supplyPipeLength, 1)} m</td>
                        <td className="p-3 text-right">{fmtN(calc.pressureDrop, 4)} bar</td>
-                      <td className="p-3 text-center">{calc.drawingComplete ? <Badge variant="green">✓ Hotovo</Badge> : <Badge variant="amber">⚠ Chýba</Badge>}</td>
+                      <td className="p-3 text-center">{calc.drawingComplete ? <Badge variant="green"><span className="flex items-center gap-1"><Check className="w-3 h-3" />Hotovo</span></Badge> : <Badge variant="amber"><span className="flex items-center gap-1"><AlertTriangle className="w-3 h-3" />Chýba</span></Badge>}</td>
                     </tr>
                   );
                 })}
