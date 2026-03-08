@@ -23,14 +23,14 @@ function StepProgress({ step }: { step: number }) {
   const pct = Math.round((step / 10) * 100);
   return (
     <div className="mt-2">
-      <div className="flex justify-between text-xs text-gray-400 mb-1">
+      <div className="flex justify-between text-xs text-muted-foreground mb-1">
         <span>Krok {step}/10 – {STEP_LABELS[step] ?? ''}</span>
         <span>{pct}%</span>
       </div>
-      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-1 bg-muted overflow-hidden" style={{ borderRadius: 'var(--radius)' }}>
         <div
-          className={`h-full rounded-full transition-all ${step === 10 ? 'bg-emerald-500' : 'bg-green-400'}`}
-          style={{ width: `${pct}%` }}
+          className="h-full transition-all"
+          style={{ width: `${pct}%`, backgroundColor: step === 10 ? 'hsl(var(--teal))' : 'hsl(var(--teal))' }}
         />
       </div>
     </div>
@@ -46,24 +46,34 @@ interface ProjectCardProps {
 function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
   const done = project.currentStep === 10;
   return (
-    <div className={`bg-white rounded-2xl border shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-3 ${
-      done ? 'border-emerald-200' : 'border-gray-200'
-    }`}>
+    <div
+      className={`bg-card border transition-shadow hover:shadow-sm p-5 flex flex-col gap-3 ${
+        done ? 'border-teal/40' : 'border-border'
+      }`}
+      style={{ borderRadius: 'var(--radius)' }}
+    >
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-sm font-bold text-green-700">{project.quoteNumber}</span>
+            <span className="font-mono text-sm font-bold text-teal">{project.quoteNumber}</span>
             <span className="text-lg">{COUNTRY_FLAG[project.country] ?? ''}</span>
-            {done && <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-semibold">Hotovo</span>}
+            {done && (
+              <span
+                className="text-xs bg-teal/10 text-teal px-2 py-0.5 font-semibold border border-teal/30 uppercase tracking-wide"
+                style={{ borderRadius: 'var(--radius)' }}
+              >
+                Hotovo
+              </span>
+            )}
           </div>
           {project.customerName ? (
-            <p className="font-semibold text-gray-800 mt-0.5">{project.customerName}</p>
+            <p className="font-semibold text-foreground mt-0.5">{project.customerName}</p>
           ) : (
-            <p className="text-gray-400 text-sm italic mt-0.5">Bez zákazníka</p>
+            <p className="text-muted-foreground text-sm italic mt-0.5">Bez zákazníka</p>
           )}
           {project.projectAddress && (
-            <p className="text-xs text-gray-500 mt-0.5">📍 {project.projectAddress}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">📍 {project.projectAddress}</p>
           )}
         </div>
         <button
@@ -71,7 +81,7 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
             e.stopPropagation();
             if (window.confirm(`Naozaj zmazať projekt ${project.quoteNumber}?`)) onDelete();
           }}
-          className="text-gray-300 hover:text-red-400 transition-colors text-lg leading-none p-1"
+          className="text-muted-foreground/30 hover:text-destructive transition-colors text-lg leading-none p-1"
           title="Zmazať projekt"
         >
           🗑
@@ -79,7 +89,7 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
       </div>
 
       {/* Stats */}
-      <div className="flex gap-4 text-xs text-gray-500">
+      <div className="flex gap-4 text-xs text-muted-foreground">
         <span>🌿 {project.numZones} {project.numZones === 1 ? 'zóna' : 'zóny'}</span>
         <span>🕒 {formatDate(project.savedAt)}</span>
       </div>
@@ -89,7 +99,8 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
       {/* Actions */}
       <button
         onClick={onOpen}
-        className="mt-1 w-full py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition-colors"
+        className="mt-1 w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold uppercase tracking-wide transition-colors"
+        style={{ borderRadius: 'var(--radius)' }}
       >
         {done ? '📄 Otvoriť / Tlačiť' : '▶ Pokračovať'}
       </button>
@@ -117,8 +128,8 @@ export function Dashboard({ onOpenProject, onNewProject }: DashboardProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">📂 Projekty</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-foreground uppercase tracking-wide">Projekty</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             {sorted.length === 0
               ? 'Žiadne uložené projekty'
               : `${sorted.length} projektov · ${done.length} dokončených`}
@@ -126,7 +137,8 @@ export function Dashboard({ onOpenProject, onNewProject }: DashboardProps) {
         </div>
         <button
           onClick={onNewProject}
-          className="flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold uppercase tracking-wide text-sm transition-colors"
+          style={{ borderRadius: 'var(--radius)' }}
         >
           ＋ Nový projekt
         </button>
@@ -134,13 +146,17 @@ export function Dashboard({ onOpenProject, onNewProject }: DashboardProps) {
 
       {/* Empty state */}
       {sorted.length === 0 && (
-        <div className="text-center py-24 bg-white rounded-2xl border border-dashed border-gray-200">
+        <div
+          className="text-center py-24 bg-card border border-dashed border-border"
+          style={{ borderRadius: 'var(--radius)' }}
+        >
           <div className="text-6xl mb-4">🌿</div>
-          <p className="text-xl font-semibold text-gray-600 mb-2">Zatiaľ žiadne projekty</p>
-          <p className="text-gray-400 mb-6">Začni tým, že vytvoríš nový projekt</p>
+          <p className="text-xl font-semibold text-foreground mb-2">Zatiaľ žiadne projekty</p>
+          <p className="text-muted-foreground mb-6">Začni tým, že vytvoríš nový projekt</p>
           <button
             onClick={onNewProject}
-            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition-colors"
+            className="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold uppercase tracking-wide transition-colors"
+            style={{ borderRadius: 'var(--radius)' }}
           >
             ＋ Nový projekt
           </button>
@@ -150,7 +166,7 @@ export function Dashboard({ onOpenProject, onNewProject }: DashboardProps) {
       {/* In-progress */}
       {inProgress.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">
+          <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 border-b border-border pb-2">
             V procese ({inProgress.length})
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -169,7 +185,7 @@ export function Dashboard({ onOpenProject, onNewProject }: DashboardProps) {
       {/* Completed */}
       {done.length > 0 && (
         <section>
-          <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">
+          <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 border-b border-border pb-2">
             Dokončené ({done.length})
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

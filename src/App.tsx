@@ -80,7 +80,7 @@ export default function App() {
       case 'changelog': return <ChangeLogPage />;
       case 'users': return currentUser.role === 'admin' ? <UsersPage /> : (
         <div className="max-w-xl mx-auto px-4 py-20 text-center">
-          <p className="text-gray-500">Prístup zamietnutý – iba pre adminov.</p>
+          <p className="text-muted-foreground">Prístup zamietnutý – iba pre adminov.</p>
         </div>
       );
     }
@@ -89,28 +89,35 @@ export default function App() {
   const NavBtn = ({ target, icon, label }: { target: AppView; icon: string; label: string }) => (
     <button
       onClick={() => setView(target)}
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-        view === target ? 'bg-green-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold tracking-wide uppercase transition-colors border ${
+        view === target
+          ? 'bg-teal text-white border-teal'
+          : 'bg-transparent text-white/70 border-white/20 hover:border-teal hover:text-white'
       }`}
+      style={{ borderRadius: 'var(--radius)' }}
     >
       {icon} {label}
     </button>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="bg-navy text-white border-b border-white/10 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+          {/* Logo */}
           <div className="flex items-center gap-3 shrink-0">
-            <div className="h-9 w-auto flex items-center">
-              <span className="text-green-600 font-bold text-lg">🌿 Sanfog</span>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 bg-teal flex items-center justify-center text-white font-bold text-xs" style={{ borderRadius: 'var(--radius)' }}>S</div>
+              <span className="text-white font-bold text-base tracking-widest uppercase">Sanfog</span>
             </div>
-            <div className="hidden sm:block border-l border-gray-200 pl-3">
-              <p className="text-xs font-semibold text-gray-700 leading-tight">Greenhouse Projekt</p>
-              <p className="text-xs text-gray-400">Interný BOM kalkulátor</p>
+            <div className="hidden sm:block border-l border-white/20 pl-3">
+              <p className="text-xs font-semibold text-white/90 leading-tight tracking-wide uppercase">Greenhouse Projekt</p>
+              <p className="text-xs text-white/40">Interný BOM kalkulátor</p>
             </div>
           </div>
 
+          {/* Nav */}
           <nav className="flex items-center gap-1 overflow-x-auto">
             <NavBtn target="dashboard" icon="📂" label="Projekty" />
             <NavBtn target="stock" icon="📦" label="Sklad" />
@@ -118,25 +125,26 @@ export default function App() {
             {currentUser.role === 'admin' && <NavBtn target="users" icon="👥" label="Používatelia" />}
           </nav>
 
+          {/* Actions */}
           <div className="flex items-center gap-2 shrink-0">
             {view === 'project' && (
               <>
                 {project.quoteNumber && (
-                  <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-lg border border-green-200">
-                    <span className="text-xs text-green-600 font-semibold">📋</span>
-                    <span className="text-xs text-green-700 font-mono font-bold">{project.quoteNumber}</span>
-                    {project.customerName && <span className="text-xs text-gray-500">· {project.customerName}</span>}
+                  <div className="hidden md:flex items-center gap-2 px-3 py-1.5 border border-teal/40 bg-teal/10" style={{ borderRadius: 'var(--radius)' }}>
+                    <span className="text-xs text-teal font-semibold font-mono">{project.quoteNumber}</span>
+                    {project.customerName && <span className="text-xs text-white/50">· {project.customerName}</span>}
                   </div>
                 )}
                 <button
                   onClick={handleSaveAndClose}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal hover:bg-teal/90 text-white transition-colors"
+                  style={{ borderRadius: 'var(--radius)' }}
                 >
                   💾 Uložiť
                 </button>
                 <button
                   onClick={handleNewProject}
-                  className="text-xs text-gray-400 hover:text-red-500 px-2 py-1 rounded transition-colors"
+                  className="text-xs text-white/40 hover:text-white px-2 py-1 transition-colors"
                 >
                   ↺ Nový
                 </button>
@@ -145,19 +153,20 @@ export default function App() {
             {view === 'dashboard' && (
               <button
                 onClick={handleNewProject}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-600 hover:bg-green-700 text-white transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal hover:bg-teal/90 text-white transition-colors"
+                style={{ borderRadius: 'var(--radius)' }}
               >
                 ＋ Nový projekt
               </button>
             )}
-            <div className="flex items-center gap-2 ml-1 pl-2 border-l border-gray-200">
-              <span className="hidden md:block text-xs text-gray-500 font-medium">
+            <div className="flex items-center gap-2 ml-1 pl-2 border-l border-white/20">
+              <span className="hidden md:block text-xs text-white/50 font-medium">
                 {currentUser.name.split(' ')[0]}
-                {currentUser.role === 'admin' && <span className="ml-1 text-purple-500">👑</span>}
+                {currentUser.role === 'admin' && <span className="ml-1 text-orange">★</span>}
               </span>
               <button
                 onClick={() => { if (window.confirm('Odhlásiť sa?')) logout(); }}
-                className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                className="flex items-center gap-1 px-2 py-1.5 text-xs text-white/40 hover:text-white transition-colors"
               >
                 🚪
               </button>
@@ -165,9 +174,10 @@ export default function App() {
           </div>
         </div>
 
+        {/* Step tabs */}
         {view === 'project' && (
-          <div className="max-w-7xl mx-auto px-4 pb-2 overflow-x-auto">
-            <div className="flex gap-1 min-w-max">
+          <div className="max-w-7xl mx-auto px-4 pb-2 overflow-x-auto border-t border-white/10">
+            <div className="flex gap-1 min-w-max pt-2">
               {STEPS.map(step => {
                 const isDone = step.num < currentStep;
                 const isActive = step.num === currentStep;
@@ -175,14 +185,17 @@ export default function App() {
                   <button
                     key={step.num}
                     onClick={() => setStep(step.num)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
-                      isActive ? 'bg-green-600 text-white shadow-sm'
-                      : isDone ? 'bg-green-50 text-green-700 hover:bg-green-100'
-                      : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap border ${
+                      isActive
+                        ? 'bg-teal text-white border-teal'
+                        : isDone
+                        ? 'bg-white/10 text-teal border-teal/30 hover:bg-teal/20'
+                        : 'text-white/30 border-transparent hover:text-white/60 hover:bg-white/5'
                     }`}
+                    style={{ borderRadius: 'var(--radius)' }}
                   >
-                    <span className={`w-4 h-4 rounded-full flex items-center justify-center text-xs ${
-                      isActive ? 'bg-white/20' : isDone ? 'bg-green-100' : 'bg-gray-100'
+                    <span className={`w-4 h-4 flex items-center justify-center text-xs font-bold ${
+                      isActive ? 'text-white' : isDone ? 'text-teal' : 'text-white/30'
                     }`}>
                       {isDone ? '✓' : step.num}
                     </span>
@@ -197,12 +210,12 @@ export default function App() {
 
       <main>{renderContent()}</main>
 
-      <footer className="border-t border-gray-200 bg-white mt-8">
+      <footer className="border-t border-border bg-card mt-8">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <span>🌿 Greenhouse Projekt · 2026 · v12</span>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span>Greenhouse Projekt · 2026 · v12</span>
           </div>
-          <div className="text-xs text-gray-300">made by VORA</div>
+          <div className="text-xs text-muted-foreground/50">made by VORA</div>
         </div>
       </footer>
     </div>
