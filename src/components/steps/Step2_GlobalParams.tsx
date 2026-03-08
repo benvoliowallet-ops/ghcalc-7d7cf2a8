@@ -1,6 +1,7 @@
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Input, Select, Card, Toggle, CalcRow } from '../ui/FormField';
+import { AlertTriangle } from 'lucide-react';
 
 export function Step2_GlobalParams() {
   const { globalParams, updateGlobalParams } = useProjectStore();
