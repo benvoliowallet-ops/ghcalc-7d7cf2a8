@@ -216,7 +216,7 @@ export function VoraAIChat() {
               className="w-6 h-6 object-contain" />
             
             <span className="text-sm font-semibold text-white">VORA AI Asistent</span>
-            <span className="w-2 h-2 rounded-full bg-teal animate-pulse" />
+            <span className="w-2 h-2 rounded-full animate-pulse bg-green-600" />
           </div>
           <button
             onClick={() => setOpen(false)}
