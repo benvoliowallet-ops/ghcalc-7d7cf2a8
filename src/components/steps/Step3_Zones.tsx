@@ -219,9 +219,9 @@ function ZoneParamsTab({ zone, zoneIndex, zones, globalParams, onUpdate, nozzleO
             <NumInput label="Počet lodí (N)" min={1} max={30} value={zone.numNaves} onChange={(n) => onUpdate({ numNaves: n })} />
           </div>
           <NumInput label="Rozostup držiakov kratovníc (R_krat)" unit="m" min={0.5} step={0.1} value={zone.trellisPitch} onChange={(n) => onUpdate({ trellisPitch: n })} />
-          <div className="p-3 bg-blue-50 rounded-lg border border-blue-100 mt-2 text-xs">
-            <p className="font-semibold text-blue-700">Plocha zóny: {fmtN(area, 1)} m²</p>
-            <p className="text-blue-600">= {zone.length} × {zone.width} × {zone.numNaves} lodí</p>
+          <div className="p-3 bg-primary/5 rounded-lg border border-primary/20 mt-2 text-xs">
+            <p className="font-semibold text-primary">Plocha zóny: {fmtN(area, 1)} m²</p>
+            <p className="text-primary/70">= {zone.length} × {zone.width} × {zone.numNaves} lodí</p>
           </div>
           <div className="mt-4">
             <Select label="Prepoj na napájacie potrubie" value={zone.connectionType ?? 'T-kus'} onChange={(e) => onUpdate({ connectionType: e.target.value as ZoneParams['connectionType'] })} options={connectionOptions} />
