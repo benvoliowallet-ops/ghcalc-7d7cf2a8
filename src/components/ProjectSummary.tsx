@@ -282,7 +282,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
             {project.customerName || 'Bez zákazníka'}
           </h1>
           {project.projectAddress && (
-            <p className="text-sm text-white/60 mt-0.5">📍 {project.projectAddress}</p>
+            <p className="text-sm text-white/60 mt-0.5 flex items-center gap-1"><MapPin className="w-3.5 h-3.5 flex-shrink-0" />{project.projectAddress}</p>
           )}
           <p className="text-xs text-white/40 mt-1">{project.quoteDate} · {project.country}</p>
         </div>
