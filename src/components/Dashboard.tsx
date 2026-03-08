@@ -170,23 +170,35 @@ interface DashboardProps {
 
 export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: DashboardProps) {
   const { savedProjects, deleteSavedProject } = useProjectStore();
+  const [search, setSearch] = useState('');
 
   const sorted = [...savedProjects].sort(
     (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
   );
 
-  const done = sorted.filter((p) => p.currentStep === 10);
-  const inProgress = sorted.filter((p) => p.currentStep < 10);
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    if (!q) return sorted;
+    return sorted.filter((p) =>
+      p.quoteNumber.toLowerCase().includes(q) ||
+      p.customerName.toLowerCase().includes(q) ||
+      p.projectAddress.toLowerCase().includes(q) ||
+      p.country.toLowerCase().includes(q)
+    );
+  }, [sorted, search]);
+
+  const done = filtered.filter((p) => p.currentStep === 10);
+  const inProgress = filtered.filter((p) => p.currentStep < 10);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground uppercase tracking-wide">Projekty</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {sorted.length === 0 ?
             'Žiadne uložené projekty' :
-            `${sorted.length} projektov · ${done.length} dokončených`}
+            `${sorted.length} projektov · ${sorted.filter(p => p.currentStep === 10).length} dokončených`}
           </p>
         </div>
         <button
@@ -196,6 +208,35 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
           <Plus className="w-4 h-4" /> Nový projekt
         </button>
       </div>
+
+      {sorted.length > 0 && (
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Hľadať podľa čísla, zákazníka, adresy..."
+            className="w-full pl-9 pr-9 py-2.5 border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+            style={{ borderRadius: 'var(--radius)' }}
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      )}
+
+      {search && filtered.length === 0 && (
+        <div className="text-center py-16 bg-card border border-dashed border-border" style={{ borderRadius: 'var(--radius)' }}>
+          <Search className="w-8 h-8 text-muted-foreground/30 mx-auto mb-3" />
+          <p className="text-muted-foreground font-medium">Žiadne projekty pre „{search}"</p>
+          <button onClick={() => setSearch('')} className="mt-3 text-sm text-primary hover:underline">Zrušiť filter</button>
+        </div>
+      )}
 
       {sorted.length === 0 &&
       <div
@@ -228,7 +269,6 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
             project={p}
             onOpen={() => onOpenProject(p.id)}
             onDelete={() => deleteSavedProject(p.id)} />
-
           )}
           </div>
         </section>
@@ -246,11 +286,9 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
             project={p}
             onOpen={() => onOpenSummary(p.id)}
             onDelete={() => deleteSavedProject(p.id)} />
-
           )}
           </div>
         </section>
       }
     </div>);
-
 }
