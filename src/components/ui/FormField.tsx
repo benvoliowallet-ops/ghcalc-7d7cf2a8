@@ -11,13 +11,13 @@ interface FormFieldProps {
 export function FormField({ label, unit, hint, children, required }: FormFieldProps) {
   return (
     <div className="mb-4">
-      <label className="block text-sm font-semibold text-gray-700 mb-1">
+      <label className="block text-sm font-semibold text-foreground mb-1">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-        {unit && <span className="text-gray-400 font-normal ml-1">[{unit}]</span>}
+        {required && <span className="text-destructive ml-1">*</span>}
+        {unit && <span className="text-muted-foreground font-normal ml-1">[{unit}]</span>}
       </label>
       {children}
-      {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
+      {hint && <p className="text-xs text-muted-foreground mt-1">{hint}</p>}
     </div>
   );
 }
@@ -33,27 +33,27 @@ export function Input({ label, unit, hint, error, className = '', ...props }: In
   return (
     <div className="mb-4">
       {label && (
-        <label className="block text-sm font-semibold text-gray-700 mb-1">
+        <label className="block text-sm font-semibold text-foreground mb-1">
           {label}
-          {props.required && <span className="text-red-500 ml-1">*</span>}
-          {unit && <span className="text-gray-400 font-normal ml-1">[{unit}]</span>}
+          {props.required && <span className="text-destructive ml-1">*</span>}
+          {unit && <span className="text-muted-foreground font-normal ml-1">[{unit}]</span>}
         </label>
       )}
       <div className="relative">
         <input
-          className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
-            error ? 'border-red-400' : 'border-gray-300'
+          className={`w-full border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors ${
+            error ? 'border-destructive' : 'border-border'
           } ${className}`}
           {...props}
         />
         {unit && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
             {unit}
           </span>
         )}
       </div>
-      {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      {hint && <p className="text-xs text-muted-foreground mt-1">{hint}</p>}
+      {error && <p className="text-xs text-destructive mt-1">{error}</p>}
     </div>
   );
 }
@@ -69,14 +69,14 @@ export function Select({ label, unit, hint, options, className = '', ...props }:
   return (
     <div className="mb-4">
       {label && (
-        <label className="block text-sm font-semibold text-gray-700 mb-1">
+        <label className="block text-sm font-semibold text-foreground mb-1">
           {label}
-          {props.required && <span className="text-red-500 ml-1">*</span>}
-          {unit && <span className="text-gray-400 font-normal ml-1">[{unit}]</span>}
+          {props.required && <span className="text-destructive ml-1">*</span>}
+          {unit && <span className="text-muted-foreground font-normal ml-1">[{unit}]</span>}
         </label>
       )}
       <select
-        className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${className}`}
+        className={`w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors ${className}`}
         {...props}
       >
         {options.map((o) => (
@@ -85,7 +85,7 @@ export function Select({ label, unit, hint, options, className = '', ...props }:
           </option>
         ))}
       </select>
-      {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
+      {hint && <p className="text-xs text-muted-foreground mt-1">{hint}</p>}
     </div>
   );
 }
@@ -100,19 +100,19 @@ interface CardProps {
 
 export function Card({ title, subtitle, children, className = '', variant = 'default' }: CardProps) {
   const variants = {
-    default: 'bg-white border border-gray-200',
-    info:    'bg-white border border-gray-200 border-t-4 border-t-blue-500',
-    warning: 'bg-white border border-gray-200 border-t-4 border-t-amber-400',
-    success: 'bg-white border border-gray-200 border-t-4 border-t-green-600',
-    calc:    'bg-slate-50 border border-slate-200',
+    default: 'bg-card border border-border',
+    info:    'bg-card border border-border border-t-4 border-t-primary',
+    warning: 'bg-card border border-border border-t-4 border-t-orange',
+    success: 'bg-card border border-border border-t-4 border-t-teal',
+    calc:    'bg-muted border border-border',
   };
 
   return (
-    <div className={`rounded-lg p-5 ${variants[variant]} ${className}`}>
+    <div className={`rounded p-5 ${variants[variant]} ${className}`}>
       {title && (
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">{title}</h3>
-          {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
+          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">{title}</h3>
+          {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
         </div>
       )}
       {children}
@@ -130,16 +130,16 @@ interface CalcRowProps {
 
 export function CalcRow({ label, value, unit, formula, highlight }: CalcRowProps) {
   return (
-    <div className={`flex items-center justify-between py-2 border-b border-gray-100 last:border-0 ${highlight ? 'font-semibold' : ''}`}>
+    <div className={`flex items-center justify-between py-2 border-b border-border last:border-0 ${highlight ? 'font-semibold' : ''}`}>
       <div>
-        <span className="text-sm text-gray-700">{label}</span>
-        {formula && <span className="ml-2 text-xs text-indigo-500 font-mono">{formula}</span>}
+        <span className="text-sm text-foreground">{label}</span>
+        {formula && <span className="ml-2 text-xs text-primary font-mono">{formula}</span>}
       </div>
       <div className="text-sm font-mono">
-        <span className={highlight ? 'text-green-700 font-bold' : 'text-gray-900'}>
+        <span className={highlight ? 'text-teal font-bold' : 'text-foreground'}>
           {typeof value === 'number' ? value.toLocaleString('sk-SK', { maximumFractionDigits: 2 }) : value}
         </span>
-        {unit && <span className="text-gray-400 ml-1 text-xs">{unit}</span>}
+        {unit && <span className="text-muted-foreground ml-1 text-xs">{unit}</span>}
       </div>
     </div>
   );
@@ -147,17 +147,17 @@ export function CalcRow({ label, value, unit, formula, highlight }: CalcRowProps
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'gray' | 'green' | 'amber' | 'red' | 'blue' | 'purple';
+  variant?: 'gray' | 'teal' | 'orange' | 'red' | 'navy' | 'muted';
 }
 
 export function Badge({ children, variant = 'gray' }: BadgeProps) {
   const variants = {
-    gray: 'bg-gray-100 text-gray-700',
-    green: 'bg-green-100 text-green-700',
-    amber: 'bg-amber-100 text-amber-700',
-    red: 'bg-red-100 text-red-700',
-    blue: 'bg-blue-100 text-blue-700',
-    purple: 'bg-purple-100 text-purple-700',
+    gray:   'bg-muted text-muted-foreground',
+    teal:   'bg-teal/10 text-teal',
+    orange: 'bg-orange/10 text-orange',
+    red:    'bg-destructive/10 text-destructive',
+    navy:   'bg-secondary/10 text-secondary',
+    muted:  'bg-muted text-muted-foreground',
   };
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${variants[variant]}`}>
@@ -182,10 +182,10 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: 'bg-green-700 hover:bg-green-800 text-white shadow-sm',
-    secondary: 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-300',
-    danger: 'bg-red-600 hover:bg-red-700 text-white',
-    ghost: 'hover:bg-gray-100 text-gray-600',
+    primary:   'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm',
+    secondary: 'bg-card hover:bg-muted text-foreground border border-border',
+    danger:    'bg-destructive hover:bg-destructive/90 text-destructive-foreground',
+    ghost:     'hover:bg-muted text-muted-foreground',
   };
   const sizes = {
     sm: 'px-3 py-1.5 text-xs',
@@ -194,7 +194,7 @@ export function Button({
   };
   return (
     <button
-      className={`inline-flex items-center gap-2 font-semibold rounded-lg transition-colors ${variants[variant]} ${sizes[size]} ${
+      className={`inline-flex items-center gap-2 font-semibold rounded transition-colors ${variants[variant]} ${sizes[size]} ${
         disabled || loading ? 'opacity-50 cursor-not-allowed' : ''
       } ${className}`}
       disabled={disabled || loading}
@@ -242,7 +242,7 @@ export function Toggle({ checked, onChange, label, disabled }: ToggleProps) {
   return (
     <label className={`flex items-center gap-3 cursor-pointer ${disabled ? 'opacity-50' : ''}`}>
       <div
-        className={`relative w-11 h-6 rounded-full transition-colors ${checked ? 'bg-green-600' : 'bg-gray-300'}`}
+        className={`relative w-11 h-6 rounded-full transition-colors ${checked ? 'bg-primary' : 'bg-border'}`}
         onClick={() => !disabled && onChange(!checked)}
       >
         <div
@@ -251,7 +251,7 @@ export function Toggle({ checked, onChange, label, disabled }: ToggleProps) {
           }`}
         />
       </div>
-      {label && <span className="text-sm text-gray-700">{label}</span>}
+      {label && <span className="text-sm text-foreground">{label}</span>}
     </label>
   );
 }
