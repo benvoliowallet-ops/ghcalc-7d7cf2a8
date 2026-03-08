@@ -28,7 +28,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
   const [copied, setCopied] = useState(false);
 
   // Load portal info when component mounts
-  useState(() => { if (openProjectId) loadPortal(); });
+  useEffect(() => { if (openProjectId) loadPortal(); }, [openProjectId, loadPortal]);
 
   const totalArea = zoneCalcs.reduce((s, c) => s + (c?.area ?? 0), 0);
   const totalFlowMlH = zoneCalcs.reduce((s, c) => s + (c?.zoneFlow ?? 0), 0);
