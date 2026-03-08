@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { Settings, Maximize2, Minimize2, Undo2, Trash2 } from 'lucide-react';
 import { useProjectStore } from '../../store/projectStore';
 import type { CADSegment, CADSymbol, CADPoint, LineType } from '../../types';
