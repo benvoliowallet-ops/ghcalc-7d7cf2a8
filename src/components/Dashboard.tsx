@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import { useProjectStore } from '../store/projectStore';
 import { useConfirm } from '../hooks/useConfirm';
 import type { SavedProject } from '../types';
@@ -33,22 +35,13 @@ function GreenhouseIcon({ className }: { className?: string }) {
       className={className}
       aria-hidden="true"
     >
-      {/* Roof ridge */}
       <polyline points="8,26 32,6 56,26" />
-      {/* Side walls */}
       <line x1="8" y1="26" x2="8" y2="56" />
       <line x1="56" y1="26" x2="56" y2="56" />
-      {/* Floor */}
       <line x1="8" y1="56" x2="56" y2="56" />
-      {/* Door */}
       <rect x="26" y="40" width="12" height="16" rx="1" />
-      {/* Left window panel */}
       <rect x="12" y="30" width="10" height="8" rx="1" />
-      {/* Right window panel */}
       <rect x="42" y="30" width="10" height="8" rx="1" />
-      {/* Roof left pane */}
-      <line x1="14" y1="45" x2="14" y2="45" />
-      {/* Ridge line down center */}
       <line x1="32" y1="6" x2="32" y2="40" strokeDasharray="3 3" strokeWidth="1.5" />
     </svg>
   );
@@ -81,6 +74,8 @@ interface ProjectCardProps {
 function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
   const confirm = useConfirm();
   const done = project.currentStep === 10;
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -90,7 +85,16 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
       confirmLabel: 'Zmazať',
       variant: 'destructive',
     });
-    if (ok) onDelete();
+    if (!ok) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await onDelete();
+    } catch {
+      // NC6 FIX: show error to user if delete fails (project was reverted in store)
+      setDeleteError('Chyba mazania. Skúste znova.');
+      setDeleting(false);
+    }
   };
 
   return (
@@ -125,12 +129,17 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
         </div>
         <button
           onClick={handleDelete}
-          className="text-muted-foreground/30 hover:text-destructive transition-colors text-lg leading-none p-1"
+          disabled={deleting}
+          className="text-muted-foreground/30 hover:text-destructive transition-colors p-1 disabled:opacity-40"
           title="Zmazať projekt"
         >
-          🗑
+          <Trash2 className="w-4 h-4" />
         </button>
       </div>
+
+      {deleteError && (
+        <p className="text-xs text-destructive bg-destructive/10 px-2 py-1 rounded">{deleteError}</p>
+      )}
 
       <div className="flex gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">

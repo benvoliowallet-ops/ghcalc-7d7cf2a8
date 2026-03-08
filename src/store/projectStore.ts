@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { supabase } from '@/integrations/supabase/client';
 import type {
   ProjectState,
   Project,
@@ -99,7 +100,7 @@ interface ProjectStore extends ProjectState {
   setSavedProjects: (projects: SavedProject[]) => void;
   setSaveStatus: (status: SaveStatus) => void;
   loadProject: (id: string) => void;
-  deleteSavedProject: (id: string) => void;
+  deleteSavedProject: (id: string) => Promise<void>;
   setStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
@@ -201,14 +202,20 @@ export const useProjectStore = create<ProjectStore>()(
         });
       },
 
-      deleteSavedProject: (id) => {
+      // NC6 FIX: return a Promise so callers can handle errors, and optimistic
+      // update is now done AFTER DB confirms success (or reverted on failure)
+      deleteSavedProject: async (id) => {
+        // Optimistic: remove from local state immediately
+        const prev = get().savedProjects;
         set(s => ({ savedProjects: s.savedProjects.filter(p => p.id !== id) }));
-        // C1 FIX: Also delete from Supabase DB
-        import('@/integrations/supabase/client').then(({ supabase }) => {
-          supabase.from('projects').delete().eq('id', id).then(({ error }) => {
-            if (error) console.error('[Projects] Delete error:', error.message);
-          });
-        });
+
+        const { error } = await supabase.from('projects').delete().eq('id', id);
+        if (error) {
+          // Revert on failure — restore the project to the list
+          console.error('[Projects] Delete error:', error.message);
+          set({ savedProjects: prev });
+          throw new Error(error.message);
+        }
       },
 
       setStep: (step) => set({ currentStep: step }),

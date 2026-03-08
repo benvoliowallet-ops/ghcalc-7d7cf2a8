@@ -42,26 +42,35 @@ export function useStockItems() {
         }))
       );
     } else {
-      // DB is empty — seed with static data (first-run initialization)
-      console.log('[Stock] DB empty, seeding with', STOCK_ITEMS.length, 'items...');
-      // Insert in batches of 20 to avoid payload limits
-      const batchSize = 20;
-      for (let i = 0; i < STOCK_ITEMS.length; i += batchSize) {
-        const batch = STOCK_ITEMS.slice(i, i + batchSize).map((item) => ({
-          code: item.code,
-          name: item.name,
-          additional_text: item.additionalText,
-          price: item.price,
-          group: item.group,
-          supplier: item.supplier ?? null,
-          created_by: currentUser.id,
-          updated_by: currentUser.id,
-        }));
-        await supabase.from('stock_items').upsert(batch);
+      // DB is empty — seed with static data, but only if the user is admin (H4 FIX)
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (profile?.role !== 'admin') {
+        // Non-admin: just use static data silently
+        setItems(STOCK_ITEMS);
+      } else {
+        console.log('[Stock] DB empty, seeding with', STOCK_ITEMS.length, 'items (admin)...');
+        const batchSize = 20;
+        for (let i = 0; i < STOCK_ITEMS.length; i += batchSize) {
+          const batch = STOCK_ITEMS.slice(i, i + batchSize).map((item) => ({
+            code: item.code,
+            name: item.name,
+            additional_text: item.additionalText,
+            price: item.price,
+            group: item.group,
+            supplier: item.supplier ?? null,
+            created_by: currentUser.id,
+            updated_by: currentUser.id,
+          }));
+          await supabase.from('stock_items').upsert(batch);
+        }
+        console.log('[Stock] Seeding complete');
+        setItems(STOCK_ITEMS);
       }
-      console.log('[Stock] Seeding complete');
-      // Reload after seeding
-      setItems(STOCK_ITEMS);
     }
   }, [currentUser]);
 

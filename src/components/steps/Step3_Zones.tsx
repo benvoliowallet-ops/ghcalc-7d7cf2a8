@@ -52,7 +52,8 @@ export function Step3_Zones() {
     value: o,
     label: `${o.toFixed(2).replace('.', ',')} mm — ${getNozzleFlowLpm(o, pressure).toFixed(3)} l/min @ ${pressure} bar`,
   }));
-  const spacingOptions = [200, 250, 300, 350, 400, 450, 500].map((v) => ({ value: v, label: `${v} mm` }));
+  // NC4 FIX: values are in cm (200cm=2m spacing), label correctly shows cm
+  const spacingOptions = [200, 250, 300, 350, 400, 450, 500].map((v) => ({ value: v, label: `${v} cm` }));
   const controlOptions = [{ value: 'Snímač', label: 'Snímač (senzor teploty/vlhkosti)' }, { value: 'Priva', label: 'Priva (externý riadiaci systém)' }];
   const connectionOptions = [{ value: 'T-kus', label: 'T-kus' }, { value: 'rovny-spoj', label: 'Rovný spoj' }];
 
@@ -93,20 +94,20 @@ export function Step3_Zones() {
           const isComplete = calc?.drawingComplete;
           return (
             <button key={i} onClick={() => setActiveZone(i)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 transition-all ${activeZoneIndex === i ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'}`}>
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 transition-all ${activeZoneIndex === i ? 'border-teal bg-teal/10 text-teal' : 'border-border bg-card text-muted-foreground hover:border-teal/40'}`}>
               <span className="w-3 h-3 rounded-full" style={{ background: ZONE_COLORS[i % ZONE_COLORS.length] }} />
               <span>{zone.name || `Zóna ${i + 1}`}</span>
-              {isComplete ? <span className="text-green-500">✓</span> : <span className="text-gray-300">○</span>}
+              {isComplete ? <span className="text-teal">✓</span> : <span className="text-muted-foreground/30">○</span>}
             </button>
           );
         })}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="flex border-b border-gray-200">
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="flex border-b border-border">
           {([{ key: 'params', label: '📋 3A–3D Parametre' }, { key: 'cad', label: '✏️ 3G Výkres (CAD)' }, { key: 'results', label: '📊 3E–3L Výsledky' }] as const).map((tab) => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 py-3 px-4 text-sm font-semibold transition-colors ${activeTab === tab.key ? 'bg-green-50 text-green-700 border-b-2 border-green-500' : 'text-gray-500 hover:bg-gray-50'}`}>
+              className={`flex-1 py-3 px-4 text-sm font-semibold transition-colors ${activeTab === tab.key ? 'bg-teal/10 text-teal border-b-2 border-teal' : 'text-muted-foreground hover:bg-muted'}`}>
               {tab.label}
             </button>
           ))}
@@ -123,8 +124,8 @@ export function Step3_Zones() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="font-bold text-gray-800">Krok 3G – Interaktívny CAD výkres</h3>
-                  <p className="text-sm text-gray-500">Nakreslite napájacie vedenie pre zónu {currentZone.name}.</p>
+                  <h3 className="font-bold text-foreground">Krok 3G – Interaktívny CAD výkres</h3>
+                  <p className="text-sm text-muted-foreground">Nakreslite napájacie vedenie pre zónu {currentZone.name}.</p>
                 </div>
                 <Button variant="secondary" size="sm" onClick={handleInitCADZones}>↺ Vygenerovať zóny</Button>
               </div>
@@ -135,18 +136,18 @@ export function Step3_Zones() {
             <ZoneResultsTab calc={currentCalc} zone={currentZone} globalParams={globalParams} />
           )}
           {activeTab === 'results' && !currentCalc && (
-            <div className="text-center py-12 text-gray-400"><p className="text-3xl mb-2">📊</p><p>Výsledky sa vypočítajú po zadaní parametrov</p></div>
+            <div className="text-center py-12 text-muted-foreground"><p className="text-3xl mb-2">📊</p><p>Výsledky sa vypočítajú po zadaní parametrov</p></div>
           )}
         </div>
       </div>
 
       {zoneCalcs.length > 0 && (
-        <div className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="p-4 border-b border-gray-100"><h3 className="font-bold text-gray-800">📋 Súhrnná tabuľka zón</h3></div>
+        <div className="mt-6 bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-border"><h3 className="font-bold text-foreground">Súhrnná tabuľka zón</h3></div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 text-gray-600 text-xs">
+                <tr className="bg-muted text-muted-foreground text-xs">
                   <th className="text-left p-3">Zóna</th><th className="text-right p-3">Plocha</th>
                   <th className="text-right p-3">Prietok</th><th className="text-right p-3">Trysky</th>
                   <th className="text-right p-3">Rúry 10mm</th><th className="text-right p-3">Lano</th>
@@ -159,15 +160,15 @@ export function Step3_Zones() {
                   const calc = zoneCalcs[i];
                   if (!calc) return null;
                   return (
-                    <tr key={i} className="border-t border-gray-100 hover:bg-gray-50">
-                      <td className="p-3 font-medium"><div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: ZONE_COLORS[i % ZONE_COLORS.length] }} />{zone.name}</div></td>
-                      <td className="p-3 text-right">{fmtN(calc.area, 1)} m²</td>
-                      <td className="p-3 text-right">{fmtN(calc.zoneFlow / 1000, 1)} l/hod</td>
-                      <td className="p-3 text-right"><span>{calc.numNozzles} ks</span>{(calc.nozzlesPerNave ?? 0) > 0 && <span className="text-gray-400 text-xs ml-1">({calc.nozzlesPerNave}/loď)</span>}</td>
-                      <td className="p-3 text-right">{calc.numPipes10mmTotal} ks</td>
-                      <td className="p-3 text-right">{fmtN(calc.ropeLength)} m{calc.ropeWaste > 0 && <span className="text-gray-400 text-xs block">odpad: {fmtN(calc.ropeWaste, 0)} m</span>}</td>
-                      <td className="p-3 text-right font-mono">{fmtN(calc.supplyPipeLength, 1)} m</td>
-                      <td className="p-3 text-right">{fmtN(calc.pressureDrop, 4)} bar</td>
+                    <tr key={i} className="border-t border-border hover:bg-muted/50">
+                       <td className="p-3 font-medium"><div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: ZONE_COLORS[i % ZONE_COLORS.length] }} />{zone.name}</div></td>
+                       <td className="p-3 text-right">{fmtN(calc.area, 1)} m²</td>
+                       <td className="p-3 text-right">{fmtN(calc.zoneFlow / 1000, 1)} l/hod</td>
+                       <td className="p-3 text-right"><span>{calc.numNozzles} ks</span>{(calc.nozzlesPerNave ?? 0) > 0 && <span className="text-muted-foreground text-xs ml-1">({calc.nozzlesPerNave}/loď)</span>}</td>
+                       <td className="p-3 text-right">{calc.numPipes10mmTotal} ks</td>
+                       <td className="p-3 text-right">{fmtN(calc.ropeLength)} m{calc.ropeWaste > 0 && <span className="text-muted-foreground text-xs block">odpad: {fmtN(calc.ropeWaste, 0)} m</span>}</td>
+                       <td className="p-3 text-right font-mono">{fmtN(calc.supplyPipeLength, 1)} m</td>
+                       <td className="p-3 text-right">{fmtN(calc.pressureDrop, 4)} bar</td>
                       <td className="p-3 text-center">{calc.drawingComplete ? <Badge variant="green">✓ Hotovo</Badge> : <Badge variant="amber">⚠ Chýba</Badge>}</td>
                     </tr>
                   );
@@ -200,7 +201,7 @@ function ZoneParamsTab({ zone, zoneIndex, zones, globalParams, onUpdate, nozzleO
       {zones.length > 1 && (
         <div className="mb-4 flex items-center gap-3 flex-wrap">
           <select defaultValue="" onChange={(e) => { const idx = Number(e.target.value); if (!isNaN(idx) && idx !== zoneIndex) { onCopyZone(idx); } e.target.value = ''; }}
-            className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white">
+            className="px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground">
             <option value="">📋 Kopírovať parametre zo zóny...</option>
             {zones.map((z, i) => i !== zoneIndex ? <option key={i} value={i}>Zóna {i + 1}: {z.name || `Zóna ${i + 1}`}</option> : null)}
           </select>
@@ -218,9 +219,9 @@ function ZoneParamsTab({ zone, zoneIndex, zones, globalParams, onUpdate, nozzleO
             <NumInput label="Počet lodí (N)" min={1} max={30} value={zone.numNaves} onChange={(n) => onUpdate({ numNaves: n })} />
           </div>
           <NumInput label="Rozostup držiakov kratovníc (R_krat)" unit="m" min={0.5} step={0.1} value={zone.trellisPitch} onChange={(n) => onUpdate({ trellisPitch: n })} />
-          <div className="p-3 bg-blue-50 rounded-lg border border-blue-100 mt-2 text-xs">
-            <p className="font-semibold text-blue-700">Plocha zóny: {fmtN(area, 1)} m²</p>
-            <p className="text-blue-600">= {zone.length} × {zone.width} × {zone.numNaves} lodí</p>
+          <div className="p-3 bg-primary/5 rounded-lg border border-primary/20 mt-2 text-xs">
+            <p className="font-semibold text-primary">Plocha zóny: {fmtN(area, 1)} m²</p>
+            <p className="text-primary/70">= {zone.length} × {zone.width} × {zone.numNaves} lodí</p>
           </div>
           <div className="mt-4">
             <Select label="Prepoj na napájacie potrubie" value={zone.connectionType ?? 'T-kus'} onChange={(e) => onUpdate({ connectionType: e.target.value as ZoneParams['connectionType'] })} options={connectionOptions} />
