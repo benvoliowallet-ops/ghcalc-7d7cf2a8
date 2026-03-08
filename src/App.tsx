@@ -118,7 +118,7 @@ export default function App() {
           <div className="flex items-center gap-3 shrink-0">
             <img src={sanfogLogoWhite} alt="Sanfog" className="h-7 w-auto" />
             <div className="hidden sm:block border-l border-white/20 pl-3">
-              <p className="text-xs font-semibold text-white/90 leading-tight tracking-wide uppercase">Greenhouse Projekt</p>
+              <p className="text-xs font-semibold text-white/90 leading-tight tracking-wide uppercase">GreenHouse Calc</p>
               <p className="text-xs text-white/40">Interný BOM kalkulátor</p>
             </div>
           </div>

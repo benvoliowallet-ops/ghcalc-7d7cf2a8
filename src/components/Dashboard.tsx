@@ -110,10 +110,11 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
 
 interface DashboardProps {
   onOpenProject: (id: string) => void;
+  onOpenSummary: (id: string) => void;
   onNewProject: () => void;
 }
 
-export function Dashboard({ onOpenProject, onNewProject }: DashboardProps) {
+export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: DashboardProps) {
   const { savedProjects, deleteSavedProject } = useProjectStore();
 
   const sorted = [...savedProjects].sort(
