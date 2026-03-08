@@ -156,7 +156,7 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
         className="mt-1 w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold uppercase tracking-wide transition-colors"
         style={{ borderRadius: 'var(--radius)' }}>
         
-        {done ? '📄 Prehľad projektu' : '▶ Pokračovať'}
+        {done ? <span className="flex items-center justify-center gap-1.5"><FileText className="w-3.5 h-3.5" />Prehľad projektu</span> : <span className="flex items-center justify-center gap-1.5"><Play className="w-3.5 h-3.5" />Pokračovať</span>}
       </button>
     </div>);
 
