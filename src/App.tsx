@@ -107,19 +107,21 @@ function AppInner() {
   useLoadProjects();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // First check current session synchronously, then subscribe to changes
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        await loadProfile(session.user);
+        loadProfile(session.user);
       } else {
         setCurrentUser(null);
         setLoading(false);
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
-        loadProfile(session.user);
+        await loadProfile(session.user);
       } else {
+        setCurrentUser(null);
         setLoading(false);
       }
     });
