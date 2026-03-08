@@ -292,21 +292,21 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
             className="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded transition-colors"
             style={{ borderRadius: 'var(--radius)' }}
           >
-            🖨 Tlačiť
+            <Printer className="w-3.5 h-3.5" /> Tlačiť
           </button>
           <button
             onClick={handleExportXLSX}
             className="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded transition-colors"
             style={{ borderRadius: 'var(--radius)' }}
           >
-            📥 Export XLSX
+            <Download className="w-3.5 h-3.5" /> Export XLSX
           </button>
           <button
             onClick={onOpenWizard}
             className="flex items-center gap-1.5 px-3 py-2 bg-teal hover:bg-teal/90 text-white text-sm font-semibold rounded transition-colors"
             style={{ borderRadius: 'var(--radius)' }}
           >
-            ✏️ Otvoriť wizard
+            <Pencil className="w-3.5 h-3.5" /> Otvoriť wizard
           </button>
         </div>
       </div>
