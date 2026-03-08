@@ -8,7 +8,7 @@ const COUNTRY_FLAG: Record<string, string> = { SK: '🇸🇰', CZ: '🇨🇿', H
 
 const STEP_LABELS: Record<number, string> = {
   1: 'Nový projekt', 2: 'Globálne param.', 3: 'Zóny', 4: 'Čerpadlo',
-  5: 'ETNA', 6: 'Náklady', 7: 'NORMIST', 8: 'Dokumenty', 9: 'Kontrola', 10: '✅ Hotovo'
+  5: 'ETNA', 6: 'Náklady', 7: 'NORMIST', 8: 'Dokumenty', 9: 'Kontrola', 10: 'Hotovo'
 };
 
 function formatDate(iso: string) {
