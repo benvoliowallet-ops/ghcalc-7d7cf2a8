@@ -25,7 +25,6 @@ import { Sidebar } from './components/Sidebar';
 import { useLoadProjects, useAutoSave } from './hooks/useProjects';
 import { ConfirmProvider, useConfirm } from './hooks/useConfirm';
 import { VoraAIChat } from './components/VoraAIChat';
-import { ProjectCommentsPanel } from './components/comments/ProjectComments';
 import Portal from './pages/Portal';
 
 type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary';
@@ -205,9 +204,6 @@ function AppInner() {
     }
   };
 
-  // Show comments panel only when viewing a project (wizard or summary)
-  const showComments = view === 'project' || view === 'summary';
-
   return (
     <div className="min-h-screen bg-background flex" style={{ position: 'relative' }}>
       <AutoSaveSubscriber view={view} />
@@ -301,9 +297,6 @@ function AppInner() {
       </div>
 
       <VoraAIChat />
-
-      {/* Comments floating panel — only during project/summary views */}
-      {showComments && <ProjectCommentsPanel projectId={openProjectId ?? null} />}
     </div>);
 }
 

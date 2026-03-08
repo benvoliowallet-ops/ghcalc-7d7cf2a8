@@ -8,6 +8,7 @@ import { getPipe10mmForSpacing } from '../data/stockItems';
 import { useNormistChecker } from '../hooks/useSupabaseItems';
 import { usePortal } from '../hooks/usePortal';
 import { ProjectPDF } from './pdf/ProjectPDF';
+import { InlineProjectComments } from './comments/ProjectComments';
 
 interface ProjectSummaryProps {
   onOpenWizard: () => void;
@@ -629,6 +630,13 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
           </div>
         </div>
       </div>
+
+      {/* Project Comments */}
+      {openProjectId && (
+        <div className="mt-6">
+          <InlineProjectComments projectId={openProjectId} />
+        </div>
+      )}
     </div>
   );
 }
