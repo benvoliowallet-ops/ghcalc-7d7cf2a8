@@ -113,6 +113,63 @@ export type Database = {
         }
         Relationships: []
       }
+      project_comments: {
+        Row: {
+          author_id: string
+          author_name: string
+          body: string
+          created_at: string
+          id: string
+          project_id: string
+          resolved: boolean
+        }
+        Insert: {
+          author_id: string
+          author_name?: string
+          body: string
+          created_at?: string
+          id?: string
+          project_id: string
+          resolved?: boolean
+        }
+        Update: {
+          author_id?: string
+          author_name?: string
+          body?: string
+          created_at?: string
+          id?: string
+          project_id?: string
+          resolved?: boolean
+        }
+        Relationships: []
+      }
+      project_portals: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          plain_password: string
+          project_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          plain_password: string
+          project_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          plain_password?: string
+          project_id?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           country: string

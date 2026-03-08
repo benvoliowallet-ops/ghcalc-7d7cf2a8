@@ -1,9 +1,13 @@
 import * as XLSX from 'xlsx';
-import { MapPin, Printer, Download, Pencil, Check } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
+import { MapPin, Printer, Download, Pencil, Check, Share2, FileText, Loader2, Copy, X, RefreshCw } from 'lucide-react';
+import { pdf } from '@react-pdf/renderer';
 import { useProjectStore } from '../store/projectStore';
 import { PUMP_TABLE, calcETNACapacity, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes, getTransportCost, getPMCost } from '../utils/calculations';
 import { getPipe10mmForSpacing } from '../data/stockItems';
 import { useNormistChecker } from '../hooks/useSupabaseItems';
+import { usePortal } from '../hooks/usePortal';
+import { ProjectPDF } from './pdf/ProjectPDF';
 
 interface ProjectSummaryProps {
   onOpenWizard: () => void;
@@ -14,8 +18,17 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
   const {
     project, globalParams, zones, zoneCalcs, normistPrice,
     costInputs, ropeOverrides, uvSystemCode, ssFilter30, cad, preOrderState,
+    openProjectId,
   } = useProjectStore();
   const { isNormist } = useNormistChecker();
+
+  const { portal, loading: portalLoading, loadPortal, createPortal, revokePortal } = usePortal(openProjectId ?? null);
+  const [shareModal, setShareModal] = useState<{ link: string; password: string } | null>(null);
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Load portal info when component mounts
+  useEffect(() => { if (openProjectId) loadPortal(); }, [openProjectId, loadPortal]);
 
   const totalArea = zoneCalcs.reduce((s, c) => s + (c?.area ?? 0), 0);
   const totalFlowMlH = zoneCalcs.reduce((s, c) => s + (c?.zoneFlow ?? 0), 0);
@@ -135,6 +148,52 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
   })();
 
   // ── Document actions ──────────────────────────────────────────────────────
+  const handleDownloadPDF = useCallback(async () => {
+    setPdfGenerating(true);
+    try {
+      const snapshot = {
+        currentStep: 10,
+        project, globalParams, zones, zoneCalcs, normistPrice,
+        costInputs, ropeOverrides, uvSystemCode: uvSystemCode ?? null, ssFilter30, cad, preOrderState,
+        pumpSelection: null, etnaConfig: {}, activeZoneIndex: 0,
+      };
+      const blob = await pdf(
+        <ProjectPDF
+          snapshot={snapshot}
+          quoteNumber={project.quoteNumber}
+          customerName={project.customerName}
+          projectAddress={project.projectAddress}
+          country={project.country}
+          contactPerson={project.contactPerson}
+        />
+      ).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Ponuka_${project.quoteNumber}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setPdfGenerating(false);
+    }
+  }, [project, globalParams, zones, zoneCalcs, normistPrice, costInputs, ropeOverrides, uvSystemCode, ssFilter30, cad, preOrderState]);
+
+  const handleShare = useCallback(async () => {
+    const result = await createPortal();
+    if (!result) return;
+    const baseUrl = window.location.origin;
+    setShareModal({
+      link: `${baseUrl}/portal/${openProjectId}`,
+      password: result.plain_password,
+    });
+  }, [createPortal, openProjectId]);
+
+  const handleCopyLink = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleExportXLSX = () => {
     const rows = zones.map((z, i) => {
       const c = zoneCalcs[i];
@@ -288,6 +347,15 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
         </div>
         <div className="flex gap-2 flex-wrap justify-end">
           <button
+            onClick={handleDownloadPDF}
+            disabled={pdfGenerating}
+            className="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded transition-colors disabled:opacity-60"
+            style={{ borderRadius: 'var(--radius)' }}
+          >
+            {pdfGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
+            PDF
+          </button>
+          <button
             onClick={handlePrint}
             className="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded transition-colors"
             style={{ borderRadius: 'var(--radius)' }}
@@ -301,6 +369,17 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
           >
             <Download className="w-3.5 h-3.5" /> Export XLSX
           </button>
+          {openProjectId && (
+            <button
+              onClick={handleShare}
+              disabled={portalLoading}
+              className="flex items-center gap-1.5 px-3 py-2 text-white text-sm font-semibold rounded transition-colors disabled:opacity-60"
+              style={{ borderRadius: 'var(--radius)', background: 'hsl(var(--orange))', }}
+            >
+              {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Share2 className="w-3.5 h-3.5" />}
+              Zdieľať
+            </button>
+          )}
           <button
             onClick={onOpenWizard}
             className="flex items-center gap-1.5 px-3 py-2 bg-teal hover:bg-teal/90 text-white text-sm font-semibold rounded transition-colors"
@@ -310,6 +389,98 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
           </button>
         </div>
       </div>
+
+      {/* Share modal */}
+      {shareModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'hsl(var(--navy) / 0.8)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setShareModal(null)}
+        >
+          <div
+            className="w-full max-w-md p-6 relative"
+            style={{
+              background: 'hsl(var(--card))',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: 'calc(var(--radius) + 4px)',
+              boxShadow: '0 8px 40px hsl(var(--navy) / 0.5)',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button onClick={() => setShareModal(null)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
+              <X className="w-4 h-4" />
+            </button>
+            <div className="flex items-center gap-2 mb-4">
+              <Share2 className="w-5 h-5" style={{ color: 'hsl(var(--orange))' }} />
+              <h2 className="font-bold text-foreground text-base">Zdieľať so zákazníkom</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Zákazník otvorí link a zadá heslo. Uvidí projekt bez cien.
+            </p>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">Link</label>
+                <div className="flex gap-2 items-center">
+                  <input
+                    readOnly
+                    value={shareModal.link}
+                    className="flex-1 px-3 py-2 text-xs font-mono rounded border border-border bg-muted text-foreground"
+                    style={{ borderRadius: 'var(--radius)' }}
+                  />
+                  <button
+                    onClick={() => handleCopyLink(shareModal.link)}
+                    className="px-3 py-2 text-xs font-semibold rounded border border-border bg-card hover:bg-muted transition-colors flex items-center gap-1"
+                    style={{ borderRadius: 'var(--radius)' }}
+                  >
+                    {copied ? <Check className="w-3 h-3 text-teal" /> : <Copy className="w-3 h-3" />}
+                    {copied ? 'OK' : 'Kopírovať'}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">Heslo</label>
+                <div className="flex gap-2 items-center">
+                  <input
+                    readOnly
+                    value={shareModal.password}
+                    className="flex-1 px-3 py-2 text-sm font-mono tracking-widest rounded border border-border bg-muted text-foreground font-bold"
+                    style={{ borderRadius: 'var(--radius)' }}
+                  />
+                  <button
+                    onClick={() => handleCopyLink(shareModal.password)}
+                    className="px-3 py-2 text-xs font-semibold rounded border border-border bg-card hover:bg-muted transition-colors flex items-center gap-1"
+                    style={{ borderRadius: 'var(--radius)' }}
+                  >
+                    <Copy className="w-3 h-3" /> Kopírovať
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 p-3 rounded text-xs" style={{ background: 'hsl(var(--orange) / 0.08)', border: '1px solid hsl(var(--orange) / 0.2)', color: 'hsl(var(--orange))', borderRadius: 'var(--radius)' }}>
+              ⚠️ Heslo sa zobrazuje iba raz. Uložte si ho alebo odošlite zákazníkovi.
+            </div>
+
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => handleCopyLink(`Link: ${shareModal.link}\nHeslo: ${shareModal.password}`)}
+                className="flex-1 py-2 text-sm font-semibold rounded border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1.5"
+                style={{ borderRadius: 'var(--radius)' }}
+              >
+                <Copy className="w-3.5 h-3.5" /> Kopírovať oboje
+              </button>
+              <button
+                onClick={async () => { await revokePortal(); setShareModal(null); }}
+                className="px-3 py-2 text-xs text-destructive hover:bg-destructive/10 rounded border border-destructive/30 transition-colors flex items-center gap-1"
+                style={{ borderRadius: 'var(--radius)' }}
+              >
+                <RefreshCw className="w-3 h-3" /> Zrušiť portál
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* KPI row */}
       <div className="grid grid-cols-2 sm:grid-cols-5 border border-t-0 border-border bg-card divide-x divide-border"

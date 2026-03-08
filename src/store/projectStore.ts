@@ -96,6 +96,7 @@ type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 interface ProjectStore extends ProjectState {
   savedProjects: SavedProject[];
   saveStatus: SaveStatus;
+  openProjectId: string | null;
   saveCurrentProject: () => void;
   setSavedProjects: (projects: SavedProject[]) => void;
   setSaveStatus: (status: SaveStatus) => void;
@@ -169,6 +170,7 @@ export const useProjectStore = create<ProjectStore>()(
       ropeOverrides: [],
       preOrderState: defaultPreOrderState,
       saveStatus: 'idle' as const,
+      openProjectId: null as string | null,
 
       setSavedProjects: (projects) => set({ savedProjects: projects }),
       setSaveStatus: (status) => set({ saveStatus: status }),
@@ -197,6 +199,7 @@ export const useProjectStore = create<ProjectStore>()(
         if (!saved) return;
         set({
           ...saved.snapshot,
+          openProjectId: id,
           // Ensure preOrderState exists for old snapshots without it
           preOrderState: saved.snapshot.preOrderState ?? defaultPreOrderState,
         });
