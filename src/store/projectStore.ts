@@ -83,9 +83,14 @@ const defaultCostInputs: CostInputs = {
   mountingMaterialStation: 500,
 };
 
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
 interface ProjectStore extends ProjectState {
   savedProjects: SavedProject[];
+  saveStatus: SaveStatus;
   saveCurrentProject: () => void;
+  setSavedProjects: (projects: SavedProject[]) => void;
+  setSaveStatus: (status: SaveStatus) => void;
   loadProject: (id: string) => void;
   deleteSavedProject: (id: string) => void;
   setStep: (step: number) => void;
