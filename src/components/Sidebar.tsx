@@ -34,17 +34,18 @@ export function Sidebar({ view, setView, onNewProject, isAdmin }: SidebarProps) 
   return (
     <aside className="fixed left-0 top-0 h-screen z-50 flex flex-col bg-navy border-r border-white/10 w-14 hover:w-52 transition-all duration-200 ease-in-out overflow-hidden group">
       {/* Logo */}
-      <div className="flex items-center h-14 px-3.5 border-b border-white/10 shrink-0">
+      <button
+        onClick={() => setView('dashboard')}
+        className="flex items-center h-14 px-3.5 border-b border-white/10 shrink-0 w-full text-left hover:opacity-80 transition-opacity cursor-pointer"
+        title="Projekty">
         <img
-
           alt="Sanfog"
           className="h-6 w-auto shrink-0 object-left object-contain"
           style={{ minWidth: '24px' }} src="/lovable-uploads/cb890b03-0832-4130-9565-f3add01e4434.png" />
-        
         <span className="ml-3 text-xs font-bold text-white/80 uppercase tracking-widest whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 delay-75">
           Greenhouse Calc
         </span>
-      </div>
+      </button>
 
       {/* Nav items */}
       <nav className="flex-1 py-3 flex flex-col gap-0.5 px-2">
