@@ -302,6 +302,7 @@ function AppInner() {
           </div>
         </footer>
       </div>
+      <VoraAIChat />
     </div>);
 
 }
