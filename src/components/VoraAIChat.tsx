@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 
-type Msg = { role: 'user' | 'assistant'; content: string };
+type Msg = {role: 'user' | 'assistant';content: string;};
 
 const SUGGESTED = [
-  'Ako fungujú zóny v projekte?',
-  'Čo je NORMIST a ako ho vyplniť?',
-  'Ako vybrať správne čerpadlo?',
-];
+'Ako fungujú zóny v projekte?',
+'Čo je NORMIST a ako ho vyplniť?',
+'Ako vybrať správne čerpadlo?'];
+
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/vora-ai`;
 
@@ -14,21 +14,21 @@ async function streamChat({
   messages,
   onDelta,
   onDone,
-  signal,
-}: {
-  messages: Msg[];
-  onDelta: (chunk: string) => void;
-  onDone: () => void;
-  signal: AbortSignal;
-}) {
+  signal
+
+
+
+
+
+}: {messages: Msg[];onDelta: (chunk: string) => void;onDone: () => void;signal: AbortSignal;}) {
   const resp = await fetch(CHAT_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
     },
     body: JSON.stringify({ messages }),
-    signal,
+    signal
   });
 
   if (!resp.ok || !resp.body) {
@@ -36,7 +36,7 @@ async function streamChat({
     try {
       const j = await resp.json();
       errMsg = j.error ?? errMsg;
-    } catch { /* ignore */ }
+    } catch {/* ignore */}
     throw new Error(errMsg);
   }
 
@@ -58,7 +58,7 @@ async function streamChat({
       if (line.startsWith(':') || line.trim() === '') continue;
       if (!line.startsWith('data: ')) continue;
       const jsonStr = line.slice(6).trim();
-      if (jsonStr === '[DONE]') { streamDone = true; break; }
+      if (jsonStr === '[DONE]') {streamDone = true;break;}
       try {
         const parsed = JSON.parse(jsonStr);
         const content = parsed.choices?.[0]?.delta?.content as string | undefined;
@@ -81,7 +81,7 @@ async function streamChat({
         const parsed = JSON.parse(jsonStr);
         const content = parsed.choices?.[0]?.delta?.content as string | undefined;
         if (content) onDelta(content);
-      } catch { /* ignore */ }
+      } catch {/* ignore */}
     }
   }
 
@@ -132,12 +132,12 @@ export function VoraAIChat() {
           setMessages((prev) => {
             const last = prev[prev.length - 1];
             if (last?.role === 'assistant') {
-              return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar } : m));
+              return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
             }
             return [...prev, { role: 'assistant', content: assistantSoFar }];
           });
         },
-        onDone: () => setLoading(false),
+        onDone: () => setLoading(false)
       });
     } catch (e: unknown) {
       if ((e as Error).name !== 'AbortError') {
@@ -159,8 +159,8 @@ export function VoraAIChat() {
             ${open ? 'opacity-0 translate-y-1' : 'opacity-0 group-hover:opacity-100'}
           `}
           style={{ marginBottom: '2px' }}
-          aria-hidden
-        >
+          aria-hidden>
+          
           Spýtaj sa ma
         </div>
 
@@ -183,16 +183,16 @@ export function VoraAIChat() {
             className={`
               w-12 h-12 rounded-full shadow-lg border-2 flex items-center justify-center
               transition-all duration-200 hover:scale-105 active:scale-95 bg-white
-              ${open
-                ? 'border-navy ring-2 ring-navy/30'
-                : 'border-navy hover:border-teal'}
-            `}
-          >
+              ${open ?
+            'border-navy ring-2 ring-navy/30' :
+            'border-navy hover:border-teal'}
+            `}>
+            
             <img
-              src="/lovable-uploads/029f5085-4877-4e0f-902e-565d9bab748c.png"
+
               alt="VORA"
-              className="w-8 h-8 object-contain"
-            />
+              className="w-8 h-8 object-contain" src="/lovable-uploads/ba9fde5a-1b5b-4c79-a6ac-cfa28de6816c.png" />
+            
           </button>
         </div>
       </div>
@@ -205,72 +205,72 @@ export function VoraAIChat() {
           transition-all duration-300 origin-bottom-right
           ${open ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}
         `}
-        style={{ maxHeight: '520px' }}
-      >
+        style={{ maxHeight: '520px' }}>
+        
         {/* Header — navy background */}
         <div className="flex items-center justify-between px-4 py-3 bg-navy rounded-t-[10px] shrink-0">
           <div className="flex items-center gap-2">
             <img
               src="/lovable-uploads/029f5085-4877-4e0f-902e-565d9bab748c.png"
               alt="VORA"
-              className="w-6 h-6 object-contain"
-            />
+              className="w-6 h-6 object-contain" />
+            
             <span className="text-sm font-semibold text-white">VORA AI Asistent</span>
             <span className="w-2 h-2 rounded-full bg-teal animate-pulse" />
           </div>
           <button
             onClick={() => setOpen(false)}
             className="text-white/60 hover:text-white transition-colors text-xl leading-none"
-            aria-label="Zatvoriť"
-          >
+            aria-label="Zatvoriť">
+            
             ×
           </button>
         </div>
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-2 bg-white" style={{ minHeight: 0 }}>
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
+          {messages.map((msg, i) =>
+          <div
+            key={i}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            
               <div
-                className={`
+              className={`
                   max-w-[85%] text-sm px-3 py-2 rounded-xl leading-relaxed
-                  ${msg.role === 'user'
-                    ? 'bg-teal text-white rounded-br-sm'
-                    : 'bg-slate-100 text-navy rounded-bl-sm border border-navy/20'}
+                  ${msg.role === 'user' ?
+              'bg-teal text-white rounded-br-sm' :
+              'bg-slate-100 text-navy rounded-bl-sm border border-navy/20'}
                 `}
-                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
-              >
+              style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+              
                 {msg.content}
-                {msg.role === 'assistant' && loading && i === messages.length - 1 && (
-                  <span className="inline-block w-1.5 h-3.5 bg-teal ml-0.5 animate-pulse rounded-sm align-middle" />
-                )}
+                {msg.role === 'assistant' && loading && i === messages.length - 1 &&
+              <span className="inline-block w-1.5 h-3.5 bg-teal ml-0.5 animate-pulse rounded-sm align-middle" />
+              }
               </div>
             </div>
-          ))}
+          )}
 
           {/* Suggested questions */}
-          {messages.length === 1 && !loading && (
-            <div className="flex flex-col gap-1.5 mt-1">
-              {SUGGESTED.map((q) => (
-                <button
-                  key={q}
-                  onClick={() => send(q)}
-                  className="text-left text-xs px-3 py-2 rounded-lg border border-navy/30 text-navy hover:bg-navy/5 transition-colors"
-                >
+          {messages.length === 1 && !loading &&
+          <div className="flex flex-col gap-1.5 mt-1">
+              {SUGGESTED.map((q) =>
+            <button
+              key={q}
+              onClick={() => send(q)}
+              className="text-left text-xs px-3 py-2 rounded-lg border border-navy/30 text-navy hover:bg-navy/5 transition-colors">
+              
                   {q}
                 </button>
-              ))}
+            )}
             </div>
-          )}
+          }
 
-          {error && (
-            <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          {error &&
+          <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
               ⚠ {error}
             </div>
-          )}
+          }
 
           <div ref={bottomRef} />
         </div>
@@ -282,21 +282,21 @@ export function VoraAIChat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input); }
+              if (e.key === 'Enter' && !e.shiftKey) {e.preventDefault();send(input);}
             }}
             placeholder="Spýtaj sa na softvér..."
             disabled={loading}
-            className="flex-1 bg-slate-50 border border-navy/30 rounded-lg px-3 py-1.5 text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:border-teal disabled:opacity-50 transition-colors"
-          />
+            className="flex-1 bg-slate-50 border border-navy/30 rounded-lg px-3 py-1.5 text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:border-teal disabled:opacity-50 transition-colors" />
+          
           <button
             onClick={() => send(input)}
             disabled={loading || !input.trim()}
-            className="px-3 py-1.5 rounded-lg bg-navy hover:bg-navy/90 text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-          >
+            className="px-3 py-1.5 rounded-lg bg-navy hover:bg-navy/90 text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
+            
             {loading ? '...' : '→'}
           </button>
         </div>
       </div>
-    </>
-  );
+    </>);
+
 }
