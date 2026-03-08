@@ -70,7 +70,10 @@ export function StockPage() {
     <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-foreground uppercase tracking-wide">📦 Skladové karty</h1>
+        <div className="flex items-center gap-2">
+          <Package className="w-5 h-5 text-foreground" />
+          <h1 className="text-xl font-bold text-foreground uppercase tracking-wide">Skladové karty</h1>
+        </div>
           <p className="text-sm text-muted-foreground">
             {items.length} položiek · zobrazených {filtered.length}
             {loading && <span className="ml-2 text-muted-foreground/50">· načítavam...</span>}
