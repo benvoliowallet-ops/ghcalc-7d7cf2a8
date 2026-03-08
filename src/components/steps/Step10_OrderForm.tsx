@@ -30,7 +30,6 @@ export function Step10_OrderForm() {
 
   const N = globalParams.numberOfZones;
 
-  // ── Collect per-zone totals first ───────────────────────────────────────────
   const { bracketBOM } = detectConcurrentPipes(cad);
   const totalNozzles: Record<string, number> = {};
   const totalPumpsByCode: Record<string, { name: string; qty: number }> = {};
@@ -52,7 +51,6 @@ export function Step10_OrderForm() {
     const existing = totalPipesByCode[pipe10mm.code];
     totalPipesByCode[pipe10mm.code] = { name: pipe10mm.name, qty: (existing?.qty ?? 0) + calc.numPipes10mmTotal, price: pipe10mm.price };
     totalFitting180 += calc.numFitting180; totalEndPlug += calc.numEndPlug;
-    // C4 FIX: use ropeOverrides from Step9 if set, otherwise fall back to calculated ropeLength
     const ropeQty = ropeOverrides[i] ?? calc.ropeLength;
     if (globalParams.steelRope === 'SS_NEREZ') totalRopeSS += ropeQty; else totalRopeOCEL += ropeQty;
     totalHangers += calc.numHangers; totalGripple += calc.numGripple; totalNozzleHangers += calc.numNozzleHangers; totalPipeHangers += calc.numPipeHangers;
@@ -61,10 +59,8 @@ export function Step10_OrderForm() {
     totalCYSY += calc.cysyLength; totalBoxes += calc.numJunctionBoxes; totalWago += calc.numWago;
   });
 
-  // ── PUMPS FIRST ──────────────────────────────────────────────────────────────
   Object.entries(totalPumpsByCode).forEach(([code, { name, qty }]) => add(code, name, qty, 'ks', 'NORMIST', 0));
 
-  // ── Pump accessories ─────────────────────────────────────────────────────────
   add('0204013A', 'Solenoid Valve Kit 70 Bar', N, 'ks', 'NORMIST', 157.44);
   add('0104003-kit', 'Pressure Switch Kit', N, 'ks', 'NORMIST', 48);
   add('204091', 'Keller Pressure Transmitter 0/160 Bar', N, 'ks', 'NORMIST', 71.55);
@@ -75,7 +71,6 @@ export function Step10_OrderForm() {
   add('BPONG-005-P2PWE', 'Náhradný rukávový filter 5 mic', 1, 'ks', 'Eftech', 4.57);
   add('NORMIST_DANFOSS', 'DANFOSS Drive', 1, 'ks', 'DANFOSS', 954);
 
-  // ── Zone items ───────────────────────────────────────────────────────────────
   Object.entries(totalNozzles).forEach(([code, qty]) => { const orifice = Object.entries(NOZZLE_BY_ORIFICE).find(([, v]) => v === code)?.[0]; add(code, `Tryska D${orifice}mm AK SS`, qty, 'ks', 'NORMIST', 1.23); });
   add('NOR 301188', 'Swivel adaptér', zoneCalcs.reduce((s, c) => s + c.numSwivel, 0), 'ks', 'NORMIST', 1.5);
   Object.entries(totalPipesByCode).forEach(([code, { name, qty, price }]) => add(code, name, qty, 'ks', 'NORMIST', price));
@@ -128,42 +123,69 @@ export function Step10_OrderForm() {
     XLSX.writeFile(wb, `Order_${project.quoteNumber}.xlsx`);
   };
 
+  if (processedLines.length === 0) {
+    return (
+      <StepLayout stepNum={10} title="Objednávkový formulár pre Attiho (OBERON)" subtitle="Finálna objednávka." hideNav={true}>
+        <div className="text-center py-24 bg-card border border-dashed border-border rounded-2xl">
+          <p className="text-xl font-semibold text-foreground mb-2">Žiadne položky</p>
+          <p className="text-muted-foreground">Najprv nakonfigurujte zóny v krokoch 2–9.</p>
+        </div>
+      </StepLayout>
+    );
+  }
+
   return (
     <StepLayout stepNum={10} title="Objednávkový formulár pre Attiho (OBERON)" subtitle="Finálna objednávka. Každá položka obsahuje Kód OBERON · Počet · MJ · Dodávateľ · Cena." hideNav={true}>
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-gray-500">Ponuka: <strong>{project.quoteNumber}</strong> · {project.customerName}</p>
+        <p className="text-sm text-muted-foreground">Ponuka: <strong>{project.quoteNumber}</strong> · {project.customerName}</p>
         <div className="flex gap-2">
           <Button variant="secondary" size="lg" onClick={exportOrderXLSX}><DownloadIcon /> Export XLSX</Button>
           <Button variant="primary" size="lg" onClick={printOrder}><PrintIcon /> Tlačiť</Button>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b bg-green-50 flex items-center justify-between">
-          <h3 className="font-bold text-green-800">📋 Objednávkový formulár</h3>
-          <div className="text-green-700 font-bold text-lg">{fmtE(grandTotal)}</div>
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-teal/30 bg-teal/10 flex items-center justify-between">
+          <h3 className="font-bold text-foreground">Objednávkový formulár</h3>
+          <div className="text-teal font-bold text-lg">{fmtE(grandTotal)}</div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
-            <thead><tr className="bg-gray-800 text-white"><th className="text-left p-3">#</th><th className="text-left p-3">Kód OBERON</th><th className="text-left p-3">Popis</th><th className="text-right p-3">Počet</th><th className="text-right p-3">MJ</th><th className="text-right p-3">Dodávateľ</th><th className="text-right p-3">Cena/MJ</th><th className="text-right p-3">Celkom</th></tr></thead>
+            <thead>
+              <tr className="bg-navy text-white">
+                <th className="text-left p-3">#</th>
+                <th className="text-left p-3">Kód OBERON</th>
+                <th className="text-left p-3">Popis</th>
+                <th className="text-right p-3">Počet</th>
+                <th className="text-right p-3">MJ</th>
+                <th className="text-right p-3">Dodávateľ</th>
+                <th className="text-right p-3">Cena/MJ</th>
+                <th className="text-right p-3">Celkom</th>
+              </tr>
+            </thead>
             <tbody>
               {processedLines.map((line, i) => {
                 const isNazliRef = line.supplier === 'NORMIST' && line.code !== 'NORMIST';
                 return (
-                  <tr key={i} className={`border-t border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                    <td className="p-2 text-gray-400">{i + 1}</td>
-                    <td className="p-2 font-mono text-blue-700">{line.code}</td>
-                    <td className="p-2 text-gray-800">{line.name}</td>
+                  <tr key={i} className={`border-t border-border ${i % 2 === 0 ? '' : 'bg-muted/30'}`}>
+                    <td className="p-2 text-muted-foreground">{i + 1}</td>
+                    <td className="p-2 font-mono text-primary">{line.code}</td>
+                    <td className="p-2 text-foreground">{line.name}</td>
                     <td className="p-2 text-right font-mono">{fmtN(line.qty, 1)}</td>
-                    <td className="p-2 text-right text-gray-400">{line.unit}</td>
-                    <td className="p-2 text-right text-gray-500">{line.supplier}</td>
-                    <td className="p-2 text-right">{isNazliRef ? <span className="text-gray-400">—</span> : <>{fmtN(line.priceUnit, 2)} €</>}</td>
-                    <td className="p-2 text-right font-semibold text-green-700">{isNazliRef ? <span className="text-gray-400">—</span> : <>{fmtN(line.total, 2)} €</>}</td>
+                    <td className="p-2 text-right text-muted-foreground">{line.unit}</td>
+                    <td className="p-2 text-right text-muted-foreground">{line.supplier}</td>
+                    <td className="p-2 text-right">{isNazliRef ? <span className="text-muted-foreground">—</span> : <>{fmtN(line.priceUnit, 2)} €</>}</td>
+                    <td className="p-2 text-right font-semibold text-teal">{isNazliRef ? <span className="text-muted-foreground">—</span> : <>{fmtN(line.total, 2)} €</>}</td>
                   </tr>
                 );
               })}
             </tbody>
-            <tfoot><tr className="bg-green-50 border-t-2 border-green-300"><td colSpan={7} className="p-4 font-bold text-gray-800">TOTAL NÁKLADY</td><td className="p-4 text-right font-bold text-green-800 text-base">{fmtE(grandTotal)}</td></tr></tfoot>
+            <tfoot>
+              <tr className="bg-teal/10 border-t-2 border-teal/30">
+                <td colSpan={7} className="p-4 font-bold text-foreground">TOTAL NÁKLADY</td>
+                <td className="p-4 text-right font-bold text-teal text-base">{fmtE(grandTotal)}</td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>

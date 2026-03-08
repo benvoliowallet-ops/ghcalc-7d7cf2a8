@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { Pencil, Trash2, Package } from 'lucide-react';
 import { useStockItems, useStockMutations } from '../../hooks/useStockDB';
 import { useAuthStore } from '../../store/authStore';
 import { useConfirm } from '../../hooks/useConfirm';
@@ -18,9 +19,10 @@ export function StockPage() {
   const [sortBy, setSortBy] = useState<'code' | 'name' | 'group' | 'price'>('group');
   const [sortAsc, setSortAsc] = useState(true);
 
-  const groups = Array.from(new Set(items.map((i) => i.group))).sort();
+  const groups = useMemo(() => Array.from(new Set(items.map((i) => i.group))).sort(), [items]);
 
-  const filtered = (() => {
+  // P2 FIX: memoize filtered list to avoid O(n log n) sort on every render
+  const filtered = useMemo(() => {
     const q = search.toLowerCase();
     let result = items.filter((item) => {
       const matchGroup = groupFilter === 'all' || item.group === groupFilter;
@@ -39,7 +41,7 @@ export function StockPage() {
       return sortAsc ? cmp : -cmp;
     });
     return result;
-  })();
+  }, [items, search, groupFilter, sortBy, sortAsc]);
 
   const handleSort = (col: typeof sortBy) => {
     if (sortBy === col) setSortAsc(!sortAsc);
@@ -68,7 +70,10 @@ export function StockPage() {
     <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-foreground uppercase tracking-wide">📦 Skladové karty</h1>
+        <div className="flex items-center gap-2">
+          <Package className="w-5 h-5 text-foreground" />
+          <h1 className="text-xl font-bold text-foreground uppercase tracking-wide">Skladové karty</h1>
+        </div>
           <p className="text-sm text-muted-foreground">
             {items.length} položiek · zobrazených {filtered.length}
             {loading && <span className="ml-2 text-muted-foreground/50">· načítavam...</span>}
@@ -134,8 +139,12 @@ export function StockPage() {
                   <td className="px-4 py-2.5 text-right font-mono font-semibold text-foreground whitespace-nowrap">{item.price.toFixed(3)}</td>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center justify-center gap-1">
-                      <button onClick={() => setEditItem(item)} className="p-1.5 hover:bg-primary/10 text-primary/60 hover:text-primary transition-colors" style={{ borderRadius: 'var(--radius)' }} title="Upraviť">✏️</button>
-                      <button onClick={() => handleDelete(item.code, item)} className="p-1.5 hover:bg-destructive/10 text-destructive/40 hover:text-destructive transition-colors" style={{ borderRadius: 'var(--radius)' }} title="Vymazať">🗑</button>
+                      <button onClick={() => setEditItem(item)} className="p-1.5 hover:bg-primary/10 text-primary/60 hover:text-primary transition-colors" style={{ borderRadius: 'var(--radius)' }} title="Upraviť">
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => handleDelete(item.code, item)} className="p-1.5 hover:bg-destructive/10 text-destructive/40 hover:text-destructive transition-colors" style={{ borderRadius: 'var(--radius)' }} title="Vymazať">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </td>
                 </tr>

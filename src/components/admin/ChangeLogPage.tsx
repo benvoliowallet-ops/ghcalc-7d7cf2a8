@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { ClipboardList } from 'lucide-react';
 import { useChangeLog } from '../../hooks/useStockDB';
 import type { ChangeLogEntry } from '../../types';
 
@@ -28,10 +29,20 @@ export function ChangeLogPage() {
     });
   }, [changelog, search, actionFilter]);
 
+  // U5 FIX: memoize per-action counts so they reflect total (not filtered) entries
+  const actionCounts = useMemo(() => ({
+    create: changelog.filter((e) => e.action === 'create').length,
+    update: changelog.filter((e) => e.action === 'update').length,
+    delete: changelog.filter((e) => e.action === 'delete').length,
+  }), [changelog]);
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-foreground uppercase tracking-wide">📋 Log zmien</h1>
+        <div className="flex items-center gap-2 mb-1">
+          <ClipboardList className="w-5 h-5 text-foreground" />
+          <h1 className="text-xl font-bold text-foreground uppercase tracking-wide">Log zmien</h1>
+        </div>
         <p className="text-sm text-muted-foreground">
           História úprav skladových kariet · {changelog.length} záznamov celkom
         </p>
@@ -59,7 +70,7 @@ export function ChangeLogPage() {
             >
               {af === 'all' ? 'Všetky' : ACTION_META[af].label}
               {af !== 'all' && (
-                <span className="ml-1 opacity-50">({changelog.filter((e) => e.action === af).length})</span>
+                <span className="ml-1 opacity-50">({actionCounts[af as keyof typeof actionCounts]})</span>
               )}
             </button>
           ))}

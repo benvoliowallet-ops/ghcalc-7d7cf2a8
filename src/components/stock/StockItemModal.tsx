@@ -14,8 +14,8 @@ interface Props {
 export function StockItemModal({ mode, item, groups, allItems, onClose }: Props) {
   const { currentUser } = useAuthStore();
 
-  // These are used as a stable reload no-op since StockPage passes reload already
-  const { addItem, updateItem } = useStockMutations(() => {});
+  // NC1 FIX: pass onClose as reload so parent list refreshes immediately after mutation
+  const { addItem, updateItem } = useStockMutations(onClose);
 
   const [code, setCode] = useState(item?.code ?? '');
   const [name, setName] = useState(item?.name ?? '');
@@ -63,7 +63,7 @@ export function StockItemModal({ mode, item, groups, allItems, onClose }: Props)
     }
 
     setSaving(false);
-    onClose();
+    // onClose is invoked by the mutation's reload() callback — no explicit call needed
   };
 
   return (
@@ -74,7 +74,7 @@ export function StockItemModal({ mode, item, groups, allItems, onClose }: Props)
       <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg border border-border">
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="text-base font-bold text-foreground">
-            {mode === 'add' ? '＋ Pridať položku' : '✏️ Upraviť položku'}
+            {mode === 'add' ? '＋ Pridať položku' : 'Upraviť položku'}
           </h2>
           <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground text-2xl leading-none w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted">×</button>
         </div>

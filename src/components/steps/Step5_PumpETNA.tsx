@@ -38,7 +38,7 @@ export function Step5_PumpETNA() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 5A: Pump components */}
         <Card title="5A · Komponenty čerpadiel">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-muted-foreground mb-3">
             Nasledujúce komponenty sa multiplilkujú × {globalParams.numberOfZones} čerpadiel:
           </p>
           <div className="space-y-2 text-sm">
@@ -52,18 +52,18 @@ export function Step5_PumpETNA() {
             ].map((item) => (
               <div
                 key={item.code}
-                className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
+                className="flex items-center justify-between py-2 border-b border-border last:border-0"
               >
                 <div>
-                  <p className="font-medium text-gray-800">{item.name}</p>
-                  <p className="text-xs text-gray-400 font-mono">{item.code}</p>
+                  <p className="font-medium text-foreground">{item.name}</p>
+                  <p className="text-xs text-muted-foreground font-mono">{item.code}</p>
                 </div>
-                <span className="font-bold text-green-700 text-lg">{item.qty}×</span>
+                <span className="font-bold text-teal text-lg">{item.qty}×</span>
               </div>
             ))}
 
             <div className="border-t pt-3 mt-2 space-y-2">
-              <p className="text-xs font-bold text-gray-500 uppercase">Ostatné (1× na projekt)</p>
+              <p className="text-xs font-bold text-muted-foreground uppercase">Ostatné (1× na projekt)</p>
               {[
                 { name: 'Teltonika GSM brána', code: 'TELTONIKA_GSM' },
                 { name: 'Náhradný rukávový filter 5 mic', code: 'BPONG-005-P2PWE' },
@@ -71,19 +71,19 @@ export function Step5_PumpETNA() {
                 { name: 'DELTA PLC + HMI', code: 'DELTA_PLC' },
               ].map((item) => (
                 <div key={item.code} className="flex items-center justify-between text-sm py-1">
-                  <p className="text-gray-700">{item.name}</p>
-                  <span className="text-gray-500">1×</span>
+                  <p className="text-foreground/80">{item.name}</p>
+                  <span className="text-muted-foreground">1×</span>
                 </div>
               ))}
             </div>
 
             <div className="border-t pt-3 mt-2 space-y-3">
               <div>
-                <p className="text-xs font-semibold text-gray-600 mb-1">UV systém</p>
+                <p className="text-xs font-semibold text-muted-foreground mb-1">UV systém</p>
                 <select
                   value={uvSystemCode ?? ''}
                   onChange={(e) => setUVSystemCode(e.target.value || null)}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value="">– bez UV systému –</option>
                   {uvItems.map((item) => (
@@ -93,7 +93,7 @@ export function Step5_PumpETNA() {
                   ))}
                 </select>
                 {uvSystemCode && (
-                  <p className="text-xs text-green-600 mt-1">✓ Vybrané: {uvSystemCode}</p>
+                  <p className="text-xs text-teal mt-1">✓ Vybrané: {uvSystemCode}</p>
                 )}
               </div>
 
@@ -122,25 +122,25 @@ export function Step5_PumpETNA() {
           />
 
           <div className="mt-4 space-y-3">
-            <div className="p-3 bg-gray-50 rounded-lg border">
-              <p className="text-xs font-semibold text-gray-600 mb-1">ETNA</p>
-              <p className="text-sm text-gray-800">{etnaLabel}</p>
+            <div className="p-3 bg-muted rounded-lg border border-border">
+              <p className="text-xs font-semibold text-muted-foreground mb-1">ETNA</p>
+              <p className="text-sm text-foreground">{etnaLabel}</p>
               {osmoticSS && (
-                <span className="text-xs text-blue-600 font-semibold">→ SS (osmotická voda)</span>
+                <span className="text-xs text-primary font-semibold">→ SS (osmotická voda)</span>
               )}
             </div>
 
-            <div className="p-3 bg-gray-50 rounded-lg border">
-              <p className="text-xs font-semibold text-gray-600 mb-1">MAXIVAREM tlaková nádoba</p>
-              <p className="text-sm text-gray-800">{maxivarem}</p>
+            <div className="p-3 bg-muted rounded-lg border border-border">
+              <p className="text-xs font-semibold text-muted-foreground mb-1">MAXIVAREM tlaková nádoba</p>
+              <p className="text-sm text-foreground">{maxivarem}</p>
               {osmoticSS && (
-                <span className="text-xs text-blue-600 font-semibold">→ SS (osmotická voda)</span>
+                <span className="text-xs text-primary font-semibold">→ SS (osmotická voda)</span>
               )}
             </div>
 
             <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
               <p className="text-xs font-semibold text-amber-700 mb-1">⚠ FOGSYSTEM NORMIST</p>
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-muted-foreground">
                 Zadáva sa manuálne po prijatí cenovej ponuky od NAZLI (krok 7).
                 Variant: {osmoticSS ? 'SS' : 'ŠTANDARD'}
               </p>
@@ -153,9 +153,9 @@ export function Step5_PumpETNA() {
                 { name: 'Príslušenstvo k ETNA-NOR (do 10m)', value: '200 € (fixné)' },
                 { name: 'Vodoinstalačný materiál ETNA-NOR', value: '300 €' },
               ].map((item) => (
-                <div key={item.name} className="flex justify-between py-1 border-b border-gray-100">
-                  <span className="text-gray-700">{item.name}</span>
-                  <span className="text-gray-500 text-xs">{(item as any).value ?? (item as any).code}</span>
+                <div key={item.name} className="flex justify-between py-1 border-b border-border">
+                  <span className="text-foreground/80">{item.name}</span>
+                  <span className="text-muted-foreground text-xs">{(item as any).value ?? (item as any).code}</span>
                 </div>
               ))}
             </div>
@@ -168,14 +168,14 @@ export function Step5_PumpETNA() {
             const flowLpm = calc.zoneFlow / 1000 / 60;
             const pump = PUMP_TABLE.find((p) => p.maxFlow >= flowLpm) ?? null;
             return (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+              <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                 <div>
                   <p className="text-sm font-medium">{zones[i]?.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {pump ? pump.name : <span className="text-red-500">⚠ Nad kapacitou</span>}
+                  <p className="text-xs text-muted-foreground">
+                    {pump ? pump.name : <span className="text-destructive">⚠ Nad kapacitou</span>}
                   </p>
                 </div>
-                <span className={`text-xs font-mono ${pump ? 'text-green-700' : 'text-red-600'}`}>
+                <span className={`text-xs font-mono ${pump ? 'text-teal' : 'text-destructive'}`}>
                   {fmtN(flowLpm, 1)} lpm
                 </span>
               </div>

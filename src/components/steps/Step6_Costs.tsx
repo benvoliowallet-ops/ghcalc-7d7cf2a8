@@ -66,7 +66,7 @@ export function Step6_Costs() {
               { label: 'Uvedenie do prevádzky', daysKey: 'commissioningDays', countKey: 'commissioningCount' },
             ].map((row) => (
               <div key={row.label}>
-                <p className="text-xs font-semibold text-gray-600 mb-1">{row.label}</p>
+                <p className="text-xs font-semibold text-muted-foreground mb-1">{row.label}</p>
                 <div className="grid grid-cols-2 gap-2">
                   <Input
                     type="number"
@@ -87,21 +87,21 @@ export function Step6_Costs() {
             ))}
 
             <div className="border-t pt-3 grid grid-cols-2 gap-2">
-              <div className="p-2 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs text-gray-500">Obhliadka / zameranie</p>
-                <p className="font-bold text-gray-800">200 €</p>
+              <div className="p-2 bg-muted rounded-lg text-center border border-border">
+                <p className="text-xs text-muted-foreground">Obhliadka / zameranie</p>
+                <p className="font-bold text-foreground">200 €</p>
               </div>
-              <div className="p-2 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs text-gray-500">Projektovanie</p>
-                <p className="font-bold text-gray-800">200 €</p>
+              <div className="p-2 bg-muted rounded-lg text-center border border-border">
+                <p className="text-xs text-muted-foreground">Projektovanie</p>
+                <p className="font-bold text-foreground">200 €</p>
               </div>
             </div>
 
             <div>
-              <div className="text-xs text-gray-500 mb-2 flex items-center gap-2 flex-wrap">
+              <div className="text-xs text-muted-foreground mb-2 flex items-center gap-2 flex-wrap">
                 <span>Celková plocha projektu:</span>
-                <span className="font-semibold text-blue-600">{autoAreaHa.toFixed(2)} ha</span>
-                <span className="text-gray-400">(zo zón: {fmtN(autoAreaM2)} m²)</span>
+                <span className="font-semibold text-primary">{autoAreaHa.toFixed(2)} ha</span>
+                <span className="text-muted-foreground/60">(zo zón: {fmtN(autoAreaM2)} m²)</span>
               </div>
               <Input
                 label="Plocha projektu (PM)"
@@ -119,10 +119,10 @@ export function Step6_Costs() {
 
         {/* 6B Transport */}
         <Card title="6B · Doprava, ubytovanie a ostatné">
-          <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 mb-4">
-            <p className="text-xs font-semibold text-blue-700">Preprava tovaru ({project.country})</p>
-            <p className="font-bold text-blue-800 text-lg">{fmtE(transpCost)}</p>
-            <p className="text-xs text-blue-600">Automaticky z kroku 1</p>
+          <div className="p-3 bg-primary/5 rounded-lg border border-primary/20 mb-4">
+            <p className="text-xs font-semibold text-primary">Preprava tovaru ({project.country})</p>
+            <p className="font-bold text-foreground text-lg">{fmtE(transpCost)}</p>
+            <p className="text-xs text-primary/70">Automaticky z kroku 1</p>
           </div>
 
           <div className="grid grid-cols-3 gap-2 mb-4">
@@ -174,13 +174,13 @@ export function Step6_Costs() {
             />
           </div>
 
-          <div className="p-3 bg-gray-50 rounded-lg border mt-2">
+          <div className="p-3 bg-muted rounded-lg border border-border mt-2">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Ďalšie náklady, colnica</span>
+              <span className="text-muted-foreground">Ďalšie náklady, colnica</span>
               <span className="font-semibold">1 400 €</span>
             </div>
             <div className="flex justify-between text-sm mt-1">
-              <span className="text-gray-600">Balné (SNFG.00001)</span>
+              <span className="text-muted-foreground">Balné (SNFG.00001)</span>
               <span className="font-semibold">350 €</span>
             </div>
           </div>

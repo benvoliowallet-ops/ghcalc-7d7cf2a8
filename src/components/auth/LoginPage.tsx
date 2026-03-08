@@ -205,7 +205,7 @@ export function LoginPage() {
             <img src={sanfogLogoWhite} alt="Sanfog" className="h-20 w-auto relative" />
           </div>
           <h1 className="text-xl font-bold uppercase tracking-widest" style={{ color: 'hsl(var(--white))' }}>
-            Greenhouse Calc
+            GreenHouse Calc
           </h1>
           <div className="mx-auto mt-2 mb-2 h-px w-16" style={{ background: 'linear-gradient(90deg, transparent, hsl(var(--orange) / 0.7), transparent)' }} />
           <p className="text-xs tracking-wide uppercase font-medium" style={{ color: 'hsl(var(--white) / 0.45)' }}>

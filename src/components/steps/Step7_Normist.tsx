@@ -19,39 +19,39 @@ export function Step7_Normist() {
             <li className="flex gap-3">
               <span className="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs flex items-center justify-center font-bold">1</span>
               <div>
-                <p className="font-semibold text-gray-800">Systém vygeneruje Order Form pre NAZLI</p>
-                <p className="text-gray-500 text-xs">Krok 8A – proforma faktúra pre NOR ELEKTRONIK Istanbul</p>
+                <p className="font-semibold text-foreground">Systém vygeneruje Order Form pre NAZLI</p>
+                <p className="text-muted-foreground text-xs">Krok 8A – proforma faktúra pre NOR ELEKTRONIK Istanbul</p>
               </div>
             </li>
             <li className="flex gap-3">
               <span className="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs flex items-center justify-center font-bold">2</span>
               <div>
-                <p className="font-semibold text-gray-800">NAZLI pošle cenovú ponuku (CP)</p>
-                <p className="text-gray-500 text-xs">Počkajte na odpoveď z Istanbulu</p>
+                <p className="font-semibold text-foreground">NAZLI pošle cenovú ponuku (CP)</p>
+                <p className="text-muted-foreground text-xs">Počkajte na odpoveď z Istanbulu</p>
               </div>
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full text-xs flex items-center justify-center font-bold">3</span>
+              <span className="flex-shrink-0 w-6 h-6 bg-teal text-white rounded-full text-xs flex items-center justify-center font-bold">3</span>
               <div>
-                <p className="font-semibold text-gray-800">Zadajte cenu NORMIST manuálne</p>
-                <p className="text-gray-500 text-xs">Táto položka vstúpi do finálnej kalkulácie (krok 8B)</p>
+                <p className="font-semibold text-foreground">Zadajte cenu NORMIST manuálne</p>
+                <p className="text-muted-foreground text-xs">Táto položka vstúpi do finálnej kalkulácie (krok 8B)</p>
               </div>
             </li>
           </ol>
         </Card>
 
         <Card title="Cena FOGSYSTEM NORMIST">
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg border text-sm space-y-2">
+          <div className="mb-4 p-3 bg-muted rounded-lg border border-border text-sm space-y-2">
             <div className="flex justify-between">
-              <span className="text-gray-600">Variant (osmotická voda)</span>
+              <span className="text-muted-foreground">Variant (osmotická voda)</span>
               <span className="font-semibold">{globalParams.osmoticWater ? 'SS' : 'ŠTANDARD'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Počet zón</span>
+              <span className="text-muted-foreground">Počet zón</span>
               <span className="font-semibold">{globalParams.numberOfZones}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Krajina dodávky</span>
+              <span className="text-muted-foreground">Krajina dodávky</span>
               <span className="font-semibold">{project.country}</span>
             </div>
           </div>
@@ -68,10 +68,10 @@ export function Step7_Normist() {
           />
 
           {normistPrice > 0 && (
-            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-xs text-green-600 font-semibold">✓ Cena zadaná</p>
-              <p className="text-2xl font-bold text-green-700 mt-1">{fmtE(normistPrice)}</p>
-              <p className="text-xs text-gray-400 mt-1">Vstúpi automaticky do BOM (krok 8B)</p>
+            <div className="mt-4 p-3 bg-teal/10 border border-teal/30 rounded-lg">
+              <p className="text-xs text-teal font-semibold">✓ Cena zadaná</p>
+              <p className="text-2xl font-bold text-teal mt-1">{fmtE(normistPrice)}</p>
+              <p className="text-xs text-muted-foreground mt-1">Vstúpi automaticky do BOM (krok 8B)</p>
             </div>
           )}
 
@@ -87,30 +87,19 @@ export function Step7_Normist() {
 
         <Card variant="info" title="ℹ️ NAZLI bankové údaje (pre Order Form)">
           <div className="text-sm space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-500">SHIPPER</span>
-              <span className="font-semibold">Sanfog s.r.o.</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">CUSTOMER</span>
-              <span className="font-semibold">NOR ELEKTRONIK</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">SHIP VIA</span>
-              <span className="font-semibold">AIR</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">PAYMENT</span>
-              <span className="font-semibold">Prior to Shipment</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">Banka</span>
-              <span className="font-semibold">YAPI VE KREDI BANKASI</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">IBAN</span>
-              <span className="font-semibold text-xs">TR69...</span>
-            </div>
+            {[
+              { label: 'SHIPPER', value: 'Sanfog s.r.o.' },
+              { label: 'CUSTOMER', value: 'NOR ELEKTRONIK' },
+              { label: 'SHIP VIA', value: 'AIR' },
+              { label: 'PAYMENT', value: 'Prior to Shipment' },
+              { label: 'Banka', value: 'YAPI VE KREDI BANKASI' },
+              { label: 'IBAN', value: 'TR69...' },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex justify-between">
+                <span className="text-muted-foreground">{label}</span>
+                <span className="font-semibold text-xs">{value}</span>
+              </div>
+            ))}
           </div>
         </Card>
       </div>

@@ -64,7 +64,6 @@ export function Step8_Documents() {
     add(`Zóna ${i+1}: ${zName}`, 'NORMIST 0311001SS', 'Drziak trysky 1 tryska SS', calc.numNozzles - calc.numFitting180, 'ks', 3.78);
     const ropeCode = globalParams.steelRope === 'SS_NEREZ' ? 'SVX_SS_NEREZ' : 'SVX 201143';
     const ropeName = globalParams.steelRope === 'SS_NEREZ' ? 'Nerezové lano 3mm' : 'Oceľové lano 3mm';
-    // C4 FIX: use ropeOverrides from Step9 if set, otherwise fall back to calculated ropeLength
     const ropeQty = ropeOverrides[i] ?? calc.ropeLength;
     add(`Zóna ${i+1}: ${zName}`, ropeCode, ropeName, ropeQty, 'm', 0.15);
     add(`Zóna ${i+1}: ${zName}`, 'MVUZTLN400MMAKNS', 'Závesný diel 400mm AK NS', calc.numHangers, 'ks', 0.23);
@@ -168,7 +167,7 @@ export function Step8_Documents() {
     <StepLayout stepNum={8} title="Generovanie výstupných dokumentov" subtitle="8A – Order Form pre NAZLI  ·  8B – BOM pre Attiho (OBERON)" canContinue={true}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card variant="info" title="8A — Order Form pre NAZLI (NORMIST)">
-          <p className="text-sm text-gray-600 mb-4">Proforma faktúra pre NOR ELEKTRONIK Istanbul ({aggregatedNazliLines.length} kódov).</p>
+          <p className="text-sm text-muted-foreground mb-4">Proforma faktúra pre NOR ELEKTRONIK Istanbul ({aggregatedNazliLines.length} kódov).</p>
           <div className="flex gap-2 flex-wrap">
             <Button variant="primary" onClick={printOrderNazli}><PrintIcon /> Tlačiť – Order Form NAZLI</Button>
             <Button variant="secondary" onClick={exportNazliXLSX}><DownloadIcon /> Export XLSX</Button>
@@ -189,36 +188,57 @@ export function Step8_Documents() {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b flex items-center justify-between">
-          <h3 className="font-bold text-gray-800">Náhľad BOM</h3>
-          <div className="text-sm text-gray-500 flex gap-4">
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-border flex items-center justify-between">
+          <h3 className="font-bold text-foreground">Náhľad BOM</h3>
+          <div className="text-sm text-muted-foreground flex gap-4">
             <span>Riadkov: <strong>{processedBomLines.length}</strong></span>
-            <span className="text-blue-600">NORMIST: <strong>{normistLines.length}</strong></span>
-            <span className="text-green-600">Atti: <strong>{attiLines.length}</strong></span>
+            <span className="text-primary">NORMIST: <strong>{normistLines.length}</strong></span>
+            <span className="text-teal">Atti: <strong>{attiLines.length}</strong></span>
           </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
-            <thead><tr className="bg-gray-50 text-gray-500"><th className="text-left p-3 w-1/4">Sekcia</th><th className="text-left p-3">Kód</th><th className="text-left p-3">Popis</th><th className="text-right p-3">Qty</th><th className="text-right p-3">MJ</th><th className="text-right p-3">Cena/MJ</th><th className="text-right p-3">Celkom</th><th className="text-center p-3">Dodávateľ</th></tr></thead>
+            <thead>
+              <tr className="bg-muted text-muted-foreground">
+                <th className="text-left p-3 w-1/4">Sekcia</th>
+                <th className="text-left p-3">Kód</th>
+                <th className="text-left p-3">Popis</th>
+                <th className="text-right p-3">Qty</th>
+                <th className="text-right p-3">MJ</th>
+                <th className="text-right p-3">Cena/MJ</th>
+                <th className="text-right p-3">Celkom</th>
+                <th className="text-center p-3">Dodávateľ</th>
+              </tr>
+            </thead>
             <tbody>
               {processedBomLines.map((line, i) => {
                 const isNazliRef = isNormist(line.code) && line.code !== 'NORMIST';
                 return (
-                  <tr key={i} className={`border-t border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                    <td className="p-2 text-gray-400 text-xs">{line.section}</td>
-                    <td className="p-2 font-mono text-xs text-blue-700">{line.code}</td>
-                    <td className="p-2 text-gray-800">{line.name}</td>
+                  <tr key={i} className={`border-t border-border ${i % 2 === 0 ? '' : 'bg-muted/30'}`}>
+                    <td className="p-2 text-muted-foreground/60 text-xs">{line.section}</td>
+                    <td className="p-2 font-mono text-xs text-primary">{line.code}</td>
+                    <td className="p-2 text-foreground">{line.name}</td>
                     <td className="p-2 text-right font-mono">{fmtN(line.qty, 1)}</td>
-                    <td className="p-2 text-right text-gray-400">{line.unit}</td>
-                    <td className="p-2 text-right text-gray-400">{isNazliRef ? '—' : `${fmtN(line.price, 2)} €`}</td>
-                    <td className="p-2 text-right font-semibold text-gray-400">{isNazliRef ? '—' : `${fmtN(line.qty * line.price, 2)} €`}</td>
-                    <td className="p-2 text-center">{isNormist(line.code) ? <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-semibold">NORMIST</span> : <span className="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">Atti</span>}</td>
+                    <td className="p-2 text-right text-muted-foreground">{line.unit}</td>
+                    <td className="p-2 text-right text-muted-foreground">{isNazliRef ? '—' : `${fmtN(line.price, 2)} €`}</td>
+                    <td className="p-2 text-right font-semibold text-muted-foreground">{isNazliRef ? '—' : `${fmtN(line.qty * line.price, 2)} €`}</td>
+                    <td className="p-2 text-center">
+                      {isNormist(line.code)
+                        ? <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded font-semibold">NORMIST</span>
+                        : <span className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded">Atti</span>
+                      }
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
-            <tfoot><tr className="bg-green-50 border-t-2 border-green-200"><td colSpan={7} className="p-3 font-bold text-gray-800 text-sm">TOTAL NÁKLADY</td><td className="p-3 text-right font-bold text-green-700 text-base">{fmtE(bomTotal)}</td></tr></tfoot>
+            <tfoot>
+              <tr className="bg-teal/10 border-t-2 border-teal/30">
+                <td colSpan={7} className="p-3 font-bold text-foreground text-sm">TOTAL NÁKLADY</td>
+                <td className="p-3 text-right font-bold text-teal text-base">{fmtE(bomTotal)}</td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>
