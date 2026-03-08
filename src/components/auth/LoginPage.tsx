@@ -53,14 +53,8 @@ export function LoginPage() {
 
         {/* Brand */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div
-              className="w-10 h-10 bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg"
-              style={{ borderRadius: 'var(--radius)' }}
-            >
-              S
-            </div>
-            <span className="text-white font-bold text-2xl tracking-widest uppercase">Sanfog</span>
+          <div className="flex items-center justify-center mb-4">
+            <img src={sanfogLogoWhite} alt="Sanfog" className="h-10 w-auto" />
           </div>
           <h1 className="text-lg font-bold text-white uppercase tracking-widest">Greenhouse Projekt</h1>
           <p className="text-sm text-white/40 mt-1">Interný BOM kalkulátor</p>
