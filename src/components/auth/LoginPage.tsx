@@ -94,16 +94,16 @@ export function LoginPage() {
 
   useEffect(() => {
     // profiles table requires auth — anonymous users get 0 rows due to RLS.
-    // Use a SECURITY DEFINER function that bypasses RLS to get real count.
-    supabase
-      .rpc('get_user_count' as 'is_admin', { _user_id: '00000000-0000-0000-0000-000000000000' })
-      .then(({ data, error }) => {
+    // get_user_count() is SECURITY DEFINER so it works without authentication.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase.rpc as any)('get_user_count')
+      .then(({ data, error }: { data: number | null; error: unknown }) => {
         if (error) {
-          // RPC doesn't exist yet — default to login (safe)
+          // RPC failed — default to login (safe fallback)
           setIsBootstrap(false);
           return;
         }
-        setIsBootstrap((data as unknown as number) === 0);
+        setIsBootstrap((data ?? 1) === 0);
       });
   }, []);
 
