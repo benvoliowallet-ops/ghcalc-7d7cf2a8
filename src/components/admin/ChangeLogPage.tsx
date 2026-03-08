@@ -52,7 +52,7 @@ export function ChangeLogPage() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="🔍 Hľadať podľa kódu, názvu, používateľa..."
+          placeholder="Hľadať podľa kódu, názvu, používateľa..."
           className="flex-1 min-w-[220px] px-3 py-2 border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
           style={{ borderRadius: 'var(--radius)' }}
         />
