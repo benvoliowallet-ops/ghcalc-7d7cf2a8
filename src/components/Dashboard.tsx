@@ -247,13 +247,7 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
             <GreenhouseIcon className="w-16 h-16 text-teal/40" />
           </div>
           <p className="text-xl font-semibold text-foreground mb-2">Zatiaľ žiadne projekty</p>
-          <p className="text-muted-foreground mb-6">Začni tým, že vytvoríš nový projekt</p>
-          <button
-          onClick={onNewProject}
-          className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold uppercase tracking-wide transition-colors"
-          style={{ borderRadius: 'var(--radius)' }}>
-            <Plus className="w-4 h-4" /> Nový projekt
-          </button>
+          <p className="text-muted-foreground">Začni tým, že vytvoríš nový projekt</p>
         </div>
       }
 
