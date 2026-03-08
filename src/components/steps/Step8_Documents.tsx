@@ -27,12 +27,12 @@ export function Step8_Documents() {
     if (qty > 0) bomLines.push({ section, code, name, qty, unit, price });
   };
 
-  add('Balné', 'SNFG.00001', 'Balné', 1, 'psch.', 350);
+  add('Balné', 'SNFG.00001', 'Balné', 1, 'ks', 350);
   if (normistPrice > 0) add('FOGSYSTEM NORMIST', 'NORMIST', `FOGSYSTEM NORMIST (${osmoticSS ? 'SS' : 'STD'})`, 1, 'ks', normistPrice);
   add('ETNA', 'snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', osmoticSS ? 3200 : 2800);
   add('ETNA', osmoticSS ? 'MAXTRA_300_SS' : 'MAXTRA_300_STANDARD', `MAXIVAREM 300V ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', osmoticSS ? 380 : 305.02);
-  add('ETNA', 'ETNA_ACC', 'Príslušenstvo k ETNA-NOR (≤10m)', 1, 'psch.', 200);
-  add('ETNA', 'ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'psch.', 300);
+  add('ETNA', 'ETNA_ACC', 'Príslušenstvo k ETNA-NOR (≤10m)', 1, 'ks', 200);
+  add('ETNA', 'ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'ks', 300);
   add('ETNA', 'SNFG.TLK.001', 'Trojcestná armatúra', 1, 'ks', 150);
   add('ETNA', 'ETNA_MONTAZ', 'Montáž ETNA', 1, 'hod', 300);
   add('Čerpadlo', '0204013A', 'Solenoid Valve Kit 70 Bar', N, 'ks', 157.44);
@@ -99,11 +99,11 @@ export function Step8_Documents() {
   if (dietsCost > 0) add('Montáž', 'SANFOG_DIETA', 'Diéty', dietsCost / 35, 'dní', 35);
   if (accommodationCost > 0) add('Montáž', 'SANFOG_UBYT', 'Ubytovanie', accommodationCost / 40, 'noc', 40);
   if (salesTripsCost > 0) add('Doprava', 'SANFOG_DOPRAVA', 'Doprava výjazdy', salesTripsCost / 150, 'výjazd', 150);
-  add('Doprava', 'SANFOG_PREPRAVA', `Preprava tovaru (${project.country})`, 1, 'psch.', transpCost);
-  add('Ostatné', 'SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'psch.', 400);
-  add('Ostatné', 'SANFOG_PM', 'Projektový manažér', 1, 'psch.', pmCost);
-  add('Ostatné', 'SANFOG_MAT', 'Montážny materiál', 1, 'psch.', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
-  add('Ostatné', 'SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'psch.', 1400);
+  add('Doprava', 'SANFOG_PREPRAVA', `Preprava tovaru (${project.country})`, 1, 'ks', transpCost);
+  add('Ostatné', 'SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'ks', 400);
+  add('Ostatné', 'SANFOG_PM', 'Projektový manažér', 1, 'ks', pmCost);
+  add('Ostatné', 'SANFOG_MAT', 'Montážny materiál', 1, 'ks', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
+  add('Ostatné', 'SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'ks', 1400);
 
   const processedBomLines = bomLines.map((l) => isNormist(l.code) && l.code !== 'NORMIST' ? { ...l, price: 0 } : l);
   const bomTotal = processedBomLines.reduce((s, l) => s + l.qty * l.price, 0);

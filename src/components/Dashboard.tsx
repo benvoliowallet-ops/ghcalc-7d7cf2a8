@@ -102,7 +102,7 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
         className="mt-1 w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold uppercase tracking-wide transition-colors"
         style={{ borderRadius: 'var(--radius)' }}
       >
-        {done ? '📄 Otvoriť / Tlačiť' : '▶ Pokračovať'}
+        {done ? '📄 Prehľad projektu' : '▶ Pokračovať'}
       </button>
     </div>
   );
@@ -110,10 +110,11 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
 
 interface DashboardProps {
   onOpenProject: (id: string) => void;
+  onOpenSummary: (id: string) => void;
   onNewProject: () => void;
 }
 
-export function Dashboard({ onOpenProject, onNewProject }: DashboardProps) {
+export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: DashboardProps) {
   const { savedProjects, deleteSavedProject } = useProjectStore();
 
   const sorted = [...savedProjects].sort(
@@ -193,7 +194,7 @@ export function Dashboard({ onOpenProject, onNewProject }: DashboardProps) {
               <ProjectCard
                 key={p.id}
                 project={p}
-                onOpen={() => onOpenProject(p.id)}
+                onOpen={() => onOpenSummary(p.id)}
                 onDelete={() => deleteSavedProject(p.id)}
               />
             ))}

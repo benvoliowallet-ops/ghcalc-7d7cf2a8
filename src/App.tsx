@@ -18,8 +18,9 @@ import { Step7_Normist } from './components/steps/Step7_Normist';
 import { Step8_Documents } from './components/steps/Step8_Documents';
 import { Step9_PreOrderCheck } from './components/steps/Step9_PreOrderCheck';
 import { Step10_OrderForm } from './components/steps/Step10_OrderForm';
+import { ProjectSummary } from './components/ProjectSummary';
 
-type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users';
+type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary';
 
 const STEPS = [
   { num: 1, label: 'Nový projekt', icon: '📋' },
@@ -53,6 +54,11 @@ export default function App() {
     setView('project');
   };
 
+  const handleOpenSummary = (id: string) => {
+    loadProject(id);
+    setView('summary');
+  };
+
   const handleSaveAndClose = () => {
     saveCurrentProject();
     setView('dashboard');
@@ -76,8 +82,9 @@ export default function App() {
 
   const renderContent = () => {
     switch (view) {
-      case 'dashboard': return <Dashboard onOpenProject={handleOpenProject} onNewProject={handleNewProject} />;
+      case 'dashboard': return <Dashboard onOpenProject={handleOpenProject} onOpenSummary={handleOpenSummary} onNewProject={handleNewProject} />;
       case 'project': return <div className="max-w-7xl mx-auto px-4 py-6">{renderStep()}</div>;
+      case 'summary': return <ProjectSummary onOpenWizard={() => setView('project')} onBack={() => setView('dashboard')} />;
       case 'stock': return <StockPage />;
       case 'changelog': return <ChangeLogPage />;
       case 'users': return currentUser.role === 'admin' ? <UsersPage /> : (
@@ -111,7 +118,7 @@ export default function App() {
           <div className="flex items-center gap-3 shrink-0">
             <img src={sanfogLogoWhite} alt="Sanfog" className="h-7 w-auto" />
             <div className="hidden sm:block border-l border-white/20 pl-3">
-              <p className="text-xs font-semibold text-white/90 leading-tight tracking-wide uppercase">Greenhouse Projekt</p>
+              <p className="text-xs font-semibold text-white/90 leading-tight tracking-wide uppercase">GreenHouse Calc</p>
               <p className="text-xs text-white/40">Interný BOM kalkulátor</p>
             </div>
           </div>
@@ -212,7 +219,7 @@ export default function App() {
       <footer className="border-t border-border bg-navy">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-white/30">
-            <span>Greenhouse Projekt · 2026 · v12</span>
+            <span>GreenHouse Calc · 2026 · v12</span>
           </div>
           <div className="flex items-center gap-2 text-xs text-white/30">
             <span>made by</span>

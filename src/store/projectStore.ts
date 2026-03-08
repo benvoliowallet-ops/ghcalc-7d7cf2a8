@@ -111,6 +111,7 @@ interface ProjectStore extends ProjectState {
   setUVSystemCode: (v: string | null) => void;
   setSSFilter: (v: boolean) => void;
   toggleCADZoneLock: (zoneIndex: number) => void;
+  setRopeOverrides: (overrides: number[]) => void;
   resetProject: () => void;
 }
 
@@ -129,13 +130,14 @@ function captureSnapshot(s: ProjectStore): ProjectState {
     uvSystemCode: s.uvSystemCode,
     ssFilter30: s.ssFilter30,
     activeZoneIndex: s.activeZoneIndex,
+    ropeOverrides: s.ropeOverrides,
   };
 }
 
 export const useProjectStore = create<ProjectStore>()(
   persist(
     (set, get) => ({
-      currentStep: 1,
+  currentStep: 1,
       project: defaultProject,
       globalParams: defaultGlobalParams,
       zones: [defaultZone],
@@ -149,6 +151,7 @@ export const useProjectStore = create<ProjectStore>()(
       ssFilter30: false,
       activeZoneIndex: 0,
       savedProjects: [],
+      ropeOverrides: [],
 
       saveCurrentProject: () => {
         const s = get();
@@ -276,6 +279,7 @@ export const useProjectStore = create<ProjectStore>()(
       setNormistPrice: (price) => set({ normistPrice: price }),
       setUVSystemCode: (v) => set({ uvSystemCode: v }),
       setSSFilter: (v) => set({ ssFilter30: v }),
+      setRopeOverrides: (overrides) => set({ ropeOverrides: overrides }),
 
       toggleCADZoneLock: (zoneIndex) =>
         set(s => ({
@@ -307,6 +311,7 @@ export const useProjectStore = create<ProjectStore>()(
           uvSystemCode: null,
           ssFilter30: false,
           activeZoneIndex: 0,
+          ropeOverrides: [],
         }),
     }),
     { name: 'greenhouse-project' }

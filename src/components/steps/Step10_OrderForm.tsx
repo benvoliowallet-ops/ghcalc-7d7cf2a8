@@ -19,26 +19,18 @@ export function Step10_OrderForm() {
     if (qty > 0) lines.push({ code, name, qty, unit, supplier, priceUnit: price, total: qty * price });
   };
 
-  add('SNFG.00001', 'Balné', 1, 'psch.', 'SANFOG', 350);
+  add('SNFG.00001', 'Balné', 1, 'ks', 'SANFOG', 350);
   if (normistPrice > 0) add('NORMIST', `FOGSYSTEM NORMIST (${osmoticSS ? 'SS' : 'STD'})`, 1, 'ks', 'NORMIST/NAZLI', normistPrice);
   add('snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', 'ETNA', osmoticSS ? 3200 : 2800);
   add(osmoticSS ? 'MAXTRA_300_SS' : 'MAXTRA_300_STANDARD', `MAXIVAREM 300V ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', 'MAXTRA CONTROL', osmoticSS ? 380 : 305.02);
-  add('ETNA_ACC', 'Príslušenstvo k ETNA-NOR', 1, 'psch.', 'ETNA', 200);
-  add('ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'psch.', 'ETNA', 300);
+  add('ETNA_ACC', 'Príslušenstvo k ETNA-NOR', 1, 'ks', 'ETNA', 200);
+  add('ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'ks', 'ETNA', 300);
   add('SNFG.TLK.001', 'Trojcestná armatúra', 1, 'ks', 'SANFOG', 150);
   add('ETNA_MONTAZ', 'Montáž ETNA', 1, 'hod', 'SANFOG', 300);
 
   const N = globalParams.numberOfZones;
-  add('0204013A', 'Solenoid Valve Kit 70 Bar', N, 'ks', 'NORMIST', 157.44);
-  add('0104003-kit', 'Pressure Switch Kit', N, 'ks', 'NORMIST', 48);
-  add('204091', 'Keller Pressure Transmitter 0/160 Bar', N, 'ks', 'NORMIST', 71.55);
-  add('4072000024', 'Bypass ventil VRT100', N, 'ks', 'TECNOMEC', 76.43);
-  add('60.0525.00', 'Poistný ventil VS220', N, 'ks', 'TECNOMEC', 29.25);
-  add('snfg.006.0001', 'Prepoj čerpadlo → hl. vedenie DN25 3m', N, 'ks', 'SANFOG', 39.728);
-  add('TELTONIKA_GSM', 'Teltonika GSM brána', 1, 'ks', 'TELTONIKA', 200);
-  add('BPONG-005-P2PWE', 'Náhradný rukávový filter 5 mic', 1, 'ks', 'Eftech', 4.57);
-  add('NORMIST_DANFOSS', 'DANFOSS Drive', 1, 'ks', 'DANFOSS', 954);
 
+  // ── Collect per-zone totals first ───────────────────────────────────────────
   const { bracketBOM } = detectConcurrentPipes(cad);
   const totalNozzles: Record<string, number> = {};
   const totalPumpsByCode: Record<string, { name: string; qty: number }> = {};
@@ -67,7 +59,21 @@ export function Step10_OrderForm() {
     totalCYSY += calc.cysyLength; totalBoxes += calc.numJunctionBoxes; totalWago += calc.numWago;
   });
 
+  // ── PUMPS FIRST ──────────────────────────────────────────────────────────────
   Object.entries(totalPumpsByCode).forEach(([code, { name, qty }]) => add(code, name, qty, 'ks', 'NORMIST', 0));
+
+  // ── Pump accessories ─────────────────────────────────────────────────────────
+  add('0204013A', 'Solenoid Valve Kit 70 Bar', N, 'ks', 'NORMIST', 157.44);
+  add('0104003-kit', 'Pressure Switch Kit', N, 'ks', 'NORMIST', 48);
+  add('204091', 'Keller Pressure Transmitter 0/160 Bar', N, 'ks', 'NORMIST', 71.55);
+  add('4072000024', 'Bypass ventil VRT100', N, 'ks', 'TECNOMEC', 76.43);
+  add('60.0525.00', 'Poistný ventil VS220', N, 'ks', 'TECNOMEC', 29.25);
+  add('snfg.006.0001', 'Prepoj čerpadlo → hl. vedenie DN25 3m', N, 'ks', 'SANFOG', 39.728);
+  add('TELTONIKA_GSM', 'Teltonika GSM brána', 1, 'ks', 'TELTONIKA', 200);
+  add('BPONG-005-P2PWE', 'Náhradný rukávový filter 5 mic', 1, 'ks', 'Eftech', 4.57);
+  add('NORMIST_DANFOSS', 'DANFOSS Drive', 1, 'ks', 'DANFOSS', 954);
+
+  // ── Zone items ───────────────────────────────────────────────────────────────
   Object.entries(totalNozzles).forEach(([code, qty]) => { const orifice = Object.entries(NOZZLE_BY_ORIFICE).find(([, v]) => v === code)?.[0]; add(code, `Tryska D${orifice}mm AK SS`, qty, 'ks', 'NORMIST', 1.23); });
   add('NOR 301188', 'Swivel adaptér', zoneCalcs.reduce((s, c) => s + c.numSwivel, 0), 'ks', 'NORMIST', 1.5);
   Object.entries(totalPipesByCode).forEach(([code, { name, qty, price }]) => add(code, name, qty, 'ks', 'NORMIST', price));
@@ -92,11 +98,11 @@ export function Step10_OrderForm() {
 
   const installTechCost = (costInputs.installTechDays * costInputs.installTechCount + costInputs.installGreenhouseDays * costInputs.installGreenhouseCount + costInputs.diggingDays * costInputs.diggingCount + costInputs.commissioningDays * costInputs.commissioningCount) * 100;
   if (installTechCost > 0) add('SANFOG_MONTAZ', 'Práca montáž', installTechCost / 100, 'dní', 'SANFOG', 100);
-  add('SANFOG_PREPRAVA', `Preprava tovaru ${project.country}`, 1, 'psch.', 'Dopravca', transpCost);
-  add('SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'psch.', 'SANFOG', 400);
-  add('SANFOG_PM', 'Projektový manažér', 1, 'psch.', 'SANFOG', pmCost);
-  add('SANFOG_MAT', 'Montážny materiál', 1, 'psch.', 'SANFOG', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
-  add('SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'psch.', 'SANFOG', 1400);
+  add('SANFOG_PREPRAVA', `Preprava tovaru ${project.country}`, 1, 'ks', 'Dopravca', transpCost);
+  add('SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'ks', 'SANFOG', 400);
+  add('SANFOG_PM', 'Projektový manažér', 1, 'ks', 'SANFOG', pmCost);
+  add('SANFOG_MAT', 'Montážny materiál', 1, 'ks', 'SANFOG', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
+  add('SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'ks', 'SANFOG', 1400);
 
   const processedLines = lines.map((l) => l.supplier === 'NORMIST' && l.code !== 'NORMIST' ? { ...l, priceUnit: 0, total: 0 } : l);
   const grandTotal = processedLines.reduce((s, l) => s + l.total, 0);

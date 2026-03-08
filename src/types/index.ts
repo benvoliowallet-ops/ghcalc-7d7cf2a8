@@ -260,4 +260,5 @@ export interface ProjectState {
   uvSystemCode: string | null;
   ssFilter30: boolean;
   activeZoneIndex: number;
+  ropeOverrides: number[];
 }
