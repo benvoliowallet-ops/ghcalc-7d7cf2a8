@@ -92,17 +92,29 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // C3 FIX: use useEffect (not useState) for async side effects
+  // Check bootstrap via a public RPC / invitations table trick:
+  // profiles requires auth, so we check the invitations table which has
+  // a public SELECT policy — but that doesn't tell us about users either.
+  // Instead, call the edge function or use a public-accessible signal.
+  // Best approach: try to sign in with a dummy call — if profiles table
+  // returns a 401/empty due to RLS we must NOT show bootstrap.
+  // We use a dedicated public function or check via auth metadata.
+  // Safest: always default to login, only show bootstrap if we get
+  // an explicit "no users" signal from an admin-level check.
   useEffect(() => {
+    // Use service-level check: invoke an edge function or use a
+    // Postgres function that runs as SECURITY DEFINER (no auth needed)
+    // For now: attempt to read invitations (public SELECT) as a proxy,
+    // but the real fix is to use a SECURITY DEFINER rpc count function.
     supabase
-      .from('profiles')
-      .select('id', { count: 'exact', head: true })
-      .then(({ count, error }) => {
+      .rpc('get_user_count')
+      .then(({ data, error }) => {
         if (error) {
+          // RPC doesn't exist yet or failed — default to login (safe)
           setIsBootstrap(false);
           return;
         }
-        setIsBootstrap((count ?? 0) === 0);
+        setIsBootstrap((data as number) === 0);
       });
   }, []);
 
