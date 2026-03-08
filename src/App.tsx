@@ -296,7 +296,7 @@ function AppInner() {
             <span className="text-xs text-white/30">GreenHouse Calc · 2026 · v13</span>
             <div className="flex items-center gap-2 text-xs text-white/30">
               <span>made by VORA </span>
-              <img alt="VORA" className="h-6 w-auto opacity-40" src="/lovable-uploads/029f5085-4877-4e0f-902e-565d9bab748c.png" />
+              <img alt="VORA" className="h-8 w-auto opacity-70" src="/lovable-uploads/029f5085-4877-4e0f-902e-565d9bab748c.png" />
             </div>
           </div>
         </footer>
