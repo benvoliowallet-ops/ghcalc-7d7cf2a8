@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Save, RotateCcw, Loader2, Check, AlertTriangle } from 'lucide-react';
 import voraLogo from './assets/vora-logo.png';
 import { useProjectStore } from './store/projectStore';
@@ -24,6 +25,8 @@ import { Sidebar } from './components/Sidebar';
 import { useLoadProjects, useAutoSave } from './hooks/useProjects';
 import { ConfirmProvider, useConfirm } from './hooks/useConfirm';
 import { VoraAIChat } from './components/VoraAIChat';
+import { ProjectCommentsPanel } from './components/comments/ProjectComments';
+import Portal from './pages/Portal';
 
 type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary';
 
@@ -99,7 +102,7 @@ function AutoSaveSubscriber({ view }: {view: AppView;}) {
 }
 
 function AppInner() {
-  const { currentStep, setStep, project, resetProject, saveCurrentProject, loadProject } = useProjectStore();
+  const { currentStep, setStep, project, resetProject, saveCurrentProject, loadProject, openProjectId } = useProjectStore();
   const { currentUser, loading, setCurrentUser, setLoading, loadProfile } = useAuthStore();
   const [view, setView] = useState<AppView>('dashboard');
   const confirm = useConfirm();
@@ -109,8 +112,6 @@ function AppInner() {
   useEffect(() => {
     let mounted = true;
 
-    // getSession() handles the case where onAuthStateChange doesn't fire the
-    // initial event (known issue on some Supabase JS versions).
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return;
       if (session?.user) {
@@ -121,7 +122,6 @@ function AppInner() {
       }
     });
 
-    // onAuthStateChange handles subsequent sign-in / sign-out events.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
       if (session?.user) {
@@ -143,7 +143,6 @@ function AppInner() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-muted-foreground text-sm">Načítavam...</div>
       </div>);
-
   }
 
   if (!currentUser) return <LoginPage />;
@@ -203,9 +202,11 @@ function AppInner() {
         <div className="max-w-xl mx-auto px-4 py-20 text-center">
           <p className="text-muted-foreground">Prístup zamietnutý – iba pre adminov.</p>
         </div>;
-
     }
   };
+
+  // Show comments panel only when viewing a project (wizard or summary)
+  const showComments = view === 'project' || view === 'summary';
 
   return (
     <div className="min-h-screen bg-background flex" style={{ position: 'relative' }}>
@@ -298,15 +299,25 @@ function AppInner() {
           </div>
         </footer>
       </div>
-      <VoraAIChat />
-    </div>);
 
+      <VoraAIChat />
+
+      {/* Comments floating panel — only during project/summary views */}
+      {showComments && <ProjectCommentsPanel projectId={openProjectId ?? null} />}
+    </div>);
 }
 
-export default function App() {
+function AppWithRouter() {
   return (
     <ConfirmProvider>
-      <AppInner />
-    </ConfirmProvider>);
-
+      <BrowserRouter>
+        <Routes>
+          <Route path="/portal/:projectId" element={<Portal />} />
+          <Route path="*" element={<AppInner />} />
+        </Routes>
+      </BrowserRouter>
+    </ConfirmProvider>
+  );
 }
+
+export default AppWithRouter;
