@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { ClipboardList } from 'lucide-react';
 import { useChangeLog } from '../../hooks/useStockDB';
 import type { ChangeLogEntry } from '../../types';
 
