@@ -59,8 +59,14 @@ export function Step3_Zones() {
   const handleOrificeChange = (orifice: number) => {
     updateZone(activeZoneIndex, { nozzleOrifice: orifice as ZoneParams['nozzleOrifice'], nozzleFlow: getNozzleFlowLpm(orifice, globalParams.systemPressure) });
   };
-  const handleCopyZone = (sourceIndex: number) => {
+  const handleCopyZone = async (sourceIndex: number) => {
     if (sourceIndex === activeZoneIndex) return;
+    const ok = await confirm({
+      title: `Kopírovať parametre zo zóny "${zones[sourceIndex].name ?? `Zóna ${sourceIndex + 1}`}"?`,
+      description: 'Aktuálne parametre zóny budú prepísané.',
+      confirmLabel: 'Kopírovať',
+    });
+    if (!ok) return;
     const { name: _name, ...rest } = zones[sourceIndex];
     updateZone(activeZoneIndex, rest);
   };
