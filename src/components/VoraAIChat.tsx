@@ -341,8 +341,8 @@ export function VoraAIChat() {
                     ? 'bg-teal text-white rounded-br-sm'
                     : 'bg-slate-100 text-navy rounded-bl-sm border border-navy/20'}
                 `}
-                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                {msg.content}
+                style={{ wordBreak: 'break-word' }}>
+                {renderContent(msg.content)}
                 {msg.role === 'assistant' && loading && i === messages.length - 1 &&
                   <span className="inline-block w-1.5 h-3.5 bg-teal ml-0.5 animate-pulse rounded-sm align-middle" />
                 }
