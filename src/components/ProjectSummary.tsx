@@ -148,6 +148,52 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
   })();
 
   // ── Document actions ──────────────────────────────────────────────────────
+  const handleDownloadPDF = useCallback(async () => {
+    setPdfGenerating(true);
+    try {
+      const snapshot = {
+        currentStep: 10,
+        project, globalParams, zones, zoneCalcs, normistPrice,
+        costInputs, ropeOverrides, uvSystemCode, ssFilter30, cad, preOrderState,
+        pumpSelection: null, etnaConfig: {}, activeZoneIndex: 0,
+      };
+      const blob = await pdf(
+        <ProjectPDF
+          snapshot={snapshot as Parameters<typeof ProjectPDF>[0]['snapshot']}
+          quoteNumber={project.quoteNumber}
+          customerName={project.customerName}
+          projectAddress={project.projectAddress}
+          country={project.country}
+          contactPerson={project.contactPerson}
+        />
+      ).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Ponuka_${project.quoteNumber}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setPdfGenerating(false);
+    }
+  }, [project, globalParams, zones, zoneCalcs, normistPrice, costInputs, ropeOverrides, uvSystemCode, ssFilter30, cad, preOrderState]);
+
+  const handleShare = useCallback(async () => {
+    const result = await createPortal();
+    if (!result) return;
+    const baseUrl = window.location.origin;
+    setShareModal({
+      link: `${baseUrl}/portal/${openProjectId}`,
+      password: result.plain_password,
+    });
+  }, [createPortal, openProjectId]);
+
+  const handleCopyLink = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleExportXLSX = () => {
     const rows = zones.map((z, i) => {
       const c = zoneCalcs[i];
