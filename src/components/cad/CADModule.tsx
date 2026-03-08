@@ -447,9 +447,9 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
               }
             }}
             disabled={history.length === 0}
-            className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            ↩ Undo ({history.length})
+            <Undo2 className="w-3.5 h-3.5" /> Undo ({history.length})
           </button>
 
           <button
