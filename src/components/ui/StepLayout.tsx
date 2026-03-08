@@ -35,28 +35,34 @@ export function StepLayout({
   return (
     <div className="max-w-5xl mx-auto">
       {/* Step header */}
-      <div className="rounded-lg overflow-hidden mb-6 shadow-sm border border-slate-800">
-        <div className="bg-slate-900 px-6 py-4 flex items-center justify-between gap-4">
+      <div className="overflow-hidden mb-6 border border-border bg-secondary" style={{ borderRadius: 'var(--radius)' }}>
+        <div className="px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="font-mono text-sm font-bold bg-green-600 text-white px-3 py-1.5 rounded flex-shrink-0 tracking-widest">
+            <div
+              className="font-mono text-sm font-bold bg-primary text-primary-foreground px-3 py-1.5 flex-shrink-0 tracking-widest"
+              style={{ borderRadius: 'var(--radius)' }}
+            >
               {String(stepNum).padStart(2, '0')}
             </div>
             <div>
-              <h1 className="text-sm font-bold text-white tracking-wide uppercase">{title}</h1>
-              {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
+              <h1 className="text-sm font-bold text-white tracking-widest uppercase">{title}</h1>
+              {subtitle && <p className="text-xs text-white/40 mt-0.5">{subtitle}</p>}
             </div>
           </div>
           <div className="hidden md:flex items-center gap-1.5 flex-shrink-0">
             {Array.from({ length: 10 }, (_, i) => (
               <div
                 key={i}
-                className={`h-1 rounded-full transition-all ${
-                  i + 1 === stepNum
-                    ? 'w-7 bg-green-400'
+                className="h-1 transition-all"
+                style={{
+                  borderRadius: 'var(--radius)',
+                  width: i + 1 === stepNum ? '28px' : '8px',
+                  backgroundColor: i + 1 === stepNum
+                    ? 'hsl(var(--primary))'
                     : i + 1 < stepNum
-                    ? 'w-2 bg-green-600'
-                    : 'w-2 bg-slate-600'
-                }`}
+                    ? 'hsl(var(--primary) / 0.5)'
+                    : 'rgba(255,255,255,0.1)',
+                }}
               />
             ))}
           </div>
@@ -68,7 +74,10 @@ export function StepLayout({
 
       {/* Navigation */}
       {!hideNav && (
-        <div className="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between">
+        <div
+          className="bg-card border border-border p-4 flex items-center justify-between"
+          style={{ borderRadius: 'var(--radius)' }}
+        >
           <Button
             variant="secondary"
             onClick={prevStep}
@@ -79,8 +88,8 @@ export function StepLayout({
 
           <div className="flex items-center gap-4">
             {continueHint && !canContinue && (
-              <span className="text-sm text-amber-700 flex items-center gap-2">
-                <span className="w-1 h-4 bg-amber-400 rounded-full inline-block flex-shrink-0" />
+              <span className="text-sm text-orange flex items-center gap-2">
+                <span className="w-1 h-4 bg-orange rounded-full inline-block flex-shrink-0" />
                 {continueHint}
               </span>
             )}

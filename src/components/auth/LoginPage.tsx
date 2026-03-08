@@ -47,46 +47,53 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
       <div className="w-full max-w-md">
 
-        {/* Logos */}
+        {/* Brand */}
         <div className="text-center mb-8">
-          <div className="h-12 mx-auto mb-4 flex items-center justify-center">
-            <span className="text-green-600 font-bold text-3xl">🌿 Sanfog</span>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div
+              className="w-10 h-10 bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg"
+              style={{ borderRadius: 'var(--radius)' }}
+            >
+              S
+            </div>
+            <span className="text-white font-bold text-2xl tracking-widest uppercase">Sanfog</span>
           </div>
-          <h1 className="text-xl font-bold text-gray-800">Greenhouse Projekt</h1>
-          <p className="text-sm text-gray-500">Interný BOM kalkulátor</p>
+          <h1 className="text-lg font-bold text-white uppercase tracking-widest">Greenhouse Projekt</h1>
+          <p className="text-sm text-white/40 mt-1">Interný BOM kalkulátor</p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div
+          className="bg-card border border-border overflow-hidden"
+          style={{ borderRadius: 'var(--radius)' }}
+        >
 
           {/* Bootstrap banner */}
           {isBootstrap && (
-            <div className="px-6 py-4 bg-amber-50 border-b border-amber-200">
+            <div className="px-6 py-4 bg-orange/10 border-b border-orange/30">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-amber-500 text-lg">🎉</span>
-                <p className="text-sm font-bold text-amber-800">
-                  Prvotné nastavenie systému
-                </p>
+                <span className="text-orange text-lg">★</span>
+                <p className="text-sm font-bold text-foreground">Prvotné nastavenie systému</p>
               </div>
-              <p className="text-xs text-amber-700 leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 Systém nemá žiadnych používateľov. Vytvorte prvý administrátorský účet.
               </p>
             </div>
           )}
 
-          {/* Tabs (only when not bootstrapping) */}
+          {/* Tabs */}
           {!isBootstrap && (
-            <div className="flex border-b border-gray-100">
+            <div className="flex border-b border-border">
               <button
                 type="button"
                 onClick={() => switchMode('login')}
-                className={`flex-1 py-3 text-sm font-semibold transition-colors ${
+                className={`flex-1 py-3 text-sm font-semibold uppercase tracking-wide transition-colors ${
                   mode === 'login'
-                    ? 'bg-white text-green-700 border-b-2 border-green-600'
-                    : 'bg-gray-50 text-gray-400 hover:text-gray-600'
+                    ? 'bg-card text-primary border-b-2 border-primary'
+                    : 'bg-muted text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Prihlásiť sa
@@ -94,13 +101,13 @@ export function LoginPage() {
               <button
                 type="button"
                 onClick={() => switchMode('register')}
-                className={`flex-1 py-3 text-sm font-semibold transition-colors ${
+                className={`flex-1 py-3 text-sm font-semibold uppercase tracking-wide transition-colors ${
                   mode === 'register'
-                    ? 'bg-white text-green-700 border-b-2 border-green-600'
-                    : 'bg-gray-50 text-gray-400 hover:text-gray-600'
+                    ? 'bg-card text-primary border-b-2 border-primary'
+                    : 'bg-muted text-muted-foreground hover:text-foreground'
                 }`}
               >
-                📩 Registrovať s pozvánkou
+                Registrovať
               </button>
             </div>
           )}
@@ -108,10 +115,10 @@ export function LoginPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
 
-            {/* Invite code – only on register mode */}
+            {/* Invite code */}
             {!isBootstrap && mode === 'register' && (
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">
+                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
                   Kód pozvánky
                 </label>
                 <input
@@ -120,14 +127,15 @@ export function LoginPage() {
                   placeholder="XXXXXXXX"
                   maxLength={8}
                   required
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm font-mono tracking-widest text-center uppercase focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2.5 border border-input bg-background text-foreground text-sm font-mono tracking-widest text-center uppercase focus:outline-none focus:ring-2 focus:ring-primary"
+                  style={{ borderRadius: 'var(--radius)' }}
                 />
               </div>
             )}
 
             {/* Email */}
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Email</label>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">Email</label>
               <input
                 type="email"
                 value={email}
@@ -135,14 +143,15 @@ export function LoginPage() {
                 placeholder="meno@sanfog.sk"
                 required
                 autoComplete="email"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2.5 border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                style={{ borderRadius: 'var(--radius)' }}
               />
             </div>
 
-            {/* Name – only on register / bootstrap */}
+            {/* Name */}
             {isRegister && (
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">
+                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
                   Meno a priezvisko
                 </label>
                 <input
@@ -151,14 +160,15 @@ export function LoginPage() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ján Novák"
                   required
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2.5 border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  style={{ borderRadius: 'var(--radius)' }}
                 />
               </div>
             )}
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Heslo</label>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">Heslo</label>
               <input
                 type="password"
                 value={password}
@@ -166,16 +176,20 @@ export function LoginPage() {
                 required
                 minLength={6}
                 autoComplete={isRegister ? 'new-password' : 'current-password'}
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2.5 border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                style={{ borderRadius: 'var(--radius)' }}
               />
               {isRegister && (
-                <p className="text-xs text-gray-400 mt-1">Minimálne 6 znakov</p>
+                <p className="text-xs text-muted-foreground mt-1">Minimálne 6 znakov</p>
               )}
             </div>
 
             {/* Error */}
             {error && (
-              <div className="px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700">
+              <div
+                className="px-3 py-2 bg-destructive/10 border border-destructive/30 text-xs text-destructive"
+                style={{ borderRadius: 'var(--radius)' }}
+              >
                 ⚠️ {error}
               </div>
             )}
@@ -183,19 +197,20 @@ export function LoginPage() {
             {/* Submit */}
             <button
               type="submit"
-              className="w-full py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition-colors shadow-sm"
+              className="w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold uppercase tracking-widest transition-colors"
+              style={{ borderRadius: 'var(--radius)' }}
             >
               {isBootstrap
-                ? '🚀 Vytvoriť admin účet a prihlásiť sa'
+                ? 'Vytvoriť admin účet'
                 : mode === 'login'
-                ? '→ Prihlásiť sa'
-                : '✓ Zaregistrovať sa'}
+                ? 'Prihlásiť sa →'
+                : 'Zaregistrovať sa ✓'}
             </button>
           </form>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-center gap-1.5 mt-6 text-xs text-gray-400">
+        <div className="flex items-center justify-center gap-1.5 mt-6 text-xs text-white/20">
           <span>made by VORA · v12</span>
         </div>
       </div>
