@@ -199,6 +199,7 @@ export const useProjectStore = create<ProjectStore>()(
         if (!saved) return;
         set({
           ...saved.snapshot,
+          openProjectId: id,
           // Ensure preOrderState exists for old snapshots without it
           preOrderState: saved.snapshot.preOrderState ?? defaultPreOrderState,
         });
