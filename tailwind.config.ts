@@ -61,9 +61,9 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         /* Sanfog brand tokens */
-        navy:   "#002a4c",
-        teal:   "#00adc6",
-        orange: "#f38f00",
+        navy:   "hsl(var(--navy))",
+        teal:   "hsl(var(--teal))",
+        orange: "hsl(var(--orange))",
       },
       borderRadius: {
         lg: "var(--radius)",
