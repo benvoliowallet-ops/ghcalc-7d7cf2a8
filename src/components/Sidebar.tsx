@@ -1,3 +1,4 @@
+import React from 'react';
 import { FolderOpen, Package, ScrollText, Users, Plus, LogOut } from 'lucide-react';
 import sanfogLogoWhite from '../assets/sanfog-logo-white.svg';
 import { useAuthStore } from '../store/authStore';
@@ -41,7 +42,7 @@ export function Sidebar({ view, setView, onNewProject, isAdmin }: SidebarProps) 
           style={{ minWidth: '24px' }}
         />
         <span className="ml-3 text-xs font-bold text-white/80 uppercase tracking-widest whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 delay-75">
-          GreenHouse Calc
+          Greenhouse Calc
         </span>
       </div>
 
@@ -107,10 +108,7 @@ export function Sidebar({ view, setView, onNewProject, isAdmin }: SidebarProps) 
 
         {/* Logout */}
         <button
-          onClick={async () => {
-            // Will use confirm from parent, but we emit to parent via prop
-            await logout();
-          }}
+          onClick={async () => { await logout(); }}
           className="flex items-center h-9 px-2 gap-3 text-orange/70 hover:text-orange hover:bg-orange/10 border-l-2 border-transparent hover:border-orange transition-colors w-full text-left"
           style={{ borderRadius: '2px' }}
           title="Odhlásiť sa"

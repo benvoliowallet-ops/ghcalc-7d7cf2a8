@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { StockItem } from '../types';
-import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
+import { supabase } from '@/integrations/supabase/client';
 import { STOCK_ITEMS } from '../data/stockItems';
 
 export function useItemsByGroup(group: string): StockItem[] {
@@ -9,25 +9,24 @@ export function useItemsByGroup(group: string): StockItem[] {
   );
 
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
     supabase
-      .from('skladove_karty')
+      .from('stock_items')
       .select('*')
       .eq('group', group)
       .then(({ data, error }) => {
         if (error) {
-          console.warn('[Supabase] useItemsByGroup error:', error.message);
+          console.warn('[Stock] useItemsByGroup error:', error.message);
           return;
         }
         if (data && data.length > 0) {
           setItems(
-            data.map((row: any) => ({
+            data.map((row) => ({
               code: row.code,
               name: row.name,
               additionalText: row.additional_text ?? '',
               price: Number(row.price ?? 0),
               group: row.group ?? group,
-              supplier: row.dodavatel ?? undefined,
+              supplier: row.supplier ?? undefined,
             }))
           );
         }
@@ -39,28 +38,32 @@ export function useItemsByGroup(group: string): StockItem[] {
 
 export function useNormistChecker() {
   const [normistCodes, setNormistCodes] = useState<Set<string>>(new Set());
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
     supabase
-      .from('skladove_karty')
+      .from('stock_items')
       .select('code')
-      .eq('dodavatel', 'NORMIST')
+      .eq('supplier', 'NORMIST')
       .then(({ data, error }) => {
         if (error) {
-          console.warn('[Supabase] useNormistChecker error:', error.message);
+          console.warn('[Stock] useNormistChecker error:', error.message);
+          setLoaded(true);
           return;
         }
         if (data) {
-          setNormistCodes(new Set(data.map((r: any) => r.code as string)));
+          setNormistCodes(new Set(data.map((r) => r.code as string)));
         }
+        setLoaded(true);
       });
   }, []);
 
   const isNormist = (code: string): boolean => {
-    if (isSupabaseConfigured && normistCodes.size > 0) {
+    // If DB data is loaded, use it exclusively
+    if (loaded && normistCodes.size > 0) {
       return normistCodes.has(code);
     }
+    // Fallback: use local static data
     const localItem = STOCK_ITEMS.find(i => i.code === code);
     if (localItem) return localItem.supplier === 'NORMIST';
     return (
@@ -73,5 +76,5 @@ export function useNormistChecker() {
     );
   };
 
-  return { isNormist };
+  return { isNormist, normistLoaded: loaded };
 }
