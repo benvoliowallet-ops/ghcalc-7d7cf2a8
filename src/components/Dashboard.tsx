@@ -124,7 +124,7 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
           <p className="text-muted-foreground text-sm italic mt-0.5">Bez zákazníka</p>
           }
           {project.projectAddress &&
-          <p className="text-xs text-muted-foreground mt-0.5">📍 {project.projectAddress}</p>
+          <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1"><MapPin className="w-3 h-3 flex-shrink-0" />{project.projectAddress}</p>
           }
         </div>
         <button
