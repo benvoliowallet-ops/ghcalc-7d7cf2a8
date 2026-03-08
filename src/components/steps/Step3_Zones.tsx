@@ -201,7 +201,7 @@ function ZoneParamsTab({ zone, zoneIndex, zones, globalParams, onUpdate, nozzleO
       {zones.length > 1 && (
         <div className="mb-4 flex items-center gap-3 flex-wrap">
           <select defaultValue="" onChange={(e) => { const idx = Number(e.target.value); if (!isNaN(idx) && idx !== zoneIndex) { onCopyZone(idx); } e.target.value = ''; }}
-            className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white">
+            className="px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground">
             <option value="">📋 Kopírovať parametre zo zóny...</option>
             {zones.map((z, i) => i !== zoneIndex ? <option key={i} value={i}>Zóna {i + 1}: {z.name || `Zóna ${i + 1}`}</option> : null)}
           </select>
