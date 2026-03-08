@@ -12,13 +12,12 @@ export function useLoadProjects() {
   useEffect(() => {
     if (!currentUser) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (supabase as any)
+    supabase
       .from('projects')
       .select('id, quote_number, customer_name, project_address, country, current_step, num_zones, snapshot, saved_at')
       .eq('owner_id', currentUser.id)
       .order('saved_at', { ascending: false })
-      .then(({ data, error }: { data: any[] | null; error: any }) => {
+      .then(({ data, error }) => {
         if (error) {
           console.error('[Projects] Load error:', error.message);
           return;
@@ -52,8 +51,7 @@ export function useProjectSaver() {
       if (!currentUser) return;
       setSaveStatus('saving');
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('projects')
         .upsert({
           id: snapshot.project.id,
@@ -64,7 +62,7 @@ export function useProjectSaver() {
           country: snapshot.project.country,
           current_step: snapshot.currentStep,
           num_zones: snapshot.zones.length,
-          snapshot: snapshot,
+          snapshot: snapshot as unknown as Record<string, unknown>,
           saved_at: new Date().toISOString(),
         });
 
@@ -83,15 +81,29 @@ export function useProjectSaver() {
   return save;
 }
 
-/** Returns a debounced auto-save function (2s debounce) and an immediate save */
+/** Returns a debounced auto-save function (2s debounce) and an immediate save.
+ *  The timer is properly cleaned up on unmount to prevent ghost saves / memory leaks. */
 export function useAutoSave() {
   const save = useProjectSaver();
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // NC3 FIX: clean up pending timer when hook unmounts
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, []);
+
   const debouncedSave = useCallback(
     (snapshot: ProjectState) => {
       if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => save(snapshot), 2000);
+      timerRef.current = setTimeout(() => {
+        timerRef.current = null;
+        save(snapshot);
+      }, 2000);
     },
     [save]
   );
@@ -99,6 +111,7 @@ export function useAutoSave() {
   const immediateSave = useCallback(
     (snapshot: ProjectState) => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = null;
       save(snapshot);
     },
     [save]

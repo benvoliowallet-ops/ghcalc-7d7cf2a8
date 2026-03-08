@@ -51,24 +51,31 @@ export function useNormistChecker() {
           setLoaded(true);
           return;
         }
-        if (data) {
+        if (data && data.length > 0) {
           setNormistCodes(new Set(data.map((r) => r.code as string)));
+        } else {
+          // DB empty or not seeded — fall back to static data
+          const staticNormist = new Set(
+            STOCK_ITEMS.filter(i => i.supplier === 'NORMIST').map(i => i.code)
+          );
+          setNormistCodes(staticNormist);
         }
         setLoaded(true);
       });
   }, []);
 
   const isNormist = (code: string): boolean => {
-    // If DB data is loaded, use it exclusively
-    if (loaded && normistCodes.size > 0) {
+    // Always use loaded set (DB or static fallback) — never prefix-match alone
+    if (loaded) {
       return normistCodes.has(code);
     }
-    // Fallback: use local static data
+    // Pre-load fallback: check static data first, then prefix heuristic
     const localItem = STOCK_ITEMS.find(i => i.code === code);
     if (localItem) return localItem.supplier === 'NORMIST';
+    // Last resort prefix check (only covers items not in static list at all)
     return (
-      code.startsWith('NOR') ||
-      code.startsWith('NORMIST') ||
+      code.startsWith('NOR ') ||
+      code.startsWith('NORMIST ') ||
       code.startsWith('NMC') ||
       code.startsWith('NORMIST_PUMP') ||
       code.startsWith('NORMIST_UV') ||
