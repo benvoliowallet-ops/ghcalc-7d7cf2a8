@@ -54,7 +54,7 @@ export function LoginPage() {
         {/* Brand */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <img src={sanfogLogoWhite} alt="Sanfog" className="h-16 w-auto" />
+            <img src={sanfogLogoWhite} alt="Sanfog" className="h-24 w-auto" />
           </div>
           <h1 className="text-lg font-bold text-white uppercase tracking-widest">Greenhouse Projekt</h1>
           <p className="text-sm text-white/40 mt-1">Interný BOM kalkulátor</p>
