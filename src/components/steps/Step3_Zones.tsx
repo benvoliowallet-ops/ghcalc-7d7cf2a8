@@ -160,15 +160,15 @@ export function Step3_Zones() {
                   const calc = zoneCalcs[i];
                   if (!calc) return null;
                   return (
-                    <tr key={i} className="border-t border-gray-100 hover:bg-gray-50">
-                      <td className="p-3 font-medium"><div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: ZONE_COLORS[i % ZONE_COLORS.length] }} />{zone.name}</div></td>
-                      <td className="p-3 text-right">{fmtN(calc.area, 1)} m²</td>
-                      <td className="p-3 text-right">{fmtN(calc.zoneFlow / 1000, 1)} l/hod</td>
-                      <td className="p-3 text-right"><span>{calc.numNozzles} ks</span>{(calc.nozzlesPerNave ?? 0) > 0 && <span className="text-gray-400 text-xs ml-1">({calc.nozzlesPerNave}/loď)</span>}</td>
-                      <td className="p-3 text-right">{calc.numPipes10mmTotal} ks</td>
-                      <td className="p-3 text-right">{fmtN(calc.ropeLength)} m{calc.ropeWaste > 0 && <span className="text-gray-400 text-xs block">odpad: {fmtN(calc.ropeWaste, 0)} m</span>}</td>
-                      <td className="p-3 text-right font-mono">{fmtN(calc.supplyPipeLength, 1)} m</td>
-                      <td className="p-3 text-right">{fmtN(calc.pressureDrop, 4)} bar</td>
+                    <tr key={i} className="border-t border-border hover:bg-muted/50">
+                       <td className="p-3 font-medium"><div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: ZONE_COLORS[i % ZONE_COLORS.length] }} />{zone.name}</div></td>
+                       <td className="p-3 text-right">{fmtN(calc.area, 1)} m²</td>
+                       <td className="p-3 text-right">{fmtN(calc.zoneFlow / 1000, 1)} l/hod</td>
+                       <td className="p-3 text-right"><span>{calc.numNozzles} ks</span>{(calc.nozzlesPerNave ?? 0) > 0 && <span className="text-muted-foreground text-xs ml-1">({calc.nozzlesPerNave}/loď)</span>}</td>
+                       <td className="p-3 text-right">{calc.numPipes10mmTotal} ks</td>
+                       <td className="p-3 text-right">{fmtN(calc.ropeLength)} m{calc.ropeWaste > 0 && <span className="text-muted-foreground text-xs block">odpad: {fmtN(calc.ropeWaste, 0)} m</span>}</td>
+                       <td className="p-3 text-right font-mono">{fmtN(calc.supplyPipeLength, 1)} m</td>
+                       <td className="p-3 text-right">{fmtN(calc.pressureDrop, 4)} bar</td>
                       <td className="p-3 text-center">{calc.drawingComplete ? <Badge variant="green">✓ Hotovo</Badge> : <Badge variant="amber">⚠ Chýba</Badge>}</td>
                     </tr>
                   );
