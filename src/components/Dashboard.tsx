@@ -193,8 +193,7 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
           onClick={onNewProject}
           className="flex items-center gap-2 px-5 py-2.5 font-semibold uppercase tracking-wide text-sm transition-colors bg-primary text-primary-foreground"
           style={{ borderRadius: 'var(--radius)' }}>
-          
-          ＋ Nový projekt
+          <Plus className="w-4 h-4" /> Nový projekt
         </button>
       </div>
 
