@@ -18,8 +18,17 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
   const {
     project, globalParams, zones, zoneCalcs, normistPrice,
     costInputs, ropeOverrides, uvSystemCode, ssFilter30, cad, preOrderState,
+    openProjectId,
   } = useProjectStore();
   const { isNormist } = useNormistChecker();
+
+  const { portal, loading: portalLoading, loadPortal, createPortal, revokePortal } = usePortal(openProjectId ?? null);
+  const [shareModal, setShareModal] = useState<{ link: string; password: string } | null>(null);
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Load portal info when component mounts
+  useState(() => { if (openProjectId) loadPortal(); });
 
   const totalArea = zoneCalcs.reduce((s, c) => s + (c?.area ?? 0), 0);
   const totalFlowMlH = zoneCalcs.reduce((s, c) => s + (c?.zoneFlow ?? 0), 0);
