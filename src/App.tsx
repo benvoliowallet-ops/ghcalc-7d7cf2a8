@@ -25,7 +25,6 @@ import { Sidebar } from './components/Sidebar';
 import { useLoadProjects, useAutoSave } from './hooks/useProjects';
 import { ConfirmProvider, useConfirm } from './hooks/useConfirm';
 import { VoraAIChat } from './components/VoraAIChat';
-import { ProjectCommentsPanel } from './components/comments/ProjectComments';
 import Portal from './pages/Portal';
 
 type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary';
