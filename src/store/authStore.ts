@@ -21,7 +21,7 @@ interface AuthStore {
   loadProfile: (user: SupabaseUser) => Promise<void>;
 }
 
-export const useAuthStore = create<AuthStore>((set, get) => ({
+export const useAuthStore = create<AuthStore>((set) => ({
   currentUser: null,
   loading: true,
 
@@ -29,6 +29,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   setLoading: (loading) => set({ loading }),
 
   loadProfile: async (user: SupabaseUser) => {
+    set({ loading: true });
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -38,7 +39,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
       if (error || !data) {
         console.error('[Auth] Failed to load profile:', error?.message);
-        set({ loading: false });
+        set({ currentUser: null, loading: false });
         return;
       }
 
@@ -53,24 +54,24 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       });
     } catch (e) {
       console.error('[Auth] loadProfile exception:', e);
-      set({ loading: false });
+      set({ currentUser: null, loading: false });
     }
   },
 
+  // onAuthStateChange in App.tsx is the single source of truth.
+  // These functions only trigger the auth event; profile loading happens via the listener.
   login: async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return { ok: false, error: 'Nesprávny email alebo heslo' };
-    if (data.user) await get().loadProfile(data.user);
     return { ok: true };
   },
 
   logout: async () => {
     await supabase.auth.signOut();
-    set({ currentUser: null });
+    set({ currentUser: null, loading: false });
   },
 
   bootstrapAdmin: async (email, name, password) => {
-    // Check if any users exist — this is the first-run setup
     const { count } = await supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true });
@@ -88,18 +89,17 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (error) return { ok: false, error: error.message };
     if (!data.user) return { ok: false, error: 'Registrácia zlyhala' };
 
-    // Profile created by DB trigger. Update role to admin explicitly.
+    // Update role to admin — trigger creates the profile but with defaults
     await supabase
       .from('profiles')
       .update({ role: 'admin', name })
       .eq('id', data.user.id);
 
-    await get().loadProfile(data.user);
+    // onAuthStateChange will fire and call loadProfile automatically
     return { ok: true };
   },
 
   registerWithInvite: async (code, email, name, password) => {
-    // Validate invitation code
     const { data: inv, error: invErr } = await supabase
       .from('invitations')
       .select('*')
@@ -121,18 +121,16 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (error) return { ok: false, error: error.message };
     if (!data.user) return { ok: false, error: 'Registrácia zlyhala' };
 
-    // Update profile name & role (trigger creates it but with defaults)
     await supabase
       .from('profiles')
       .upsert({ id: data.user.id, email, name, role: inv.role });
 
-    // Mark invitation as used
     await supabase
       .from('invitations')
       .update({ used_at: new Date().toISOString(), used_by: data.user.id })
       .eq('code', code);
 
-    await get().loadProfile(data.user);
+    // onAuthStateChange will fire and call loadProfile automatically
     return { ok: true };
   },
 }));
