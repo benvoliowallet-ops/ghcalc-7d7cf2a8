@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import sanfogLogoWhite from './assets/sanfog-logo-white.svg';
 import { useProjectStore } from './store/projectStore';
 import { useAuthStore } from './store/authStore';
 import { Dashboard } from './components/Dashboard';

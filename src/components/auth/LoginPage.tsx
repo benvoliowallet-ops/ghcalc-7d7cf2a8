@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
+import sanfogLogoWhite from '../../assets/sanfog-logo-white.svg';
 
 type Mode = 'login' | 'register';
 
