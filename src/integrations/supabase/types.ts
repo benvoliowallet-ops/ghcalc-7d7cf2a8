@@ -202,6 +202,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_all_profiles: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          role: string
+        }[]
+      }
       get_user_count: { Args: never; Returns: number }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
     }

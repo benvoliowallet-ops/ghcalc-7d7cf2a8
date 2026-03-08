@@ -45,7 +45,7 @@ export function UsersPage() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const loadUsers = async () => {
-    const { data } = await supabase.from('profiles').select('*').order('created_at');
+    const { data } = await supabase.rpc('get_all_profiles');
     if (data) setUsers(data as ProfileRow[]);
   };
 
