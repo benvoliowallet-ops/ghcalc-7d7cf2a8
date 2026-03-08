@@ -97,12 +97,12 @@ export function LoginPage() {
     supabase
       .from('profiles')
       .select('id', { count: 'exact', head: true })
-      .then(({ count }) => {
+      .then(({ count, error }) => {
+        if (error) {
+          setIsBootstrap(false);
+          return;
+        }
         setIsBootstrap((count ?? 0) === 0);
-      })
-      .catch(() => {
-        // If request fails, assume non-bootstrap (login mode)
-        setIsBootstrap(false);
       });
   }, []);
 

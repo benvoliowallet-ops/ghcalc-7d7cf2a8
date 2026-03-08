@@ -85,6 +85,7 @@ function AutoSaveSubscriber({ view }: { view: AppView }) {
       ssFilter30:      store.ssFilter30,
       activeZoneIndex: store.activeZoneIndex,
       ropeOverrides:   store.ropeOverrides,
+      preOrderState:   store.preOrderState,
     };
     debouncedSave(snapshot);
   // eslint-disable-next-line react-hooks/exhaustive-deps
