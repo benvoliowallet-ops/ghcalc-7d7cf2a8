@@ -105,7 +105,7 @@ export function Step2_GlobalParams() {
           </div>
         </Card>
 
-        <Card variant="info" title="ℹ️ Pravidlá materiálov">
+        <Card variant="info" title="Pravidlá materiálov">
           <div className="space-y-3 text-sm">
             <div className="p-3 bg-white rounded-lg border border-blue-100">
               <p className="font-semibold text-blue-800 mb-1">Osmotická voda = ÁNO</p>
