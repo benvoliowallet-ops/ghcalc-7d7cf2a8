@@ -213,7 +213,7 @@ export function VoraAIChat() {
             <img
               src="/lovable-uploads/029f5085-4877-4e0f-902e-565d9bab748c.png"
               alt="VORA"
-              className="w-6 h-6 object-contain" />
+              className="w-9 h-9 object-contain" />
             
             <span className="text-sm font-semibold text-white">VORA AI Asistent</span>
             <span className="w-2 h-2 rounded-full animate-pulse bg-green-600" />
