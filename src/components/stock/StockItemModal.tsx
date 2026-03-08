@@ -14,56 +14,11 @@ interface Props {
 export function StockItemModal({ mode, item, groups, allItems, onClose }: Props) {
   const { currentUser } = useAuthStore();
 
-  // NC1 FIX: pass onClose as the reload callback so parent list refreshes after mutation
+  // NC1 FIX: mutations call their reload() which IS onClose — triggers parent refresh + close
   const { addItem, updateItem } = useStockMutations(onClose);
-
-  const [code, setCode] = useState(item?.code ?? '');
-  const [name, setName] = useState(item?.name ?? '');
-  const [additionalText, setAdditionalText] = useState(item?.additionalText ?? '');
-  const [price, setPrice] = useState(item?.price?.toString() ?? '');
-  const [group, setGroup] = useState(item?.group ?? '');
-  const [error, setError] = useState('');
-  const [saving, setSaving] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!currentUser) return;
-    setError('');
-
-    const trimmedCode = code.trim();
-    const priceNum = parseFloat(price);
-
-    if (!trimmedCode) return setError('Kód je povinný');
-    if (isNaN(priceNum) || priceNum < 0) return setError('Zadajte platnú cenu (≥ 0)');
-    if (!name.trim()) return setError('Názov je povinný');
-    if (!group.trim()) return setError('Skupina je povinná');
-
-    setSaving(true);
-
-    if (mode === 'add') {
-      if (allItems.some((i) => i.code === trimmedCode)) {
-        setSaving(false);
-        return setError('Položka s týmto kódom už existuje');
-      }
-      const result = await addItem({
-        code: trimmedCode,
-        name: name.trim(),
-        additionalText: additionalText.trim(),
-        price: priceNum,
-        group: group.trim(),
-      });
-      if (!result.ok) { setSaving(false); return setError(result.error ?? 'Chyba'); }
-    } else {
-      const result = await updateItem(
-        item!.code,
-        { name: name.trim(), additionalText: additionalText.trim(), price: priceNum, group: group.trim() },
-        item!
-      );
-      if (!result.ok) { setSaving(false); return setError(result.error ?? 'Chyba'); }
-    }
-
+...
     setSaving(false);
-    onClose();
+    // onClose is called by the mutation's reload() — no need to call again here
   };
 
   return (
