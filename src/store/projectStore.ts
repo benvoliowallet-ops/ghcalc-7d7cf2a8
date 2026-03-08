@@ -136,7 +136,7 @@ function captureSnapshot(s: ProjectStore): ProjectState {
 export const useProjectStore = create<ProjectStore>()(
   persist(
     (set, get) => ({
-      currentStep: 1,
+  currentStep: 1,
       project: defaultProject,
       globalParams: defaultGlobalParams,
       zones: [defaultZone],
@@ -150,6 +150,7 @@ export const useProjectStore = create<ProjectStore>()(
       ssFilter30: false,
       activeZoneIndex: 0,
       savedProjects: [],
+      ropeOverrides: [],
 
       saveCurrentProject: () => {
         const s = get();
