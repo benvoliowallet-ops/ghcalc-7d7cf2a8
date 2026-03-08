@@ -29,27 +29,32 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   setLoading: (loading) => set({ loading }),
 
   loadProfile: async (user: SupabaseUser) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, email, name, role')
-      .eq('id', user.id)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, email, name, role')
+        .eq('id', user.id)
+        .single();
 
-    if (error || !data) {
-      console.error('[Auth] Failed to load profile:', error?.message);
+      if (error || !data) {
+        console.error('[Auth] Failed to load profile:', error?.message);
+        set({ loading: false });
+        return;
+      }
+
+      set({
+        currentUser: {
+          id: data.id,
+          email: data.email,
+          name: data.name,
+          role: data.role as 'admin' | 'user',
+        },
+        loading: false,
+      });
+    } catch (e) {
+      console.error('[Auth] loadProfile exception:', e);
       set({ loading: false });
-      return;
     }
-
-    set({
-      currentUser: {
-        id: data.id,
-        email: data.email,
-        name: data.name,
-        role: data.role as 'admin' | 'user',
-      },
-      loading: false,
-    });
   },
 
   login: async (email, password) => {
