@@ -96,6 +96,7 @@ type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 interface ProjectStore extends ProjectState {
   savedProjects: SavedProject[];
   saveStatus: SaveStatus;
+  openProjectId: string | null;
   saveCurrentProject: () => void;
   setSavedProjects: (projects: SavedProject[]) => void;
   setSaveStatus: (status: SaveStatus) => void;
