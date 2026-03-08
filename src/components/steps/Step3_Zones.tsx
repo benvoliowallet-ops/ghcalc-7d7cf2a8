@@ -64,9 +64,15 @@ export function Step3_Zones() {
     const { name: _name, ...rest } = zones[sourceIndex];
     updateZone(activeZoneIndex, rest);
   };
-  const handleInitCADZones = () => {
+  const handleInitCADZones = async () => {
     if (cad.segments.length > 0 || cad.zones.length > 0) {
-      if (!window.confirm('Toto resetuje pozície zón v CAD náčrte. Pokračovať?')) return;
+      const ok = await confirm({
+        title: 'Resetovať CAD výkres?',
+        description: 'Toto resetuje pozície zón v CAD náčrte. Akcia je nevratná.',
+        confirmLabel: 'Resetovať',
+        variant: 'destructive',
+      });
+      if (!ok) return;
     }
     initCADZones();
   };
