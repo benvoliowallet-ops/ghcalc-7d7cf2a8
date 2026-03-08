@@ -108,8 +108,8 @@ export function StockPage() {
           ))}
         </select>
         {(search || groupFilter !== 'all') && (
-          <button onClick={() => { setSearch(''); setGroupFilter('all'); }} className="px-3 py-2 border border-border text-sm text-muted-foreground hover:bg-muted transition-colors" style={{ borderRadius: 'var(--radius)' }}>
-            ✕ Zrušiť filter
+          <button onClick={() => { setSearch(''); setGroupFilter('all'); }} className="flex items-center gap-1.5 px-3 py-2 border border-border text-sm text-muted-foreground hover:bg-muted transition-colors" style={{ borderRadius: 'var(--radius)' }}>
+            <X className="w-3.5 h-3.5" /> Zrušiť filter
           </button>
         )}
       </div>
