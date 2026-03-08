@@ -187,7 +187,7 @@ export function Step6_Costs() {
         </Card>
 
         {/* Summary */}
-        <Card variant="calc" title="📊 Súhrn nákladov (krok 6)">
+        <Card variant="calc" title="Súhrn nákladov (krok 6)">
           <CalcRow label="Práca (100€/deň)" value={fmtE(installTechCost)} />
           <CalcRow label="Diéty (35€/deň)" value={fmtE(dietsCost)} />
           <CalcRow label="Ubytovanie" value={fmtE(accommodationCost)} />

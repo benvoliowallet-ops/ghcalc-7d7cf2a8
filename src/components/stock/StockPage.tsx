@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Pencil, Trash2, Package } from 'lucide-react';
+import { Pencil, Trash2, Package, Plus, ChevronUp, ChevronDown, ChevronsUpDown, X } from 'lucide-react';
 import { useStockItems, useStockMutations } from '../../hooks/useStockDB';
 import { useAuthStore } from '../../store/authStore';
 import { useConfirm } from '../../hooks/useConfirm';
@@ -61,9 +61,9 @@ export function StockPage() {
 
   const SortIcon = ({ col }: { col: typeof sortBy }) =>
     sortBy === col ? (
-      <span className="ml-1 text-teal">{sortAsc ? '↑' : '↓'}</span>
+      sortAsc ? <ChevronUp className="w-3 h-3 ml-1 text-teal inline" /> : <ChevronDown className="w-3 h-3 ml-1 text-teal inline" />
     ) : (
-      <span className="ml-1 text-border">↕</span>
+      <ChevronsUpDown className="w-3 h-3 ml-1 text-border inline" />
     );
 
   return (
@@ -84,7 +84,7 @@ export function StockPage() {
           className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors shadow-sm"
           style={{ borderRadius: 'var(--radius)' }}
         >
-          ＋ Pridať položku
+          <Plus className="w-4 h-4" /> Pridať položku
         </button>
       </div>
 
@@ -92,7 +92,7 @@ export function StockPage() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="🔍 Hľadať podľa kódu, názvu, skupiny..."
+          placeholder="Hľadať podľa kódu, názvu, skupiny..."
           className="flex-1 min-w-[220px] px-3 py-2 border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
           style={{ borderRadius: 'var(--radius)' }}
         />
@@ -108,8 +108,8 @@ export function StockPage() {
           ))}
         </select>
         {(search || groupFilter !== 'all') && (
-          <button onClick={() => { setSearch(''); setGroupFilter('all'); }} className="px-3 py-2 border border-border text-sm text-muted-foreground hover:bg-muted transition-colors" style={{ borderRadius: 'var(--radius)' }}>
-            ✕ Zrušiť filter
+          <button onClick={() => { setSearch(''); setGroupFilter('all'); }} className="flex items-center gap-1.5 px-3 py-2 border border-border text-sm text-muted-foreground hover:bg-muted transition-colors" style={{ borderRadius: 'var(--radius)' }}>
+            <X className="w-3.5 h-3.5" /> Zrušiť filter
           </button>
         )}
       </div>

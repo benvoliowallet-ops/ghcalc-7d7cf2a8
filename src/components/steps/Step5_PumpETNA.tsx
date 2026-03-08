@@ -1,4 +1,5 @@
 import { useProjectStore } from '../../store/projectStore';
+import { Check, AlertTriangle } from 'lucide-react';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, CalcRow, Toggle } from '../ui/FormField';
 import { PUMP_TABLE, calcETNACapacity, fmtN } from '../../utils/calculations';
@@ -93,7 +94,7 @@ export function Step5_PumpETNA() {
                   ))}
                 </select>
                 {uvSystemCode && (
-                  <p className="text-xs text-teal mt-1">✓ Vybrané: {uvSystemCode}</p>
+                  <p className="text-xs text-teal mt-1 flex items-center gap-1"><Check className="w-3 h-3" />Vybrané: {uvSystemCode}</p>
                 )}
               </div>
 
@@ -139,7 +140,7 @@ export function Step5_PumpETNA() {
             </div>
 
             <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-              <p className="text-xs font-semibold text-amber-700 mb-1">⚠ FOGSYSTEM NORMIST</p>
+              <p className="text-xs font-semibold text-amber-700 mb-1 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />FOGSYSTEM NORMIST</p>
               <p className="text-xs text-muted-foreground">
                 Zadáva sa manuálne po prijatí cenovej ponuky od NAZLI (krok 7).
                 Variant: {osmoticSS ? 'SS' : 'ŠTANDARD'}
@@ -172,7 +173,7 @@ export function Step5_PumpETNA() {
                 <div>
                   <p className="text-sm font-medium">{zones[i]?.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {pump ? pump.name : <span className="text-destructive">⚠ Nad kapacitou</span>}
+                    {pump ? pump.name : <span className="text-destructive flex items-center gap-1"><AlertTriangle className="w-3 h-3" />Nad kapacitou</span>}
                   </p>
                 </div>
                 <span className={`text-xs font-mono ${pump ? 'text-teal' : 'text-destructive'}`}>

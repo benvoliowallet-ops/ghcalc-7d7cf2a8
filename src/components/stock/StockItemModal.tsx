@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import { useStockMutations } from '../../hooks/useStockDB';
 import { useAuthStore } from '../../store/authStore';
 import type { StockItem } from '../../types';
@@ -125,7 +126,7 @@ export function StockItemModal({ mode, item, groups, allItems, onClose }: Props)
           </div>
 
           {error && (
-            <div className="px-3 py-2 bg-destructive/10 border border-destructive/30 rounded-lg text-xs text-destructive">⚠️ {error}</div>
+            <div className="px-3 py-2 bg-destructive/10 border border-destructive/30 rounded-lg text-xs text-destructive flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />{error}</div>
           )}
 
           <div className="flex gap-3 pt-2">

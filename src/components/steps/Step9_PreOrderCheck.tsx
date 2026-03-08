@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Search, CheckCircle, Check, AlertTriangle } from 'lucide-react';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Input, Card, Badge } from '../ui/FormField';
@@ -42,7 +43,7 @@ export function Step9_PreOrderCheck() {
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Card 1 – Pump connector */}
-        <Card variant="warning" title="🔍 Kontrola 1 – Prepoj čerpadlo → hl. vedenie DN25">
+        <Card variant="warning" title="Kontrola 1 – Prepoj čerpadlo → hl. vedenie DN25">
           <p className="text-sm text-muted-foreground mb-4">
             Štandard je <strong>3 m</strong>. Overte skutočné metre pre konkrétny projekt.
           </p>
@@ -73,7 +74,7 @@ export function Step9_PreOrderCheck() {
         </Card>
 
         {/* Card 2 – ETNA accessories */}
-        <Card variant="warning" title="🔍 Kontrola 2 – Príslušenstvo k ETNA">
+        <Card variant="warning" title="Kontrola 2 – Príslušenstvo k ETNA">
           <p className="text-sm text-muted-foreground mb-4">
             Fixný náklad <strong>200 €</strong> platí len do 10 m.
             Ak je vzdialenosť od čerpadla k ETNA nad 10 m, zadajte skutočný náklad.
@@ -101,14 +102,14 @@ export function Step9_PreOrderCheck() {
               <Badge variant="amber">Vlastná suma: {fmtE(etnaCustomCost)}</Badge>
             </div>
           ) : (
-            <div className="p-3 bg-teal/5 border border-teal/20 rounded-md mt-2">
-              <p className="text-sm text-teal font-semibold">✓ Fixná sadzba 200 € (≤ 10m)</p>
+          <div className="p-3 bg-teal/5 border border-teal/20 rounded-md mt-2">
+              <p className="text-sm text-teal font-semibold flex items-center gap-1"><Check className="w-3 h-3" />Fixná sadzba 200 € (≤ 10m)</p>
             </div>
           )}
         </Card>
 
         {/* Card 3 – Rope lengths */}
-        <Card variant="info" title="🔍 Kontrola 3 – Dĺžky lana">
+        <Card variant="info" title="Kontrola 3 – Dĺžky lana">
           <p className="text-sm text-muted-foreground mb-4">
             Lano sa objednáva v cievkach po <strong>500 m</strong>. Systém vypočítal potrebu per zóna.
             Upravte množstvo ak chcete objednať inak (napr. spojiť viaceré zóny).
@@ -158,22 +159,22 @@ export function Step9_PreOrderCheck() {
         </Card>
 
         {/* Summary card */}
-        <Card variant="success" title="✅ Zhrnutie kontroly">
+        <Card variant="success" title="Zhrnutie kontroly">
           <div className="space-y-3">
             <div className="flex items-center justify-between py-2 border-b border-border">
               <span className="text-sm text-foreground">Prepoj čerpadlo → vedenie DN25</span>
               <Badge variant={allGood ? 'green' : 'amber'}>
-                {allGood ? '✓ Skontrolované' : '⚠ Chýba'}
+                {allGood ? <span className="flex items-center gap-1"><Check className="w-3 h-3" />Skontrolované</span> : <span className="flex items-center gap-1"><AlertTriangle className="w-3 h-3" />Chýba</span>}
               </Badge>
             </div>
             <div className="flex items-center justify-between py-2 border-b border-border">
               <span className="text-sm text-foreground">Príslušenstvo k ETNA ({etnaDistance}m)</span>
-              <Badge variant="green">{etnaAccessoryCost} € ✓</Badge>
+              <Badge variant="green"><span className="flex items-center gap-1">{etnaAccessoryCost} € <Check className="w-3 h-3" /></span></Badge>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-sm text-foreground">Lano celkom</span>
               <Badge variant="green">
-                {fmtN(ropeOverrides.reduce((s, v) => s + (v || 0), 0), 0)} m ✓
+                <span className="flex items-center gap-1">{fmtN(ropeOverrides.reduce((s, v) => s + (v || 0), 0), 0)} m <Check className="w-3 h-3" /></span>
               </Badge>
             </div>
           </div>

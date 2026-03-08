@@ -1,6 +1,7 @@
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Input, Select, Card, Toggle, CalcRow } from '../ui/FormField';
+import { AlertTriangle } from 'lucide-react';
 
 export function Step2_GlobalParams() {
   const { globalParams, updateGlobalParams } = useProjectStore();
@@ -105,7 +106,7 @@ export function Step2_GlobalParams() {
           </div>
         </Card>
 
-        <Card variant="info" title="ℹ️ Pravidlá materiálov">
+        <Card variant="info" title="Pravidlá materiálov">
           <div className="space-y-3 text-sm">
             <div className="p-3 bg-white rounded-lg border border-blue-100">
               <p className="font-semibold text-blue-800 mb-1">Osmotická voda = ÁNO</p>
@@ -114,7 +115,7 @@ export function Step2_GlobalParams() {
               </p>
             </div>
             <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
-              <p className="font-semibold text-amber-800 mb-1">⚠ Vždy SS (bez ohľadu na osmózu)</p>
+              <p className="font-semibold text-amber-800 mb-1 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />Vždy SS (bez ohľadu na osmózu)</p>
               <p className="text-gray-600 text-xs">
                 Trubka A304 TIG 22×1,5 · VT Spojka P22F AK · T-kus prepoj · Dilatácia DN25 · Závesný
                 diel 400mm · Ventil ihlový G1/2F · Prepoj čerpadlo→vedenie DN25
@@ -123,7 +124,7 @@ export function Step2_GlobalParams() {
           </div>
         </Card>
 
-        <Card variant="calc" title="📊 Zhrnutie parametrov">
+        <Card variant="calc" title="Zhrnutie parametrov">
           <CalcRow label="Počet zón" value={globalParams.numberOfZones} />
           <CalcRow label="Počet čerpadiel" value={globalParams.numberOfZones} />
           <CalcRow label="Kapacita foggingu" value={globalParams.fogCapacity} unit="ml/hod/m²" />

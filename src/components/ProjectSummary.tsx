@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx';
+import { MapPin, Printer, Download, Pencil, Check } from 'lucide-react';
 import { useProjectStore } from '../store/projectStore';
 import { PUMP_TABLE, calcETNACapacity, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes, getTransportCost, getPMCost } from '../utils/calculations';
 import { getPipe10mmForSpacing } from '../data/stockItems';
@@ -273,15 +274,15 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
         <div>
           <div className="flex items-center gap-3 mb-1">
             <span className="font-mono text-lg font-bold text-teal">{project.quoteNumber}</span>
-            <span className="text-xs bg-teal/20 text-teal border border-teal/40 px-2 py-0.5 rounded font-semibold uppercase tracking-wide">
-              Hotovo ✓
+            <span className="text-xs bg-teal/20 text-teal border border-teal/40 px-2 py-0.5 rounded font-semibold uppercase tracking-wide flex items-center gap-1">
+              Hotovo <Check className="w-3 h-3" />
             </span>
           </div>
           <h1 className="text-xl font-bold text-white">
             {project.customerName || 'Bez zákazníka'}
           </h1>
           {project.projectAddress && (
-            <p className="text-sm text-white/60 mt-0.5">📍 {project.projectAddress}</p>
+            <p className="text-sm text-white/60 mt-0.5 flex items-center gap-1"><MapPin className="w-3.5 h-3.5 flex-shrink-0" />{project.projectAddress}</p>
           )}
           <p className="text-xs text-white/40 mt-1">{project.quoteDate} · {project.country}</p>
         </div>
@@ -291,21 +292,21 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
             className="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded transition-colors"
             style={{ borderRadius: 'var(--radius)' }}
           >
-            🖨 Tlačiť
+            <Printer className="w-3.5 h-3.5" /> Tlačiť
           </button>
           <button
             onClick={handleExportXLSX}
             className="flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded transition-colors"
             style={{ borderRadius: 'var(--radius)' }}
           >
-            📥 Export XLSX
+            <Download className="w-3.5 h-3.5" /> Export XLSX
           </button>
           <button
             onClick={onOpenWizard}
             className="flex items-center gap-1.5 px-3 py-2 bg-teal hover:bg-teal/90 text-white text-sm font-semibold rounded transition-colors"
             style={{ borderRadius: 'var(--radius)' }}
           >
-            ✏️ Otvoriť wizard
+            <Pencil className="w-3.5 h-3.5" /> Otvoriť wizard
           </button>
         </div>
       </div>
@@ -421,14 +422,14 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
               className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground text-sm font-semibold rounded hover:opacity-90 transition-opacity"
               style={{ borderRadius: 'var(--radius)' }}
             >
-              🖨 Tlačiť
+              <Printer className="w-3.5 h-3.5" /> Tlačiť
             </button>
             <button
               onClick={exportNazliXLSX}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-muted text-foreground text-sm font-semibold rounded hover:bg-muted/80 transition-colors"
               style={{ borderRadius: 'var(--radius)' }}
             >
-              📥 XLSX
+              <Download className="w-3.5 h-3.5" /> XLSX
             </button>
           </div>
         </div>
@@ -445,14 +446,14 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
               className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground text-sm font-semibold rounded hover:opacity-90 transition-opacity"
               style={{ borderRadius: 'var(--radius)' }}
             >
-              🖨 Tlačiť
+              <Printer className="w-3.5 h-3.5" /> Tlačiť
             </button>
             <button
               onClick={exportAttiBOMXLSX}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-muted text-foreground text-sm font-semibold rounded hover:bg-muted/80 transition-colors"
               style={{ borderRadius: 'var(--radius)' }}
             >
-              📥 XLSX
+              <Download className="w-3.5 h-3.5" /> XLSX
             </button>
           </div>
         </div>

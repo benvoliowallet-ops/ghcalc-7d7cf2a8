@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Save, RotateCcw, Loader2, Check, AlertTriangle } from 'lucide-react';
 import voraLogo from './assets/vora-logo.png';
 import { useProjectStore } from './store/projectStore';
 import { useAuthStore } from './store/authStore';
@@ -52,17 +52,15 @@ function SaveIndicator() {
         saveStatus === 'saved' ? 'hsl(var(--teal))' :
         'hsl(0 80% 65%)'
       }}>
-      
-      {saveStatus === 'saving' && <span className="animate-spin inline-block">⟳</span>}
-      {saveStatus === 'saved' && '✓'}
-      {saveStatus === 'error' && '⚠'}
+      {saveStatus === 'saving' && <Loader2 className="w-3 h-3 animate-spin" />}
+      {saveStatus === 'saved' && <Check className="w-3 h-3" />}
+      {saveStatus === 'error' && <AlertTriangle className="w-3 h-3" />}
       <span>
         {saveStatus === 'saving' ? 'Ukladám...' :
         saveStatus === 'saved' ? 'Uložené' :
         'Chyba ukladania'}
       </span>
     </div>);
-
 }
 
 function AutoSaveSubscriber({ view }: {view: AppView;}) {
@@ -274,14 +272,12 @@ function AppInner() {
                 onClick={handleSaveAndClose}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal hover:bg-teal/90 text-white transition-colors"
                 style={{ borderRadius: 'var(--radius)' }}>
-                
-                  💾 Uložiť
+                  <Save className="w-3.5 h-3.5" /> Uložiť
                 </button>
                 <button
                 onClick={handleNewProject}
-                className="text-xs text-white/40 hover:text-white px-2 py-1 transition-colors">
-                
-                  ↺ Nový
+                className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white px-2 py-1 transition-colors">
+                  <RotateCcw className="w-3.5 h-3.5" /> Nový
                 </button>
               </div>
             </div>

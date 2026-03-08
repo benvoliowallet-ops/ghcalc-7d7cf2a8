@@ -1,4 +1,5 @@
-import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import { Settings, Maximize2, Minimize2, Undo2, Trash2 } from 'lucide-react';
 import { useProjectStore } from '../../store/projectStore';
 import type { CADSegment, CADSymbol, CADPoint, LineType } from '../../types';
 import { detectConcurrentPipes, bracketPipeCount, getTrellisBracketCode, getRacmetBracketCode } from '../../utils/calculations';
@@ -401,15 +402,15 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
       <div className="flex flex-col gap-1.5 w-36 flex-shrink-0 overflow-y-auto">
         <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Nástroj</p>
         {([
-          { key: 'select', icon: '↖', label: 'Výber' },
-          { key: 'pan', icon: '✋', label: 'Pan' },
-          { key: 'pipe', icon: '—', label: 'Potrubie' },
-          { key: 'cable_cysy', icon: '~', label: 'CYSY kábel' },
-          { key: 'cable_ftp', icon: '·', label: 'FTP kábel' },
-          { key: 'pump', icon: '⚙', label: 'Čerpadlo' },
-          { key: 'drain_magnet', icon: '⊕', label: 'Drain Mag.' },
-          { key: 'sensor', icon: '◈', label: 'Snímač' },
-        ] as const).map((t) => (
+          { key: 'select' as Tool, icon: '↖', label: 'Výber' },
+          { key: 'pan' as Tool, icon: '✋', label: 'Pan' },
+          { key: 'pipe' as Tool, icon: '—', label: 'Potrubie' },
+          { key: 'cable_cysy' as Tool, icon: '~', label: 'CYSY kábel' },
+          { key: 'cable_ftp' as Tool, icon: '·', label: 'FTP kábel' },
+          { key: 'pump' as Tool, icon: <Settings size={16} />, label: 'Čerpadlo' },
+          { key: 'drain_magnet' as Tool, icon: '⊕', label: 'Drain Mag.' },
+          { key: 'sensor' as Tool, icon: '◈', label: 'Snímač' },
+        ] as { key: Tool; icon: React.ReactNode; label: string }[]).map((t) => (
           <button
             key={t.key}
             onClick={() => {
@@ -432,9 +433,9 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
         <div className="mt-1 border-t pt-2 flex flex-col gap-1">
           <button
             onClick={fitToView}
-            className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700"
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700"
           >
-            ⊡ Fit to view
+            <Maximize2 className="w-3.5 h-3.5" /> Fit to view
           </button>
 
           <button
@@ -446,21 +447,21 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
               }
             }}
             disabled={history.length === 0}
-            className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            ↩ Undo ({history.length})
+            <Undo2 className="w-3.5 h-3.5" /> Undo ({history.length})
           </button>
 
           <button
             onClick={deleteSelected}
             disabled={!hasSelection}
-            className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+            className={`w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
               hasSelection
                 ? 'bg-red-500 text-white hover:bg-red-600'
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             }`}
           >
-            🗑 Zmazať
+            <Trash2 className="w-3.5 h-3.5" /> Zmazať
             {hasSelection && (
               <span className="block text-xs opacity-80">
                 {selectedType === 'segment' ? 'čiara' : 'symbol'}
@@ -470,9 +471,9 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
 
           <button
             onClick={toggleFullscreen}
-            className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700"
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700"
           >
-            {isFullscreen ? '✕ Ukončiť' : '⛶ Celá obrazovka'}
+            {isFullscreen ? <><Minimize2 className="w-3.5 h-3.5" /> Ukončiť</> : <><Maximize2 className="w-3.5 h-3.5" /> Celá obrazovka</>}
           </button>
         </div>
 

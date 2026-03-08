@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { List, PenLine, BarChart2, RotateCcw, Check, Circle, AlertTriangle } from 'lucide-react';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
@@ -97,7 +98,7 @@ export function Step3_Zones() {
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 transition-all ${activeZoneIndex === i ? 'border-teal bg-teal/10 text-teal' : 'border-border bg-card text-muted-foreground hover:border-teal/40'}`}>
               <span className="w-3 h-3 rounded-full" style={{ background: ZONE_COLORS[i % ZONE_COLORS.length] }} />
               <span>{zone.name || `Zóna ${i + 1}`}</span>
-              {isComplete ? <span className="text-teal">✓</span> : <span className="text-muted-foreground/30">○</span>}
+              {isComplete ? <Check className="w-3 h-3 text-teal" /> : <Circle className="w-3 h-3 text-muted-foreground/30" />}
             </button>
           );
         })}
@@ -105,10 +106,10 @@ export function Step3_Zones() {
 
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="flex border-b border-border">
-          {([{ key: 'params', label: '📋 3A–3D Parametre' }, { key: 'cad', label: '✏️ 3G Výkres (CAD)' }, { key: 'results', label: '📊 3E–3L Výsledky' }] as const).map((tab) => (
+          {([{ key: 'params', label: '3A–3D Parametre', icon: <List className="w-3.5 h-3.5" /> }, { key: 'cad', label: '3G Výkres (CAD)', icon: <PenLine className="w-3.5 h-3.5" /> }, { key: 'results', label: '3E–3L Výsledky', icon: <BarChart2 className="w-3.5 h-3.5" /> }] as const).map((tab) => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 py-3 px-4 text-sm font-semibold transition-colors ${activeTab === tab.key ? 'bg-teal/10 text-teal border-b-2 border-teal' : 'text-muted-foreground hover:bg-muted'}`}>
-              {tab.label}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-3 px-4 text-sm font-semibold transition-colors ${activeTab === tab.key ? 'bg-teal/10 text-teal border-b-2 border-teal' : 'text-muted-foreground hover:bg-muted'}`}>
+              {tab.icon}{tab.label}
             </button>
           ))}
         </div>
@@ -127,7 +128,7 @@ export function Step3_Zones() {
                   <h3 className="font-bold text-foreground">Krok 3G – Interaktívny CAD výkres</h3>
                   <p className="text-sm text-muted-foreground">Nakreslite napájacie vedenie pre zónu {currentZone.name}.</p>
                 </div>
-                <Button variant="secondary" size="sm" onClick={handleInitCADZones}>↺ Vygenerovať zóny</Button>
+                <Button variant="secondary" size="sm" onClick={handleInitCADZones} className="flex items-center gap-1.5"><RotateCcw className="w-3.5 h-3.5" /> Vygenerovať zóny</Button>
               </div>
               <CADModule activeZoneIndex={activeZoneIndex} />
             </div>
@@ -136,7 +137,7 @@ export function Step3_Zones() {
             <ZoneResultsTab calc={currentCalc} zone={currentZone} globalParams={globalParams} />
           )}
           {activeTab === 'results' && !currentCalc && (
-            <div className="text-center py-12 text-muted-foreground"><p className="text-3xl mb-2">📊</p><p>Výsledky sa vypočítajú po zadaní parametrov</p></div>
+            <div className="text-center py-12 text-muted-foreground"><BarChart2 className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" /><p>Výsledky sa vypočítajú po zadaní parametrov</p></div>
           )}
         </div>
       </div>
@@ -169,7 +170,7 @@ export function Step3_Zones() {
                        <td className="p-3 text-right">{fmtN(calc.ropeLength)} m{calc.ropeWaste > 0 && <span className="text-muted-foreground text-xs block">odpad: {fmtN(calc.ropeWaste, 0)} m</span>}</td>
                        <td className="p-3 text-right font-mono">{fmtN(calc.supplyPipeLength, 1)} m</td>
                        <td className="p-3 text-right">{fmtN(calc.pressureDrop, 4)} bar</td>
-                      <td className="p-3 text-center">{calc.drawingComplete ? <Badge variant="green">✓ Hotovo</Badge> : <Badge variant="amber">⚠ Chýba</Badge>}</td>
+                      <td className="p-3 text-center">{calc.drawingComplete ? <Badge variant="green"><span className="flex items-center gap-1"><Check className="w-3 h-3" />Hotovo</span></Badge> : <Badge variant="amber"><span className="flex items-center gap-1"><AlertTriangle className="w-3 h-3" />Chýba</span></Badge>}</td>
                     </tr>
                   );
                 })}
@@ -289,7 +290,7 @@ function ZoneResultsTab({ calc, zone }: { calc: ZoneCalc; zone: ZoneParams; glob
   if (!calc.drawingComplete) {
     return (
       <div className="p-6 text-center">
-        <div className="text-4xl mb-3">✏️</div>
+        <PenLine className="w-8 h-8 text-muted-foreground/40 mx-auto mb-3" />
         <p className="font-semibold text-gray-700">Najprv dokončite výkres (krok 3G)</p>
         <p className="text-sm text-gray-500 mt-1">Výsledky krokov 3E a 3H závisia od výkresu napájacieho vedenia.</p>
       </div>

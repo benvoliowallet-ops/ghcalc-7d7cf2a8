@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, MapPin, Clock, FileText, Play, Plus } from 'lucide-react';
 import { useProjectStore } from '../store/projectStore';
 import { useConfirm } from '../hooks/useConfirm';
 import type { SavedProject } from '../types';
@@ -8,7 +8,7 @@ const COUNTRY_FLAG: Record<string, string> = { SK: '🇸🇰', CZ: '🇨🇿', H
 
 const STEP_LABELS: Record<number, string> = {
   1: 'Nový projekt', 2: 'Globálne param.', 3: 'Zóny', 4: 'Čerpadlo',
-  5: 'ETNA', 6: 'Náklady', 7: 'NORMIST', 8: 'Dokumenty', 9: 'Kontrola', 10: '✅ Hotovo'
+  5: 'ETNA', 6: 'Náklady', 7: 'NORMIST', 8: 'Dokumenty', 9: 'Kontrola', 10: 'Hotovo'
 };
 
 function formatDate(iso: string) {
@@ -124,7 +124,7 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
           <p className="text-muted-foreground text-sm italic mt-0.5">Bez zákazníka</p>
           }
           {project.projectAddress &&
-          <p className="text-xs text-muted-foreground mt-0.5">📍 {project.projectAddress}</p>
+          <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1"><MapPin className="w-3 h-3 flex-shrink-0" />{project.projectAddress}</p>
           }
         </div>
         <button
@@ -146,7 +146,7 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
           <GreenhouseIcon className="w-3.5 h-3.5 text-teal/70" />
           {project.numZones} {project.numZones === 1 ? 'zóna' : 'zóny'}
         </span>
-        <span>🕒 {formatDate(project.savedAt)}</span>
+        <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDate(project.savedAt)}</span>
       </div>
 
       <StepProgress step={project.currentStep} />
@@ -156,7 +156,7 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
         className="mt-1 w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold uppercase tracking-wide transition-colors"
         style={{ borderRadius: 'var(--radius)' }}>
         
-        {done ? '📄 Prehľad projektu' : '▶ Pokračovať'}
+        {done ? <span className="flex items-center justify-center gap-1.5"><FileText className="w-3.5 h-3.5" />Prehľad projektu</span> : <span className="flex items-center justify-center gap-1.5"><Play className="w-3.5 h-3.5" />Pokračovať</span>}
       </button>
     </div>);
 
@@ -193,8 +193,7 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
           onClick={onNewProject}
           className="flex items-center gap-2 px-5 py-2.5 font-semibold uppercase tracking-wide text-sm transition-colors bg-primary text-primary-foreground"
           style={{ borderRadius: 'var(--radius)' }}>
-          
-          ＋ Nový projekt
+          <Plus className="w-4 h-4" /> Nový projekt
         </button>
       </div>
 
@@ -210,10 +209,9 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
           <p className="text-muted-foreground mb-6">Začni tým, že vytvoríš nový projekt</p>
           <button
           onClick={onNewProject}
-          className="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold uppercase tracking-wide transition-colors"
+          className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold uppercase tracking-wide transition-colors"
           style={{ borderRadius: 'var(--radius)' }}>
-          
-            ＋ Nový projekt
+            <Plus className="w-4 h-4" /> Nový projekt
           </button>
         </div>
       }
