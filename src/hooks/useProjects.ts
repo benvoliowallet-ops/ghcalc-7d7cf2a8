@@ -33,7 +33,7 @@ export function useLoadProjects() {
           country: row.country,
           currentStep: row.current_step,
           numZones: row.num_zones,
-          snapshot: row.snapshot as ProjectState,
+          snapshot: row.snapshot as unknown as ProjectState,
         }));
 
         setSavedProjects(saved);
