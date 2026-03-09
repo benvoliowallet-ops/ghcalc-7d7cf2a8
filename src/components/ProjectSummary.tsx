@@ -18,7 +18,7 @@ interface ProjectSummaryProps {
 export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
   const {
     project, globalParams, zones, zoneCalcs, normistPrice,
-    costInputs, ropeOverrides, uvSystemCode, ssFilter30, cad, preOrderState,
+    costInputs, ropeOverrides, uvSystemCode, ssFilter30, uvSystemNazli, cad, preOrderState,
     openProjectId,
   } = useProjectStore();
   const { isNormist } = useNormistChecker();
