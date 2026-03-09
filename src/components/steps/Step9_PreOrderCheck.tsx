@@ -7,6 +7,7 @@ import { fmtE, fmtN } from '../../utils/calculations';
 
 export function Step9_PreOrderCheck() {
   const { globalParams, zones, zoneCalcs, ropeOverrides, setRopeOverrides, preOrderState, updatePreOrderState } = useProjectStore();
+  const [roundedTotal, setRoundedTotal] = useState<number | null>(null);
 
   const { pumpConnectorMeters, etnaDistance, etnaCustomCost } = preOrderState;
 
