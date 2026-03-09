@@ -68,11 +68,12 @@ function StepProgress({ step }: {step: number;}) {
 
 interface ProjectCardProps {
   project: SavedProject;
+  currentUserId: string;
   onOpen: () => void;
   onDelete: () => void;
 }
 
-function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
+function ProjectCard({ project, currentUserId, onOpen, onDelete }: ProjectCardProps) {
   const confirm = useConfirm();
   const done = project.currentStep === 10;
   const [deleting, setDeleting] = useState(false);
