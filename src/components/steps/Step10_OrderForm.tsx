@@ -2,7 +2,7 @@ import * as XLSX from 'xlsx';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
-import { NOZZLE_BY_ORIFICE, calcETNACapacity, getTransportCost, getPMCost, PUMP_TABLE, fmtN, fmtE, detectConcurrentPipes } from '../../utils/calculations';
+import { NOZZLE_BY_ORIFICE, calcETNACapacity, selectMaxivarem, getTransportCost, getPMCost, PUMP_TABLE, fmtN, fmtE, detectConcurrentPipes } from '../../utils/calculations';
 import { getPipe10mmForSpacing } from '../../data/stockItems';
 
 export function Step10_OrderForm() {
@@ -12,6 +12,7 @@ export function Step10_OrderForm() {
   const transpCost = getTransportCost(project.country);
   const pmCost = getPMCost(costInputs.projectArea);
   const osmoticSS = globalParams.osmoticWater;
+  const maxivaremInfo = selectMaxivarem(calcETNACapacity(totalFlowMlH), osmoticSS);
 
   type OrderLine = { code: string; name: string; qty: number; unit: string; supplier: string; priceUnit: number; total: number };
   const lines: OrderLine[] = [];
@@ -22,7 +23,7 @@ export function Step10_OrderForm() {
   add('SNFG.00001', 'Balné', 1, 'ks', 'SANFOG', 350);
   if (normistPrice > 0) add('NORMIST', `FOGSYSTEM NORMIST (${osmoticSS ? 'SS' : 'STD'})`, 1, 'ks', 'NORMIST/NAZLI', normistPrice);
   add('snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', 'ETNA', osmoticSS ? 3200 : 2800);
-  add(osmoticSS ? 'MAXTRA_300_SS' : 'MAXTRA_300_STANDARD', `MAXIVAREM 300V ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', 'MAXTRA CONTROL', osmoticSS ? 380 : 305.02);
+  add(maxivaremInfo.code, maxivaremInfo.label, 1, 'ks', 'MAXTRA CONTROL', maxivaremInfo.price);
   add('ETNA_ACC', 'Príslušenstvo k ETNA-NOR', 1, 'ks', 'ETNA', 200);
   add('ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'ks', 'ETNA', 300);
   add('SNFG.TLK.001', 'Trojcestná armatúra', 1, 'ks', 'SANFOG', 150);

@@ -210,6 +210,26 @@ export function calcETNACapacity(totalFlowMlH: number): number {
   return (totalFlowMlH / 1000 / 1000) * 1.5;
 }
 
+export function selectMaxivarem(
+  etnaCapacityM3h: number,
+  osmoticSS: boolean
+): { code: string; label: string; sizeL: 300 | 500 | 750; price: number } {
+  const sizeL: 300 | 500 | 750 =
+    etnaCapacityM3h <= 15 ? 300 : etnaCapacityM3h <= 25 ? 500 : 750;
+  const variant = osmoticSS ? 'SS' : 'STANDARD';
+  const code = `MAXTRA_${sizeL}_${variant}`;
+  const label = `MAXIVAREM ${osmoticSS ? 'SS' : 'ŠTANDARD'} (${sizeL}L)`;
+  const PRICES: Record<string, number> = {
+    MAXTRA_300_STANDARD: 305.02,
+    MAXTRA_300_SS: 380.0,
+    MAXTRA_500_STANDARD: 500.0,
+    MAXTRA_500_SS: 600.0,
+    MAXTRA_750_STANDARD: 700.0,
+    MAXTRA_750_SS: 850.0,
+  };
+  return { code, label, sizeL, price: PRICES[code] ?? 0 };
+}
+
 export function getTransportCost(country: 'SK' | 'CZ' | 'HU'): number {
   return country === 'HU' ? 750 : 450;
 }
