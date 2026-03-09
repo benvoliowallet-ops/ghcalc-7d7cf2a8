@@ -352,7 +352,7 @@ export function detectConcurrentPipes(cad: CADDrawing): {
     }
   }
 
-  const bomAcc: Record<string, { qty: number; slots: 2 | 4 | 6; direction: 'trellis' | 'racmet'; name: string }> = {};
+  const bomAcc: Record<string, { qty: number; slots: 1 | 2 | 4 | 6; direction: 'trellis' | 'racmet'; name: string }> = {};
   const outIntervals: ConcurrentInterval[] = [];
 
   const accBOM = (code: string, qty: number, slots: 2 | 4 | 6, dir: 'trellis' | 'racmet', name: string) => {
