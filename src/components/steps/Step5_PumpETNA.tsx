@@ -2,7 +2,7 @@ import { useProjectStore } from '../../store/projectStore';
 import { Check, AlertTriangle } from 'lucide-react';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, CalcRow, Toggle } from '../ui/FormField';
-import { PUMP_TABLE, calcETNACapacity, fmtN } from '../../utils/calculations';
+import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, fmtN } from '../../utils/calculations';
 import { useItemsByGroup } from '../../hooks/useSupabaseItems';
 
 export function Step5_PumpETNA() {
@@ -22,9 +22,7 @@ export function Step5_PumpETNA() {
   const etnaCapacity = calcETNACapacity(totalFlowMlH);
   const osmoticSS = globalParams.osmoticWater;
 
-  const maxivarem = osmoticSS
-    ? 'MAXIVAREM SS variant (300L)'
-    : 'MAXIVAREM ŠTANDARD (300L)';
+  const maxivaremInfo = selectMaxivarem(etnaCapacity, osmoticSS);
   const etnaLabel = osmoticSS
     ? 'HF KI-ST 32/2-30 SS variant (snfg.001.0021)'
     : 'HF KI-ST 32/2-30 ŠTANDARD (snfg.001.0021)';
