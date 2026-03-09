@@ -8,7 +8,7 @@ import { getPipe10mmForSpacing } from '../../data/stockItems';
 import { useNormistChecker } from '../../hooks/useSupabaseItems';
 
 export function Step8_Documents() {
-  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad, ropeOverrides, preOrderState } = useProjectStore();
+  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, uvSystemNazli, cad, ropeOverrides, preOrderState } = useProjectStore();
   const { isNormist } = useNormistChecker();
   const bomRef = useRef<HTMLDivElement>(null);
   const orderRef = useRef<HTMLDivElement>(null);
@@ -117,7 +117,9 @@ export function Step8_Documents() {
       const ex = m.get(nl.code);
       ex ? (ex.qty += nl.qty) : m.set(nl.code, { code: nl.code, name: nl.name, qty: nl.qty, unit: nl.unit });
     });
-    return Array.from(m.values());
+    const lines = Array.from(m.values());
+    if (uvSystemNazli) lines.push({ code: 'UV_SYSTEM', name: 'UV System', qty: 1, unit: 'ks' });
+    return lines;
   })();
 
   const printBOM = () => {

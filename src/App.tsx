@@ -84,6 +84,7 @@ function AutoSaveSubscriber({ view }: {view: AppView;}) {
       costInputs: store.costInputs,
       uvSystemCode: store.uvSystemCode,
       ssFilter30: store.ssFilter30,
+      uvSystemNazli: store.uvSystemNazli,
       activeZoneIndex: store.activeZoneIndex,
       ropeOverrides: store.ropeOverrides,
       preOrderState: store.preOrderState
@@ -94,7 +95,7 @@ function AutoSaveSubscriber({ view }: {view: AppView;}) {
   store.currentStep, store.project, store.globalParams, store.zones,
   store.zoneCalcs, store.cad, store.pumpSelection, store.etnaConfig,
   store.normistPrice, store.costInputs, store.uvSystemCode, store.ssFilter30,
-  store.activeZoneIndex, store.ropeOverrides, store.preOrderState, view]
+  store.uvSystemNazli, store.activeZoneIndex, store.ropeOverrides, store.preOrderState, view]
   );
 
   return null;

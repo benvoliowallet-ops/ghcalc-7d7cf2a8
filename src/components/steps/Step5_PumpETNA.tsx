@@ -12,8 +12,10 @@ export function Step5_PumpETNA() {
     zones,
     uvSystemCode,
     ssFilter30,
+    uvSystemNazli,
     setUVSystemCode,
     setSSFilter,
+    setUVSystemNazli,
   } = useProjectStore();
 
   const totalFlowMlH = zoneCalcs.reduce((sum, c) => sum + (c?.zoneFlow ?? 0), 0);
@@ -98,6 +100,11 @@ export function Step5_PumpETNA() {
                 )}
               </div>
 
+              <Toggle
+                checked={uvSystemNazli}
+                onChange={setUVSystemNazli}
+                label="UV Systém"
+              />
               <Toggle
                 checked={ssFilter30}
                 onChange={setSSFilter}

@@ -124,6 +124,7 @@ interface ProjectStore extends ProjectState {
   setNormistPrice: (price: number) => void;
   setUVSystemCode: (v: string | null) => void;
   setSSFilter: (v: boolean) => void;
+  setUVSystemNazli: (v: boolean) => void;
   toggleCADZoneLock: (zoneIndex: number) => void;
   setRopeOverrides: (overrides: number[]) => void;
   updatePreOrderState: (s: Partial<PreOrderState>) => void;
@@ -144,6 +145,7 @@ function captureSnapshot(s: ProjectStore): ProjectState {
     costInputs: s.costInputs,
     uvSystemCode: s.uvSystemCode,
     ssFilter30: s.ssFilter30,
+    uvSystemNazli: s.uvSystemNazli,
     activeZoneIndex: s.activeZoneIndex,
     ropeOverrides: s.ropeOverrides,
     preOrderState: s.preOrderState,
@@ -165,6 +167,7 @@ export const useProjectStore = create<ProjectStore>()(
       costInputs: defaultCostInputs,
       uvSystemCode: null,
       ssFilter30: false,
+      uvSystemNazli: false,
       activeZoneIndex: 0,
       savedProjects: [],
       ropeOverrides: [],
@@ -328,6 +331,7 @@ export const useProjectStore = create<ProjectStore>()(
       setNormistPrice: (price) => set({ normistPrice: price }),
       setUVSystemCode: (v) => set({ uvSystemCode: v }),
       setSSFilter: (v) => set({ ssFilter30: v }),
+      setUVSystemNazli: (v) => set({ uvSystemNazli: v }),
       setRopeOverrides: (overrides) => set({ ropeOverrides: overrides }),
       updatePreOrderState: (s) => set(prev => ({ preOrderState: { ...prev.preOrderState, ...s } })),
 
@@ -360,6 +364,7 @@ export const useProjectStore = create<ProjectStore>()(
           costInputs: defaultCostInputs,
           uvSystemCode: null,
           ssFilter30: false,
+          uvSystemNazli: false,
           activeZoneIndex: 0,
           ropeOverrides: [],
           preOrderState: defaultPreOrderState,

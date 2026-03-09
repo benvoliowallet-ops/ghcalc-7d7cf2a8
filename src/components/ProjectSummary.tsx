@@ -18,7 +18,7 @@ interface ProjectSummaryProps {
 export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
   const {
     project, globalParams, zones, zoneCalcs, normistPrice,
-    costInputs, ropeOverrides, uvSystemCode, ssFilter30, cad, preOrderState,
+    costInputs, ropeOverrides, uvSystemCode, ssFilter30, uvSystemNazli, cad, preOrderState,
     openProjectId,
   } = useProjectStore();
   const { isNormist } = useNormistChecker();
@@ -145,7 +145,9 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
       const ex = m.get(nl.code);
       ex ? (ex.qty += nl.qty) : m.set(nl.code, { code: nl.code, name: nl.name, qty: nl.qty, unit: nl.unit });
     });
-    return Array.from(m.values());
+    const lines = Array.from(m.values());
+    if (uvSystemNazli) lines.push({ code: 'UV_SYSTEM', name: 'UV System', qty: 1, unit: 'ks' });
+    return lines;
   })();
 
   // ── Document actions ──────────────────────────────────────────────────────
@@ -155,7 +157,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
       const snapshot = {
         currentStep: 10,
         project, globalParams, zones, zoneCalcs, normistPrice,
-        costInputs, ropeOverrides, uvSystemCode: uvSystemCode ?? null, ssFilter30, cad, preOrderState,
+        costInputs, ropeOverrides, uvSystemCode: uvSystemCode ?? null, ssFilter30, uvSystemNazli, cad, preOrderState,
         pumpSelection: null, etnaConfig: {}, activeZoneIndex: 0,
       };
       const blob = await pdf(
@@ -177,7 +179,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
     } finally {
       setPdfGenerating(false);
     }
-  }, [project, globalParams, zones, zoneCalcs, normistPrice, costInputs, ropeOverrides, uvSystemCode, ssFilter30, cad, preOrderState]);
+  }, [project, globalParams, zones, zoneCalcs, normistPrice, costInputs, ropeOverrides, uvSystemCode, ssFilter30, uvSystemNazli, cad, preOrderState]);
 
   const handleShare = useCallback(async () => {
     const result = await createPortal();
