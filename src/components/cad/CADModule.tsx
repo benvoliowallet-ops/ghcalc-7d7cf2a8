@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
-import { Settings, Maximize2, Minimize2, Undo2, Trash2 } from 'lucide-react';
+import { Settings, Maximize2, Minimize2, Undo2, Trash2, Check } from 'lucide-react';
 import { useProjectStore } from '../../store/projectStore';
 import type { CADSegment, CADSymbol, CADPoint, LineType } from '../../types';
 import { detectConcurrentPipes, bracketPipeCount, getTrellisBracketCode, getRacmetBracketCode } from '../../utils/calculations';
@@ -25,6 +25,7 @@ const LINE_DASH: Record<LineType, number[]> = {
 const SNAP_RADIUS = 12;
 const GRID_SIZE = 0.25;
 const GUIDE_SNAP_THRESHOLD = 5;
+const ESC_HOLD_DURATION = 3000; // ms
 
 interface CADModuleProps {
   activeZoneIndex: number;
@@ -51,10 +52,17 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const fullscreenRef = useRef<HTMLDivElement>(null);
 
+  // ESC hold refs
+  const escHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const escHoldRafRef = useRef<number | null>(null);
+  const escHoldStartRef = useRef<number | null>(null);
+  // Track if ESC hold was completed (so keyup doesn't re-request fullscreen)
+  const escHoldCompletedRef = useRef(false);
+
   const {
     cad, addSegment, removeSegment, addSymbol, removeSymbol,
     setCADData, updateCADZonePosition, markDrawingComplete, zones,
-    zoneCalcs, toggleCADZoneLock,
+    zoneCalcs, toggleCADZoneLock, setActiveZone,
   } = useProjectStore();
 
   const [tool, setTool] = useState<Tool>('pipe');
@@ -72,6 +80,19 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
   const [floatLabel, setFloatLabel] = useState<{ x: number; y: number; text: string } | null>(null);
   const [guideLines, setGuideLines] = useState<GuideLine[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Space bar pan state
+  const [spaceHeld, setSpaceHeld] = useState(false);
+  const prevToolBeforeSpaceRef = useRef<Tool | null>(null);
+
+  // ESC hold progress (null = not holding, 0..100 = animating)
+  const [escHoldProgress, setEscHoldProgress] = useState<number | null>(null);
+
+  // Local zone index — synced from prop; overrideable when fullscreen
+  const [localActiveZone, setLocalActiveZone] = useState(activeZoneIndex);
+  useEffect(() => {
+    setLocalActiveZone(activeZoneIndex);
+  }, [activeZoneIndex]);
 
   const scale = cad.scale || 8;
 
@@ -222,8 +243,23 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
     setFloatLabel(null);
   }, []);
 
+  // Cancel ESC hold countdown
+  const cancelEscHold = useCallback(() => {
+    if (escHoldTimerRef.current) {
+      clearTimeout(escHoldTimerRef.current);
+      escHoldTimerRef.current = null;
+    }
+    if (escHoldRafRef.current) {
+      cancelAnimationFrame(escHoldRafRef.current);
+      escHoldRafRef.current = null;
+    }
+    escHoldStartRef.current = null;
+    setEscHoldProgress(null);
+  }, []);
+
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (e.button === 1 || tool === 'pan') {
+    // Space-held pan OR pan tool — left button only
+    if ((spaceHeld && e.button === 0) || tool === 'pan') {
       setIsPanning(true);
       const rawPt = getSVGPoint(e);
       setPanStart({ mx: rawPt.x, my: rawPt.y, vx: viewBox.x, vy: viewBox.y });
@@ -249,13 +285,13 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
         if (len < 1) { stopDrawing(); return; }
         const seg: CADSegment = {
           id: crypto.randomUUID(),
-          zoneIndex: activeZoneIndex,
+          zoneIndex: localActiveZone,
           lineType: tool as LineType,
           start: drawing.startPoint,
           end,
         };
         addSegment(seg);
-        markDrawingComplete(activeZoneIndex, true);
+        markDrawingComplete(localActiveZone, true);
         setDrawing({ isDrawing: true, startPoint: end, currentPoint: end });
         setGhostLine(null);
       }
@@ -266,11 +302,11 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
         type: tool as 'drain_magnet' | 'sensor' | 'pump',
         x: snapPt.x,
         y: snapPt.y,
-        zoneIndex: activeZoneIndex,
+        zoneIndex: localActiveZone,
       };
       addSymbol(sym);
     }
-  }, [tool, getSVGPoint, viewBox, findSnapPoint, snapToGrid, drawing, applyOrtho, activeZoneIndex, addSegment, addSymbol, markDrawingComplete, pushHistory, stopDrawing]);
+  }, [tool, spaceHeld, getSVGPoint, viewBox, findSnapPoint, snapToGrid, drawing, applyOrtho, localActiveZone, addSegment, addSymbol, markDrawingComplete, pushHistory, stopDrawing]);
 
   const handleMouseUp = useCallback(() => {
     setIsPanning(false);
@@ -299,7 +335,46 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') return;
 
-    if (e.key === 'Escape') stopDrawing();
+    // Space bar — activate pan (guard against repeat)
+    if (e.code === 'Space' && !e.repeat) {
+      e.preventDefault();
+      if (!spaceHeld) {
+        prevToolBeforeSpaceRef.current = tool;
+        setSpaceHeld(true);
+      }
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      // Always cancel current drawing action
+      stopDrawing();
+
+      // If in fullscreen, start ESC hold countdown
+      if (isFullscreen) {
+        escHoldCompletedRef.current = false;
+        escHoldStartRef.current = performance.now();
+        setEscHoldProgress(0);
+
+        // Animate progress via rAF
+        const animate = () => {
+          if (!escHoldStartRef.current) return;
+          const elapsed = performance.now() - escHoldStartRef.current;
+          const progress = Math.min(100, (elapsed / ESC_HOLD_DURATION) * 100);
+          setEscHoldProgress(progress);
+          if (progress < 100) {
+            escHoldRafRef.current = requestAnimationFrame(animate);
+          }
+        };
+        escHoldRafRef.current = requestAnimationFrame(animate);
+
+        // After 3s, exit fullscreen
+        escHoldTimerRef.current = setTimeout(() => {
+          escHoldCompletedRef.current = true;
+          cancelEscHold();
+          document.exitFullscreen().catch(() => {});
+        }, ESC_HOLD_DURATION);
+      }
+    }
 
     if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
       e.preventDefault();
@@ -313,12 +388,48 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
     if (e.key === 'Delete' || e.key === 'Backspace') {
       if (selectedId) deleteSelected();
     }
-  }, [history, selectedId, stopDrawing, deleteSelected, setCADData]);
+  }, [history, selectedId, stopDrawing, deleteSelected, setCADData, isFullscreen, spaceHeld, tool, cancelEscHold]);
+
+  const handleKeyUp = useCallback((e: KeyboardEvent) => {
+    if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') return;
+
+    // Space bar — deactivate pan
+    if (e.code === 'Space') {
+      e.preventDefault();
+      setSpaceHeld(false);
+      setIsPanning(false);
+      // Restore previous tool
+      if (prevToolBeforeSpaceRef.current !== null) {
+        setTool(prevToolBeforeSpaceRef.current);
+        prevToolBeforeSpaceRef.current = null;
+      }
+      return;
+    }
+
+    // ESC released before 3s — cancel hold and re-enter fullscreen (undo browser forced exit)
+    if (e.key === 'Escape') {
+      const wasHolding = escHoldStartRef.current !== null;
+      cancelEscHold();
+      if (wasHolding && !escHoldCompletedRef.current && isFullscreen) {
+        // Browser may have already exited fullscreen; re-request it
+        fullscreenRef.current?.requestFullscreen().catch(() => {});
+      }
+    }
+  }, [cancelEscHold, isFullscreen]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [handleKeyDown, handleKeyUp]);
+
+  // Clean up ESC hold on unmount
+  useEffect(() => {
+    return () => cancelEscHold();
+  }, [cancelEscHold]);
 
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
@@ -364,8 +475,14 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
     setViewBox({ x: minX - pad, y: minY - pad, w: maxX - minX + pad * 2, h: maxY - minY + pad * 2 });
   }, [cad.zones]);
 
+  // Switch zone from fullscreen zone picker — also update global store
+  const handleZoneSwitch = useCallback((i: number) => {
+    setLocalActiveZone(i);
+    setActiveZone(i);
+  }, [setActiveZone]);
+
   const pipeLength = cad.segments
-    .filter((s) => s.zoneIndex === activeZoneIndex && s.lineType === 'pipe')
+    .filter((s) => s.zoneIndex === localActiveZone && s.lineType === 'pipe')
     .reduce((sum, s) => {
       const dx = s.end.x - s.start.x;
       const dy = s.end.y - s.start.y;
@@ -392,9 +509,18 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
 
   const hasSelection = selectedId !== null;
 
-  const dilationPoints = zoneCalcs[activeZoneIndex]?.dilationPoints ?? [];
+  const dilationPoints = zoneCalcs[localActiveZone]?.dilationPoints ?? [];
 
   const concurrentIntervals = useMemo(() => detectConcurrentPipes(cad).intervals, [cad]);
+
+  // Effective cursor style
+  const svgCursor = isPanning
+    ? 'grabbing'
+    : (spaceHeld || tool === 'pan')
+    ? 'grab'
+    : tool === 'select'
+    ? 'default'
+    : 'crosshair';
 
   return (
     <div ref={fullscreenRef} className="flex gap-3 bg-white" style={{ height: isFullscreen ? '100vh' : '600px' }}>
@@ -420,13 +546,14 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
               setSelectedType(null);
             }}
             className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium border transition-colors ${
-              tool === t.key
+              (tool === t.key || (spaceHeld && t.key === 'pan'))
                 ? 'bg-green-600 text-white border-green-600'
                 : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
             }`}
           >
             <span className="text-base w-5 text-center">{t.icon}</span>
             {t.label}
+            {t.key === 'pan' && <span className="ml-auto text-[9px] opacity-60 font-normal">SPACE</span>}
           </button>
         ))}
 
@@ -480,7 +607,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
         <div className="mt-1 p-2 bg-green-50 rounded-lg border border-green-200 text-xs">
           <p className="font-bold text-green-800">Σ Potrubie</p>
           <p className="text-green-700 font-mono text-base">{pipeLength.toFixed(1)} m</p>
-          <p className="text-gray-400 mt-1">Zóna {activeZoneIndex + 1}</p>
+          <p className="text-gray-400 mt-1">Zóna {localActiveZone + 1}</p>
           {dilationPoints.length > 0 && (
             <p className="text-amber-600 mt-1 font-semibold">
               🟨 {dilationPoints.length} dilatáci{dilationPoints.length === 1 ? 'a' : 'í'}
@@ -492,8 +619,10 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
           <p>↖ Výber → klikni prvok</p>
           <p>Del/⌫ = zmazať výber</p>
           <p>Dbl-klik = koniec čiary</p>
-          <p>Esc = zrušiť</p>
+          <p>Esc = zrušiť akciu</p>
           <p>Ctrl+Z = undo</p>
+          <p>SPACE = pan (drž)</p>
+          {isFullscreen && <p className="text-orange-400">ESC 3s = ukončiť</p>}
           <p>🟨 = dilatácia</p>
         </div>
       </div>
@@ -505,6 +634,52 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
         tabIndex={0}
         style={{ outline: 'none' }}
       >
+        {/* Fullscreen zone switcher — only visible in fullscreen */}
+        {isFullscreen && zones.length > 1 && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-2xl shadow-lg border border-gray-200">
+            {zones.map((zone, i) => {
+              const color = ZONE_COLORS[i % ZONE_COLORS.length];
+              const isActive = i === localActiveZone;
+              const calc = zoneCalcs[i];
+              const isDone = calc?.drawingComplete ?? false;
+              return (
+                <button
+                  key={i}
+                  onClick={() => handleZoneSwitch(i)}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
+                    isActive
+                      ? 'text-white shadow-sm'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                  style={isActive ? { background: color } : {}}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ background: isActive ? 'rgba(255,255,255,0.7)' : color }}
+                  />
+                  {zone.name}
+                  {isDone && (
+                    <Check className="w-3 h-3" style={{ color: isActive ? 'rgba(255,255,255,0.9)' : '#16a34a' }} />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ESC hold countdown overlay — only in fullscreen while holding */}
+        {isFullscreen && escHoldProgress !== null && (
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1.5 bg-gray-900/90 backdrop-blur-sm text-white text-xs px-4 py-2.5 rounded-xl shadow-xl pointer-events-none">
+            <span className="font-medium">Podržte ESC pre ukončenie...</span>
+            <div className="w-40 h-1.5 bg-gray-600 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-red-500 rounded-full transition-none"
+                style={{ width: `${escHoldProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
         <svg
           ref={svgRef}
           className="w-full h-full"
@@ -513,9 +688,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onDoubleClick={handleDoubleClick}
-          style={{
-            cursor: isPanning ? 'grabbing' : tool === 'pan' ? 'grab' : tool === 'select' ? 'default' : 'crosshair',
-          }}
+          style={{ cursor: svgCursor }}
         >
           <defs>
             <pattern id="grid" width={GRID_SIZE * scale} height={GRID_SIZE * scale} patternUnits="userSpaceOnUse">
@@ -535,7 +708,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
             const zoneData = zones[zone.zoneIndex];
             if (!zoneData) return null;
             const color = ZONE_COLORS[zone.zoneIndex % ZONE_COLORS.length];
-            const isActive = zone.zoneIndex === activeZoneIndex;
+            const isActive = zone.zoneIndex === localActiveZone;
             const isVisible = isLayerVisible(zone.zoneIndex);
             const labelSize = Math.min(20, Math.max(12, Math.round(zone.height / 5)));
 
@@ -629,7 +802,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
             if (!isLayerVisible(seg.zoneIndex, seg.lineType)) return null;
             const color = LINE_COLORS[seg.lineType];
             const isSelected = seg.id === selectedId;
-            const isActiveZone = seg.zoneIndex === activeZoneIndex;
+            const isActiveZone = seg.zoneIndex === localActiveZone;
             const dx = seg.end.x - seg.start.x;
             const dy = seg.end.y - seg.start.y;
             const len = Math.sqrt(dx * dx + dy * dy) / scale;
@@ -674,7 +847,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
 
           {/* Symbols */}
           {cad.symbols.map((sym) => {
-            const isActive = sym.zoneIndex === activeZoneIndex;
+            const isActive = sym.zoneIndex === localActiveZone;
             const isSelected = sym.id === selectedId;
             return (
               <g key={sym.id}
@@ -820,7 +993,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
           return (
             <div key={i} className="mb-3">
               <div className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold ${
-                i === activeZoneIndex ? 'bg-green-50 border border-green-200' : 'hover:bg-gray-50'
+                i === localActiveZone ? 'bg-green-50 border border-green-200' : 'hover:bg-gray-50'
               }`}>
                 <span
                   className="w-3 h-3 rounded-full flex-shrink-0 cursor-pointer"
@@ -852,7 +1025,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
               <div className="ml-5 mt-1 space-y-0.5">
                 {(['pipe', 'cable_cysy', 'cable_ftp'] as LineType[]).map((lt) => {
                   const count = cad.segments.filter((s) => s.zoneIndex === i && s.lineType === lt).length;
-                  if (count === 0 && i !== activeZoneIndex) return null;
+                  if (count === 0 && i !== localActiveZone) return null;
                   const labels: Record<LineType, string> = {
                     pipe: '💧 Potrubie',
                     cable_cysy: '⚡ CYSY',
