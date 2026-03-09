@@ -5,7 +5,55 @@ import { pdf } from '@react-pdf/renderer';
 import { useProjectStore } from '../store/projectStore';
 import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes, getTransportCost, getPMCost } from '../utils/calculations';
 import { getPipe10mmForSpacing } from '../data/stockItems';
-...
+import { useNormistChecker } from '../hooks/useSupabaseItems';
+import { usePortal } from '../hooks/usePortal';
+import { ProjectPDF } from './pdf/ProjectPDF';
+import { InlineProjectComments } from './comments/ProjectComments';
+
+interface ProjectSummaryProps {
+  onOpenWizard: () => void;
+  onBack: () => void;
+}
+
+export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
+  const {
+    project, globalParams, zones, zoneCalcs, normistPrice,
+    costInputs, ropeOverrides, uvSystemCode, ssFilter30, uvSystemNazli, cad, preOrderState,
+    openProjectId,
+  } = useProjectStore();
+  const { isNormist } = useNormistChecker();
+
+  const { portal, loading: portalLoading, loadPortal, createPortal, revokePortal } = usePortal(openProjectId ?? null);
+  const [shareModal, setShareModal] = useState<{ link: string; password: string } | null>(null);
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => { if (openProjectId) loadPortal(); }, [openProjectId, loadPortal]);
+
+  const totalArea = zoneCalcs.reduce((s, c) => s + (c?.area ?? 0), 0);
+  const totalFlowMlH = zoneCalcs.reduce((s, c) => s + (c?.zoneFlow ?? 0), 0);
+  const etnaCapacity = calcETNACapacity(totalFlowMlH);
+  const totalNozzles = zoneCalcs.reduce((s, c) => s + (c?.numNozzles ?? 0), 0);
+
+  const roughCost = normistPrice + 350 +
+    (costInputs.installTechDays * costInputs.installTechCount +
+     costInputs.installGreenhouseDays * costInputs.installGreenhouseCount +
+     costInputs.commissioningDays * costInputs.commissioningCount) * 100;
+
+  const transpCost = getTransportCost(project.country);
+  const pmCost = getPMCost(costInputs.projectArea);
+  const osmoticSS = globalParams.osmoticWater;
+  const N = globalParams.numberOfZones;
+  const { bracketBOM } = detectConcurrentPipes(cad);
+  const cadHasPipes = cad.segments.some(s => s.lineType === 'pipe');
+
+  const bomLines: { section: string; code: string; name: string; qty: number; unit: string; price: number }[] = [];
+  const add = (section: string, code: string, name: string, qty: number, unit: string, price: number) => {
+    if (qty > 0) bomLines.push({ section, code, name, qty, unit, price });
+  };
+
+  add('Balné', 'SNFG.00001', 'Balné', 1, 'ks', 350);
+  if (normistPrice > 0) add('FOGSYSTEM NORMIST', 'NORMIST', `FOGSYSTEM NORMIST (${osmoticSS ? 'SS' : 'STD'})`, 1, 'ks', normistPrice);
   add('ETNA', 'snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', osmoticSS ? 3200 : 2800);
   const maxivaremInfo = selectMaxivarem(etnaCapacity, osmoticSS);
   add('ETNA', maxivaremInfo.code, maxivaremInfo.label, 1, 'ks', maxivaremInfo.price);

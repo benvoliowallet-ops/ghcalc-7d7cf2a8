@@ -13,7 +13,15 @@ export function Step10_OrderForm() {
   const pmCost = getPMCost(costInputs.projectArea);
   const osmoticSS = globalParams.osmoticWater;
   const maxivaremInfo = selectMaxivarem(calcETNACapacity(totalFlowMlH), osmoticSS);
-...
+
+  type OrderLine = { code: string; name: string; qty: number; unit: string; supplier: string; priceUnit: number; total: number };
+  const lines: OrderLine[] = [];
+  const add = (code: string, name: string, qty: number, unit: string, supplier: string, price: number) => {
+    if (qty > 0) lines.push({ code, name, qty, unit, supplier, priceUnit: price, total: qty * price });
+  };
+
+  add('SNFG.00001', 'Balné', 1, 'ks', 'SANFOG', 350);
+  if (normistPrice > 0) add('NORMIST', `FOGSYSTEM NORMIST (${osmoticSS ? 'SS' : 'STD'})`, 1, 'ks', 'NORMIST/NAZLI', normistPrice);
   add('snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', 'ETNA', osmoticSS ? 3200 : 2800);
   add(maxivaremInfo.code, maxivaremInfo.label, 1, 'ks', 'MAXTRA CONTROL', maxivaremInfo.price);
   add('ETNA_ACC', 'Príslušenstvo k ETNA-NOR', 1, 'ks', 'ETNA', 200);
