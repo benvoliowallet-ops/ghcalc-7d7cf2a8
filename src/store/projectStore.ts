@@ -331,6 +331,7 @@ export const useProjectStore = create<ProjectStore>()(
       setNormistPrice: (price) => set({ normistPrice: price }),
       setUVSystemCode: (v) => set({ uvSystemCode: v }),
       setSSFilter: (v) => set({ ssFilter30: v }),
+      setUVSystemNazli: (v) => set({ uvSystemNazli: v }),
       setRopeOverrides: (overrides) => set({ ropeOverrides: overrides }),
       updatePreOrderState: (s) => set(prev => ({ preOrderState: { ...prev.preOrderState, ...s } })),
 
