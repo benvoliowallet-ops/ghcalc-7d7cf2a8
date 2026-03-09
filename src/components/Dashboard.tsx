@@ -269,6 +269,7 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
           <ProjectCard
             key={p.id}
             project={p}
+            currentUserId={currentUser?.id ?? ''}
             onOpen={() => onOpenProject(p.id)}
             onDelete={() => deleteSavedProject(p.id)} />
           )}
@@ -286,6 +287,7 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
           <ProjectCard
             key={p.id}
             project={p}
+            currentUserId={currentUser?.id ?? ''}
             onOpen={() => onOpenSummary(p.id)}
             onDelete={() => deleteSavedProject(p.id)} />
           )}
