@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { Search, CheckCircle, Check, AlertTriangle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { CheckCircle, Check, AlertTriangle } from 'lucide-react';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
-import { Input, Card, Badge } from '../ui/FormField';
+import { Input, Card, Badge, Button } from '../ui/FormField';
 import { fmtE, fmtN } from '../../utils/calculations';
 
 export function Step9_PreOrderCheck() {
