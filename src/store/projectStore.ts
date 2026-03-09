@@ -79,8 +79,7 @@ const defaultCostInputs: CostInputs = {
   salesTrips: 1,
   techTrips: 2,
   implTeamTrips: 1,
-  accommodationNights: 0,
-  accommodationTechs: 0,
+  accommodationCost: 0,
   mountingMaterial: 500,
   mountingMaterialStation: 500,
 };

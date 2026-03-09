@@ -194,8 +194,7 @@ export interface CostInputs {
   salesTrips: number;
   techTrips: number;
   implTeamTrips: number;
-  accommodationNights: number;
-  accommodationTechs: number;
+  accommodationCost: number;
   mountingMaterial: 500 | 750 | 1000 | 1500;
   mountingMaterialStation: 500 | 750 | 1000 | 1500;
 }

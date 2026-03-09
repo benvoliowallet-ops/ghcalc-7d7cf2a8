@@ -32,7 +32,7 @@ export function Step6_Costs() {
       costInputs.diggingDays * costInputs.diggingCount +
       costInputs.commissioningDays * costInputs.commissioningCount) * 35;
 
-  const accommodationCost = costInputs.accommodationNights * costInputs.accommodationTechs * 40;
+  const accommodationCost = costInputs.accommodationCost;
   const salesTripsCost = (costInputs.salesTrips + costInputs.techTrips + costInputs.implTeamTrips) * 150;
 
   const totalLabour =
@@ -142,20 +142,13 @@ export function Step6_Costs() {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 mb-4">
+          <div className="mb-4">
             <Input
-              label="Ubytovanie – noci"
+              label="Ubytovanie [€]"
               type="number"
               min={0}
-              value={costInputs.accommodationNights}
-              onChange={(e) => updateCostInputs({ accommodationNights: Number(e.target.value) })}
-            />
-            <Input
-              label="Ubytovanie – technici"
-              type="number"
-              min={0}
-              value={costInputs.accommodationTechs}
-              onChange={(e) => updateCostInputs({ accommodationTechs: Number(e.target.value) })}
+              value={costInputs.accommodationCost}
+              onChange={(e) => updateCostInputs({ accommodationCost: Number(e.target.value) })}
             />
           </div>
 
