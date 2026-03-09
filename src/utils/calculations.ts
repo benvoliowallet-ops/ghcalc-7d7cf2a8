@@ -242,6 +242,53 @@ export function getRacmetBracketCode(nPipes: number): string {
   }
 }
 
+// ─── Greedy largest-first bracket decomposition ───────────────────────────────
+const TRELLIS_VARIANTS = [
+  { pipes: 6, code: 'snfg.05.0018' },
+  { pipes: 4, code: 'snfg.05.0006' },
+  { pipes: 2, code: 'snfg.05.0005' },
+  { pipes: 1, code: 'snfg.05.0004' },
+] as const;
+
+const RACMET_VARIANTS = [
+  { pipes: 6, code: 'snfg.05.0012' },
+  { pipes: 4, code: 'snfg.05.0010' },
+  { pipes: 2, code: 'snfg.05.0008' },
+] as const;
+
+export function decomposeBrackets(
+  n: number,
+  type: 'trellis' | 'racmet'
+): { code: string; pipes: number; count: number }[] {
+  const variants: readonly { pipes: number; code: string }[] =
+    type === 'trellis' ? TRELLIS_VARIANTS : RACMET_VARIANTS;
+
+  const result: { code: string; pipes: number; count: number }[] = [];
+  let rem = n;
+
+  for (const v of variants) {
+    if (rem <= 0) break;
+    const qty = Math.floor(rem / v.pipes);
+    if (qty > 0) {
+      result.push({ code: v.code, pipes: v.pipes, count: qty });
+      rem -= qty * v.pipes;
+    }
+  }
+
+  // If remainder > 0 (only possible for RACMET with odd counts), overshoot with smallest variant
+  if (rem > 0) {
+    const smallest = variants[variants.length - 1];
+    const existing = result.find(r => r.code === smallest.code);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      result.push({ code: smallest.code, pipes: smallest.pipes, count: 1 });
+    }
+  }
+
+  return result;
+}
+
 const PARALLEL_TOLERANCE_PX = 5;
 
 interface _PipeRange { coord: number; min: number; max: number; }
