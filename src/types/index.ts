@@ -86,6 +86,7 @@ export interface ZoneCalc {
   zoneIndex: number;
   area: number;
   zoneFlow: number;
+  numHolders: number;
   numNozzles: number;
   nozzlesPerNave: number;
   numSwivel: number;

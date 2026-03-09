@@ -42,12 +42,13 @@ export function calcZone(
   const nozzlesPerNave = nozzlesPerNaveRaw % 2 === 0
     ? nozzlesPerNaveRaw
     : nozzlesPerNaveRaw + 1;
-  const numNozzles = nozzlesPerNave * N;
+  const numHolders = nozzlesPerNave * N;
+  const numNozzles = numHolders * 2;
   const numSwivel = N * 3;
 
-  const numPipes10mmPerNave = Math.ceil(nozzlesPerNave / 2);
+  const numPipes10mmPerNave = nozzlesPerNave;        // 1 pipe segment per holder (no /2)
   const numPipes10mmTotal = numPipes10mmPerNave * N;
-  const numFitting180 = Math.ceil(numNozzles / 2);
+  const numFitting180 = Math.ceil(numHolders / 2);
   const numEndPlug = N * 2;
 
   const ropeRaw = (L + 10) * N;
@@ -55,7 +56,7 @@ export function calcZone(
   const ropeWaste = ropeLength - ropeRaw;
   const numHangers = Math.floor(L / Rkrat) * N;
   const numGripple = N * 2;
-  const numNozzleHangers = numNozzles;
+  const numNozzleHangers = numHolders;               // 1 hanger per holder
   const L_pipe = numPipes10mmPerNave > 0 ? L / numPipes10mmPerNave : 0;
   const numPipeHangers = L_pipe <= 3.5 ? numPipes10mmTotal * 1 : numPipes10mmTotal * 2;
 
@@ -122,6 +123,7 @@ export function calcZone(
     zoneIndex,
     area,
     zoneFlow,
+    numHolders,
     numNozzles,
     nozzlesPerNave,
     numSwivel,
@@ -384,7 +386,8 @@ export function generateNozzleCombos(zone: ZoneParams, globalParams: GlobalParam
         const nozzlesPerNave = effectiveLength > 0 && spacingM > 0
           ? Math.floor(effectiveLength / spacingM) + 1
           : 0;
-        const numNozzles = nozzlesPerNave * N;
+        const numHoldersCombo = nozzlesPerNave * N;
+        const numNozzles = numHoldersCombo * 2;        // 2 nozzles per holder
         const qLpm = NOZZLE_FLOW_LPM[orifice]?.[pressure] ?? 0;
         const qActualMlH = numNozzles * qLpm * 60 * 1000;
         if (qActualMlH >= qRequired) {

@@ -272,7 +272,7 @@ function ZoneParamsTab({ zone, zoneIndex, zones, globalParams, onUpdate, nozzleO
               </table>
             </div>
           </div>
-          <Select label="Rozostup trysiek" unit="cm" value={zone.nozzleSpacing} onChange={(e) => onUpdate({ nozzleSpacing: Number(e.target.value) as ZoneParams['nozzleSpacing'] })} options={spacingOptions} />
+          <Select label="Rozostup medzi držiakmi trysiek" unit="cm" value={zone.nozzleSpacing} onChange={(e) => onUpdate({ nozzleSpacing: Number(e.target.value) as ZoneParams['nozzleSpacing'] })} options={spacingOptions} />
           <NozzleComboTable zone={zone} globalParams={globalParams} onSelect={(combo) => onUpdate({ nozzleOrifice: combo.orifice, nozzleSpacing: combo.spacingCm as ZoneParams['nozzleSpacing'], nozzleFlow: getNozzleFlowLpm(combo.orifice, globalParams.systemPressure) })} />
           <Select label="Typ riadenia" value={zone.controlType} onChange={(e) => onUpdate({ controlType: e.target.value as ZoneParams['controlType'] })} options={controlOptions} />
           <div className="grid grid-cols-2 gap-3 mt-2">
@@ -325,7 +325,7 @@ function NozzleComboTable({ zone, globalParams, onSelect }: { zone: ZoneParams; 
       <p className="text-xs font-semibold text-gray-600 mb-1">🔍 Kombinácie trysiek</p>
       <div className="overflow-x-auto rounded-lg border border-gray-200">
         <table className="text-xs w-full">
-          <thead><tr className="bg-gray-50 text-gray-500"><th className="text-left px-2 py-1.5">Orifice</th><th className="text-right px-2 py-1.5">Rozostup</th><th className="text-right px-2 py-1.5">Trysky</th><th className="text-right px-2 py-1.5">Q skut.</th><th className="text-right px-2 py-1.5">%</th><th className="text-right px-2 py-1.5">bar</th></tr></thead>
+          <thead><tr className="bg-gray-50 text-gray-500"><th className="text-left px-2 py-1.5">Orifice</th><th className="text-right px-2 py-1.5">Rozostup</th><th className="text-right px-2 py-1.5">Trysky [ks]</th><th className="text-right px-2 py-1.5">Q skut. [l/h]</th><th className="text-right px-2 py-1.5">%</th><th className="text-right px-2 py-1.5">bar</th></tr></thead>
           <tbody>
             {sorted.map((c, idx) => {
               const active = c.pressure === pressure;
@@ -335,7 +335,7 @@ function NozzleComboTable({ zone, globalParams, onSelect }: { zone: ZoneParams; 
                   <td className={`px-2 py-1.5 font-mono font-bold ${active ? 'text-green-700' : ''}`}>{c.orifice.toFixed(2).replace('.', ',')} mm</td>
                   <td className="px-2 py-1.5 text-right">{c.spacingCm} cm</td>
                   <td className="px-2 py-1.5 text-right font-mono">{c.numNozzles}</td>
-                  <td className="px-2 py-1.5 text-right font-mono">{fmtN(c.qActualMlH)} ml/h</td>
+                  <td className="px-2 py-1.5 text-right font-mono">{fmtN(c.qActualMlH / 1000, 1)} l/h</td>
                   <td className={`px-2 py-1.5 text-right font-bold ${c.coveragePct >= 100 ? (active ? 'text-green-700' : 'text-gray-500') : 'text-red-500'}`}>{c.coveragePct}%</td>
                   <td className="px-2 py-1.5 text-right">{c.pressure}</td>
                 </tr>

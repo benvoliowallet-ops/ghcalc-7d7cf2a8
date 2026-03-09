@@ -331,7 +331,7 @@ export function ProjectPDF({ snapshot, quoteNumber, customerName, projectAddress
         add(pipe10mm.code, pipe10mm.name, calc.numPipes10mmTotal, 'ks');
         add('NORMIST 0311002SS-180', 'Fitting SS 180°', calc.numFitting180, 'ks');
         add('NORMIST 0311008SS', 'End plug 10mm SS', calc.numEndPlug, 'ks');
-        add('NORMIST 0311001SS', 'Drziak trysky 1 tryska SS', calc.numNozzles - calc.numFitting180, 'ks');
+        add('NORMIST 0311001SS', 'Drziak trysky 1 tryska SS', calc.numHolders - calc.numFitting180, 'ks');
         add('ITALINOX', 'Trubka A304 TIG 22×1,5 [SS]', Math.ceil(calc.inoxPipeLength), 'm');
         add('183022000', 'VT Spojka P22F AK [SS]', calc.numInoxConnectors, 'ks');
         add('RACMET 182022000', 'VT T-kus P22F AK [SS]', calc.numTJunctions, 'ks');
