@@ -188,6 +188,8 @@ export const useProjectStore = create<ProjectStore>()(
           currentStep: s.currentStep,
           numZones: s.zones.length,
           snapshot,
+          ownerId: '',
+          ownerName: '',
         };
         set(prev => ({
           savedProjects: [entry, ...prev.savedProjects.filter(p => p.id !== entry.id)],
