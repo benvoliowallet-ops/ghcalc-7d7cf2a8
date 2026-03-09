@@ -179,7 +179,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
     } finally {
       setPdfGenerating(false);
     }
-  }, [project, globalParams, zones, zoneCalcs, normistPrice, costInputs, ropeOverrides, uvSystemCode, ssFilter30, cad, preOrderState]);
+  }, [project, globalParams, zones, zoneCalcs, normistPrice, costInputs, ropeOverrides, uvSystemCode, ssFilter30, uvSystemNazli, cad, preOrderState]);
 
   const handleShare = useCallback(async () => {
     const result = await createPortal();
