@@ -167,6 +167,7 @@ export const useProjectStore = create<ProjectStore>()(
       costInputs: defaultCostInputs,
       uvSystemCode: null,
       ssFilter30: false,
+      uvSystemNazli: false,
       activeZoneIndex: 0,
       savedProjects: [],
       ropeOverrides: [],
