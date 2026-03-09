@@ -365,9 +365,16 @@ export function detectConcurrentPipes(cad: CADDrawing): {
     const axisCoord = group.reduce((s, g) => s + g.coord, 0) / group.length;
     for (const iv of _sweepLine(group.map(g => [g.min, g.max] as [number, number]))) {
       const lenM = (iv.end - iv.start) / scale;
-      const slots = bracketPipeCount(iv.count);
-      const code = getRacmetBracketCode(iv.count);
-      accBOM(code, Math.ceil(lenM / 2.5), slots, 'racmet', `RACMET drziak ${slots} vedení`);
+      const numBrackets = Math.ceil(lenM / 2.5);
+      for (const piece of decomposeBrackets(iv.count, 'racmet')) {
+        accBOM(
+          piece.code,
+          numBrackets * piece.count,
+          piece.pipes as 1 | 2 | 4 | 6,
+          'racmet',
+          `Zabetónovaný držiak RACMET ${piece.pipes} vedení`
+        );
+      }
       if (iv.count > 1) outIntervals.push({ axisCoord, start: iv.start, end: iv.end, count: iv.count, direction: 'H' });
     }
   }
@@ -376,9 +383,16 @@ export function detectConcurrentPipes(cad: CADDrawing): {
     const axisCoord = group.reduce((s, g) => s + g.coord, 0) / group.length;
     for (const iv of _sweepLine(group.map(g => [g.min, g.max] as [number, number]))) {
       const lenM = (iv.end - iv.start) / scale;
-      const slots = bracketPipeCount(iv.count);
-      const code = getTrellisBracketCode(iv.count);
-      accBOM(code, Math.ceil(lenM / 2.66), slots, 'trellis', `Drziak kratovnica ${slots} vedení`);
+      const numBrackets = Math.ceil(lenM / 2.66);
+      for (const piece of decomposeBrackets(iv.count, 'trellis')) {
+        accBOM(
+          piece.code,
+          numBrackets * piece.count,
+          piece.pipes as 1 | 2 | 4 | 6,
+          'trellis',
+          `Drziak kratovnica ${piece.pipes} vedení`
+        );
+      }
       if (iv.count > 1) outIntervals.push({ axisCoord, start: iv.start, end: iv.end, count: iv.count, direction: 'V' });
     }
   }
