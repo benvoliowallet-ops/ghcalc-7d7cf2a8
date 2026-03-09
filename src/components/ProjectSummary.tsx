@@ -157,7 +157,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
       const snapshot = {
         currentStep: 10,
         project, globalParams, zones, zoneCalcs, normistPrice,
-        costInputs, ropeOverrides, uvSystemCode: uvSystemCode ?? null, ssFilter30, cad, preOrderState,
+        costInputs, ropeOverrides, uvSystemCode: uvSystemCode ?? null, ssFilter30, uvSystemNazli, cad, preOrderState,
         pumpSelection: null, etnaConfig: {}, activeZoneIndex: 0,
       };
       const blob = await pdf(
