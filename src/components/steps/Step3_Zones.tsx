@@ -325,7 +325,7 @@ function NozzleComboTable({ zone, globalParams, onSelect }: { zone: ZoneParams; 
       <p className="text-xs font-semibold text-gray-600 mb-1">🔍 Kombinácie trysiek</p>
       <div className="overflow-x-auto rounded-lg border border-gray-200">
         <table className="text-xs w-full">
-          <thead><tr className="bg-gray-50 text-gray-500"><th className="text-left px-2 py-1.5">Orifice</th><th className="text-right px-2 py-1.5">Rozostup</th><th className="text-right px-2 py-1.5">Trysky</th><th className="text-right px-2 py-1.5">Q skut.</th><th className="text-right px-2 py-1.5">%</th><th className="text-right px-2 py-1.5">bar</th></tr></thead>
+          <thead><tr className="bg-gray-50 text-gray-500"><th className="text-left px-2 py-1.5">Orifice</th><th className="text-right px-2 py-1.5">Rozostup</th><th className="text-right px-2 py-1.5">Trysky [ks]</th><th className="text-right px-2 py-1.5">Q skut. [l/h]</th><th className="text-right px-2 py-1.5">%</th><th className="text-right px-2 py-1.5">bar</th></tr></thead>
           <tbody>
             {sorted.map((c, idx) => {
               const active = c.pressure === pressure;
