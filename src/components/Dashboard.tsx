@@ -177,6 +177,7 @@ interface DashboardProps {
 
 export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: DashboardProps) {
   const { savedProjects, deleteSavedProject } = useProjectStore();
+  const { currentUser } = useAuthStore();
   const [search, setSearch] = useState('');
 
   const sorted = [...savedProjects].sort(
