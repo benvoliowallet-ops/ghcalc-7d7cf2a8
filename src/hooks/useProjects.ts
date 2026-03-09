@@ -12,32 +12,49 @@ export function useLoadProjects() {
   useEffect(() => {
     if (!currentUser) return;
 
-    supabase
-      .from('projects')
-      .select('id, quote_number, customer_name, project_address, country, current_step, num_zones, snapshot, saved_at')
-      .eq('owner_id', currentUser.id)
-      .order('saved_at', { ascending: false })
-      .then(({ data, error }) => {
-        if (error) {
-          console.error('[Projects] Load error:', error.message);
-          return;
-        }
-        if (!data) return;
+    const loadProjects = async () => {
+      const { data: projects, error } = await supabase
+        .from('projects')
+        .select('id, quote_number, customer_name, project_address, country, current_step, num_zones, snapshot, saved_at, owner_id')
+        .order('saved_at', { ascending: false });
 
-        const saved: SavedProject[] = data.map((row) => ({
-          id: row.id,
-          savedAt: row.saved_at,
-          quoteNumber: row.quote_number,
-          customerName: row.customer_name,
-          projectAddress: row.project_address,
-          country: row.country,
-          currentStep: row.current_step,
-          numZones: row.num_zones,
-          snapshot: row.snapshot as unknown as ProjectState,
-        }));
+      if (error) {
+        console.error('[Projects] Load error:', error.message);
+        return;
+      }
+      if (!projects || projects.length === 0) {
+        setSavedProjects([]);
+        return;
+      }
 
-        setSavedProjects(saved);
-      });
+      // Fetch profiles for all unique owner_ids
+      const ownerIds = [...new Set(projects.map((p) => p.owner_id))];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, name, email')
+        .in('id', ownerIds);
+
+      const profileMap = new Map<string, string>();
+      profiles?.forEach((p) => profileMap.set(p.id, p.name || p.email));
+
+      const saved: SavedProject[] = projects.map((row) => ({
+        id: row.id,
+        savedAt: row.saved_at,
+        quoteNumber: row.quote_number,
+        customerName: row.customer_name,
+        projectAddress: row.project_address,
+        country: row.country,
+        currentStep: row.current_step,
+        numZones: row.num_zones,
+        snapshot: row.snapshot as unknown as ProjectState,
+        ownerId: row.owner_id,
+        ownerName: profileMap.get(row.owner_id) ?? row.owner_id,
+      }));
+
+      setSavedProjects(saved);
+    };
+
+    loadProjects();
   }, [currentUser, setSavedProjects]);
 }
 
