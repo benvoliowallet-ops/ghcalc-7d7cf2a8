@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
-import { Trash2, MapPin, Clock, FileText, Play, Plus, Search, X } from 'lucide-react';
+import { Trash2, MapPin, Clock, FileText, Play, Plus, Search, X, User } from 'lucide-react';
 import { useProjectStore } from '../store/projectStore';
+import { useAuthStore } from '../store/authStore';
 import { useConfirm } from '../hooks/useConfirm';
 import type { SavedProject } from '../types';
 
