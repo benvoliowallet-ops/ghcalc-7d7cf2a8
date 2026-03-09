@@ -138,7 +138,8 @@ export function Step5_PumpETNA() {
 
             <div className="p-3 bg-muted rounded-lg border border-border">
               <p className="text-xs font-semibold text-muted-foreground mb-1">MAXIVAREM tlaková nádoba</p>
-              <p className="text-sm text-foreground">{maxivarem}</p>
+              <p className="text-sm text-foreground">{maxivaremInfo.label}</p>
+              <p className="text-xs font-mono text-muted-foreground mt-0.5">{maxivaremInfo.code}</p>
               {osmoticSS && (
                 <span className="text-xs text-primary font-semibold">→ SS (osmotická voda)</span>
               )}
