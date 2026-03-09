@@ -123,6 +123,7 @@ export function calcZone(
     zoneIndex,
     area,
     zoneFlow,
+    numHolders,
     numNozzles,
     nozzlesPerNave,
     numSwivel,
