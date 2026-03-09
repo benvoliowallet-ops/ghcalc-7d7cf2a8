@@ -128,15 +128,20 @@ function ProjectCard({ project, currentUserId, onOpen, onDelete }: ProjectCardPr
           {project.projectAddress &&
           <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1"><MapPin className="w-3 h-3 flex-shrink-0" />{project.projectAddress}</p>
           }
+          <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+            <User className="w-3 h-3 flex-shrink-0" />
+            Vytvoril: {project.ownerId === currentUserId ? 'Ja' : project.ownerName}
+          </p>
         </div>
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          className="text-muted-foreground/30 hover:text-destructive transition-colors p-1 disabled:opacity-40"
-          title="Zmazať projekt">
-          
-          <Trash2 className="w-4 h-4" />
-        </button>
+        {project.ownerId === currentUserId && (
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="text-muted-foreground/30 hover:text-destructive transition-colors p-1 disabled:opacity-40"
+            title="Zmazať projekt">
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {deleteError &&
