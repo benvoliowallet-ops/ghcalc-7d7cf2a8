@@ -101,6 +101,11 @@ export function Step5_PumpETNA() {
               </div>
 
               <Toggle
+                checked={uvSystemNazli}
+                onChange={setUVSystemNazli}
+                label="UV Systém"
+              />
+              <Toggle
                 checked={ssFilter30}
                 onChange={setSSFilter}
                 label='SS Filter 30" Unit'

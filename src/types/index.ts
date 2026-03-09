@@ -269,6 +269,7 @@ export interface ProjectState {
   costInputs: CostInputs;
   uvSystemCode: string | null;
   ssFilter30: boolean;
+  uvSystemNazli: boolean;
   activeZoneIndex: number;
   ropeOverrides: number[];
   preOrderState: PreOrderState;

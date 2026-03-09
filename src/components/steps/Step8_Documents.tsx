@@ -117,7 +117,9 @@ export function Step8_Documents() {
       const ex = m.get(nl.code);
       ex ? (ex.qty += nl.qty) : m.set(nl.code, { code: nl.code, name: nl.name, qty: nl.qty, unit: nl.unit });
     });
-    return Array.from(m.values());
+    const lines = Array.from(m.values());
+    if (uvSystemNazli) lines.push({ code: 'UV_SYSTEM', name: 'UV System', qty: 1, unit: 'ks' });
+    return lines;
   })();
 
   const printBOM = () => {
