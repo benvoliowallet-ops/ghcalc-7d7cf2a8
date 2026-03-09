@@ -145,6 +145,7 @@ function captureSnapshot(s: ProjectStore): ProjectState {
     costInputs: s.costInputs,
     uvSystemCode: s.uvSystemCode,
     ssFilter30: s.ssFilter30,
+    uvSystemNazli: s.uvSystemNazli,
     activeZoneIndex: s.activeZoneIndex,
     ropeOverrides: s.ropeOverrides,
     preOrderState: s.preOrderState,
