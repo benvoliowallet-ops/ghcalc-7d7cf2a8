@@ -32,7 +32,7 @@ export function Step6_Costs() {
       costInputs.diggingDays * costInputs.diggingCount +
       costInputs.commissioningDays * costInputs.commissioningCount) * 35;
 
-  const accommodationCost = costInputs.accommodationNights * costInputs.accommodationTechs * 40;
+  const accommodationCost = costInputs.accommodationCost;
   const salesTripsCost = (costInputs.salesTrips + costInputs.techTrips + costInputs.implTeamTrips) * 150;
 
   const totalLabour =

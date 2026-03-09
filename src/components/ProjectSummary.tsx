@@ -122,12 +122,12 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
 
   const installTechCost = (costInputs.installTechDays * costInputs.installTechCount + costInputs.installGreenhouseDays * costInputs.installGreenhouseCount + costInputs.diggingDays * costInputs.diggingCount + costInputs.commissioningDays * costInputs.commissioningCount) * 100;
   const dietsCost = (costInputs.installTechDays * costInputs.installTechCount + costInputs.installGreenhouseDays * costInputs.installGreenhouseCount + costInputs.diggingDays * costInputs.diggingCount + costInputs.commissioningDays * costInputs.commissioningCount) * 35;
-  const accommodationCost = costInputs.accommodationNights * costInputs.accommodationTechs * 40;
+  const accommodationCost = costInputs.accommodationCost;
   const salesTripsCost = (costInputs.salesTrips + costInputs.techTrips + costInputs.implTeamTrips) * 150;
 
   if (installTechCost > 0) add('Montáž', 'SANFOG_MONTAZ', 'Práca montáž', installTechCost / 100, 'dní', 100);
   if (dietsCost > 0) add('Montáž', 'SANFOG_DIETA', 'Diéty', dietsCost / 35, 'dní', 35);
-  if (accommodationCost > 0) add('Montáž', 'SANFOG_UBYT', 'Ubytovanie', accommodationCost / 40, 'noc', 40);
+  if (accommodationCost > 0) add('Montáž', 'SANFOG_UBYT', 'Ubytovanie', 1, 'ks', accommodationCost);
   if (salesTripsCost > 0) add('Doprava', 'SANFOG_DOPRAVA', 'Doprava výjazdy', salesTripsCost / 150, 'výjazd', 150);
   add('Doprava', 'SANFOG_PREPRAVA', `Preprava tovaru (${project.country})`, 1, 'ks', transpCost);
   add('Ostatné', 'SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'ks', 400);
