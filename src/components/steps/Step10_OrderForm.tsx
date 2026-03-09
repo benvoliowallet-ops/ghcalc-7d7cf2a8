@@ -105,19 +105,26 @@ export function Step10_OrderForm() {
   const processedLines = lines.map((l) => l.supplier === 'NORMIST' && l.code !== 'NORMIST' ? { ...l, priceUnit: 0, total: 0 } : l);
   const grandTotal = processedLines.reduce((s, l) => s + l.total, 0);
 
+  const totalRopeRaw = ropeOverrides.reduce((s, v) => s + (v || 0), 0);
+  const ropeCeiled = Math.ceil(totalRopeRaw / 500) * 500;
+  const ropeSpools = ropeCeiled / 500;
+
   const printOrder = () => {
     const w = window.open('', '_blank');
     if (!w) return;
-    w.document.write(`<html><head><title>Objednávka – ${project.quoteNumber}</title><style>body{font-family:Arial;font-size:11px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:5px 8px}th{background:#14532d;color:#fff}tfoot td{font-weight:bold}</style></head><body>`);
+    w.document.write(`<html><head><title>Objednávka – ${project.quoteNumber}</title><style>body{font-family:Arial;font-size:11px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:5px 8px}th{background:#14532d;color:#fff}tfoot td{font-weight:bold}.rope-note{background:#f0fdf4;border-left:3px solid #16a34a;padding:6px 10px;margin:8px 0;font-size:11px}</style></head><body>`);
     w.document.write(`<h1>OBJEDNÁVKOVÝ FORMULÁR PRE ATTIHO</h1><p>Ponuka: ${project.quoteNumber} | ${project.customerName}</p>`);
     w.document.write('<table><thead><tr><th>#</th><th>Kód</th><th>Popis</th><th>Počet</th><th>MJ</th><th>Dodávateľ</th><th>Cena/MJ €</th><th>Celkom €</th></tr></thead><tbody>');
     processedLines.forEach((l, i) => { const isNR = l.supplier === 'NORMIST' && l.code !== 'NORMIST'; w.document.write(`<tr><td>${i+1}</td><td>${l.code}</td><td>${l.name}</td><td>${fmtN(l.qty,1)}</td><td>${l.unit}</td><td>${l.supplier}</td><td>${isNR?'—':fmtN(l.priceUnit,2)}</td><td>${isNR?'—':fmtN(l.total,2)}</td></tr>`); });
-    w.document.write(`</tbody><tfoot><tr><td colspan="7">TOTAL</td><td>${fmtN(grandTotal,2)} €</td></tr></tfoot></table></body></html>`);
+    w.document.write(`</tbody><tfoot><tr><td colspan="7">TOTAL</td><td>${fmtN(grandTotal,2)} €</td></tr></tfoot></table>`);
+    w.document.write(`<div class="rope-note"><strong>Lano celkom (zaokrúhlené nahor na 500 m):</strong> ${fmtN(ropeCeiled, 0)} m = ${ropeSpools} × cievka 500 m</div>`);
+    w.document.write(`</body></html>`);
     w.document.close(); w.print();
   };
 
   const exportOrderXLSX = () => {
     const rows = processedLines.map((l, i) => { const isNR = l.supplier === 'NORMIST' && l.code !== 'NORMIST'; return { '#': i+1, Kód: l.code, Popis: l.name, Qty: l.qty, MJ: l.unit, Dodávateľ: l.supplier, 'Cena/MJ': isNR ? '—' : l.priceUnit, Celkom: isNR ? '—' : l.total }; });
+    rows.push({ '#': rows.length + 1, Kód: 'INFO', Popis: `Lano zaokrúhlené nahor na 500 m: ${fmtN(ropeCeiled, 0)} m = ${ropeSpools} × cievka 500 m`, Qty: ropeCeiled, MJ: 'm', Dodávateľ: '—', 'Cena/MJ': '—', Celkom: '—' });
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Objednávka');

@@ -165,6 +165,7 @@ export function Step8_Documents() {
 
   const exportAttiBOMXLSX = () => {
     const rows = attiLines.map((l, i) => ({ '#': i + 1, Sekcia: l.section, Kód: l.code, Popis: l.name, Qty: l.qty, MJ: l.unit, 'Cena/MJ': l.price, Celkom: +(l.qty * l.price).toFixed(2) }));
+    rows.push({ '#': rows.length + 1, Sekcia: 'Lano', Kód: 'INFO', Popis: `Lano zaokrúhlené nahor na 500 m: ${fmtN(ropeCeiled, 0)} m = ${ropeSpools} × cievka 500 m`, Qty: ropeCeiled, MJ: 'm', 'Cena/MJ': 0, Celkom: 0 });
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'BOM Atti');
