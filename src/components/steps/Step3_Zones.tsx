@@ -272,7 +272,7 @@ function ZoneParamsTab({ zone, zoneIndex, zones, globalParams, onUpdate, nozzleO
               </table>
             </div>
           </div>
-          <Select label="Rozostup trysiek" unit="cm" value={zone.nozzleSpacing} onChange={(e) => onUpdate({ nozzleSpacing: Number(e.target.value) as ZoneParams['nozzleSpacing'] })} options={spacingOptions} />
+          <Select label="Rozostup medzi držiakmi trysiek" unit="cm" value={zone.nozzleSpacing} onChange={(e) => onUpdate({ nozzleSpacing: Number(e.target.value) as ZoneParams['nozzleSpacing'] })} options={spacingOptions} />
           <NozzleComboTable zone={zone} globalParams={globalParams} onSelect={(combo) => onUpdate({ nozzleOrifice: combo.orifice, nozzleSpacing: combo.spacingCm as ZoneParams['nozzleSpacing'], nozzleFlow: getNozzleFlowLpm(combo.orifice, globalParams.systemPressure) })} />
           <Select label="Typ riadenia" value={zone.controlType} onChange={(e) => onUpdate({ controlType: e.target.value as ZoneParams['controlType'] })} options={controlOptions} />
           <div className="grid grid-cols-2 gap-3 mt-2">
