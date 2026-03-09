@@ -13,7 +13,7 @@ export interface BracketBOMLine {
   code: string;
   name: string;
   qty: number;
-  slots: 2 | 4 | 6;
+  slots: 1 | 2 | 4 | 6;
   direction: 'trellis' | 'racmet';
 }
 
