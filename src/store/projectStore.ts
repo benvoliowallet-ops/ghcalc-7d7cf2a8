@@ -124,6 +124,7 @@ interface ProjectStore extends ProjectState {
   setNormistPrice: (price: number) => void;
   setUVSystemCode: (v: string | null) => void;
   setSSFilter: (v: boolean) => void;
+  setUVSystemNazli: (v: boolean) => void;
   toggleCADZoneLock: (zoneIndex: number) => void;
   setRopeOverrides: (overrides: number[]) => void;
   updatePreOrderState: (s: Partial<PreOrderState>) => void;
