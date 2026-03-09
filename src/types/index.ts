@@ -217,6 +217,8 @@ export interface SavedProject {
   currentStep: number;
   numZones: number;
   snapshot: ProjectState;
+  ownerId: string;
+  ownerName: string;
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────

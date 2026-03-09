@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
-import { Trash2, MapPin, Clock, FileText, Play, Plus, Search, X } from 'lucide-react';
+import { Trash2, MapPin, Clock, FileText, Play, Plus, Search, X, User } from 'lucide-react';
 import { useProjectStore } from '../store/projectStore';
+import { useAuthStore } from '../store/authStore';
 import { useConfirm } from '../hooks/useConfirm';
 import type { SavedProject } from '../types';
 
@@ -67,11 +68,12 @@ function StepProgress({ step }: {step: number;}) {
 
 interface ProjectCardProps {
   project: SavedProject;
+  currentUserId: string;
   onOpen: () => void;
   onDelete: () => void;
 }
 
-function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
+function ProjectCard({ project, currentUserId, onOpen, onDelete }: ProjectCardProps) {
   const confirm = useConfirm();
   const done = project.currentStep === 10;
   const [deleting, setDeleting] = useState(false);
@@ -126,15 +128,20 @@ function ProjectCard({ project, onOpen, onDelete }: ProjectCardProps) {
           {project.projectAddress &&
           <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1"><MapPin className="w-3 h-3 flex-shrink-0" />{project.projectAddress}</p>
           }
+          <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+            <User className="w-3 h-3 flex-shrink-0" />
+            Vytvoril: {project.ownerId === currentUserId ? 'Ja' : project.ownerName}
+          </p>
         </div>
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          className="text-muted-foreground/30 hover:text-destructive transition-colors p-1 disabled:opacity-40"
-          title="Zmazať projekt">
-          
-          <Trash2 className="w-4 h-4" />
-        </button>
+        {project.ownerId === currentUserId && (
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="text-muted-foreground/30 hover:text-destructive transition-colors p-1 disabled:opacity-40"
+            title="Zmazať projekt">
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {deleteError &&
@@ -170,6 +177,7 @@ interface DashboardProps {
 
 export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: DashboardProps) {
   const { savedProjects, deleteSavedProject } = useProjectStore();
+  const { currentUser } = useAuthStore();
   const [search, setSearch] = useState('');
 
   const sorted = [...savedProjects].sort(
@@ -261,6 +269,7 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
           <ProjectCard
             key={p.id}
             project={p}
+            currentUserId={currentUser?.id ?? ''}
             onOpen={() => onOpenProject(p.id)}
             onDelete={() => deleteSavedProject(p.id)} />
           )}
@@ -278,6 +287,7 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
           <ProjectCard
             key={p.id}
             project={p}
+            currentUserId={currentUser?.id ?? ''}
             onOpen={() => onOpenSummary(p.id)}
             onDelete={() => deleteSavedProject(p.id)} />
           )}
