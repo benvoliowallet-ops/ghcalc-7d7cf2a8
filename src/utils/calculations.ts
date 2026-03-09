@@ -386,7 +386,8 @@ export function generateNozzleCombos(zone: ZoneParams, globalParams: GlobalParam
         const nozzlesPerNave = effectiveLength > 0 && spacingM > 0
           ? Math.floor(effectiveLength / spacingM) + 1
           : 0;
-        const numNozzles = nozzlesPerNave * N;
+        const numHoldersCombo = nozzlesPerNave * N;
+        const numNozzles = numHoldersCombo * 2;        // 2 nozzles per holder
         const qLpm = NOZZLE_FLOW_LPM[orifice]?.[pressure] ?? 0;
         const qActualMlH = numNozzles * qLpm * 60 * 1000;
         if (qActualMlH >= qRequired) {

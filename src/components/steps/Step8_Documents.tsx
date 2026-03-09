@@ -61,7 +61,7 @@ export function Step8_Documents() {
     add(`Zóna ${i+1}: ${zName}`, pipe10mm.code, pipe10mm.name, calc.numPipes10mmTotal, 'ks', pipe10mm.price);
     add(`Zóna ${i+1}: ${zName}`, 'NORMIST 0311002SS-180', 'Fitting SS 180°', calc.numFitting180, 'ks', 2.4);
     add(`Zóna ${i+1}: ${zName}`, 'NORMIST 0311008SS', 'End plug 10mm SS', calc.numEndPlug, 'ks', 0.73);
-    add(`Zóna ${i+1}: ${zName}`, 'NORMIST 0311001SS', 'Drziak trysky 1 tryska SS', calc.numNozzles - calc.numFitting180, 'ks', 3.78);
+    add(`Zóna ${i+1}: ${zName}`, 'NORMIST 0311001SS', 'Drziak trysky 1 tryska SS', calc.numHolders - calc.numFitting180, 'ks', 3.78);
     const ropeCode = globalParams.steelRope === 'SS_NEREZ' ? 'SVX_SS_NEREZ' : 'SVX 201143';
     const ropeName = globalParams.steelRope === 'SS_NEREZ' ? 'Nerezové lano 3mm' : 'Oceľové lano 3mm';
     const ropeQty = ropeOverrides[i] ?? calc.ropeLength;

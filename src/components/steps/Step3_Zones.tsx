@@ -335,7 +335,7 @@ function NozzleComboTable({ zone, globalParams, onSelect }: { zone: ZoneParams; 
                   <td className={`px-2 py-1.5 font-mono font-bold ${active ? 'text-green-700' : ''}`}>{c.orifice.toFixed(2).replace('.', ',')} mm</td>
                   <td className="px-2 py-1.5 text-right">{c.spacingCm} cm</td>
                   <td className="px-2 py-1.5 text-right font-mono">{c.numNozzles}</td>
-                  <td className="px-2 py-1.5 text-right font-mono">{fmtN(c.qActualMlH)} ml/h</td>
+                  <td className="px-2 py-1.5 text-right font-mono">{fmtN(c.qActualMlH / 1000, 1)} l/h</td>
                   <td className={`px-2 py-1.5 text-right font-bold ${c.coveragePct >= 100 ? (active ? 'text-green-700' : 'text-gray-500') : 'text-red-500'}`}>{c.coveragePct}%</td>
                   <td className="px-2 py-1.5 text-right">{c.pressure}</td>
                 </tr>
