@@ -32,6 +32,9 @@ export function Sidebar({ view, setView, onNewProject, isAdmin }: SidebarProps) 
   [...NAV_ITEMS, { target: 'users' as AppView, icon: Users, label: 'Používatelia' }] :
   NAV_ITEMS;
 
+  // 'summary' view should highlight the dashboard item
+  const resolvedView = (view === 'summary' ? 'dashboard' : view) as AppView;
+
   return (
     <aside className="fixed left-0 top-0 h-screen z-50 flex flex-col bg-navy border-r border-white/10 w-14 hover:w-52 transition-all duration-200 ease-in-out overflow-hidden group">
       {/* Logo */}
