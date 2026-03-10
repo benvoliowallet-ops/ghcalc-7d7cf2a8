@@ -65,10 +65,12 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
     zoneCalcs, toggleCADZoneLock, setActiveZone,
   } = useProjectStore();
 
+  const viewBoxRef = useRef({ x: 0, y: 0, w: 1200, h: 700 });
+  const panStartRef = useRef<{ mx: number; my: number; vx: number; vy: number } | null>(null);
+
   const [tool, setTool] = useState<Tool>('pipe');
   const [viewBox, setViewBox] = useState({ x: 0, y: 0, w: 1200, h: 700 });
   const [isPanning, setIsPanning] = useState(false);
-  const [panStart, setPanStart] = useState<{ mx: number; my: number; vx: number; vy: number } | null>(null);
   const [drawing, setDrawing] = useState<DrawingState>({ isDrawing: false, startPoint: null, currentPoint: null });
   const [snapPoint, setSnapPoint] = useState<CADPoint | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -171,10 +173,16 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     const rawPt = getSVGPoint(e);
 
-    if (isPanning && panStart) {
-      const dx = rawPt.x - panStart.mx;
-      const dy = rawPt.y - panStart.my;
-      setViewBox((v) => ({ ...v, x: panStart.vx - dx, y: panStart.vy - dy }));
+    if (isPanning && panStartRef.current) {
+      const ps = panStartRef.current;
+      const dx = rawPt.x - ps.mx;
+      const dy = rawPt.y - ps.my;
+      const nx = ps.vx - dx;
+      const ny = ps.vy - dy;
+      viewBoxRef.current = { ...viewBoxRef.current, x: nx, y: ny };
+      if (svgRef.current) {
+        svgRef.current.setAttribute('viewBox', `${nx} ${ny} ${viewBoxRef.current.w} ${viewBoxRef.current.h}`);
+      }
       return;
     }
 
@@ -235,7 +243,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
       const lenM = Math.sqrt(dx * dx + dy * dy) / scale;
       setFloatLabel({ x: orthoEnd.x + 12, y: orthoEnd.y - 8, text: `${lenM.toFixed(1)} m` });
     }
-  }, [isPanning, panStart, draggingZone, drawing, findSnapPoint, snapToGrid, applyOrtho, scale, getSVGPoint, updateCADZonePosition, zoneOverlaps, cad.zones]);
+  }, [isPanning, draggingZone, drawing, findSnapPoint, snapToGrid, applyOrtho, scale, getSVGPoint, updateCADZonePosition, zoneOverlaps, cad.zones]);
 
   const stopDrawing = useCallback(() => {
     setDrawing({ isDrawing: false, startPoint: null, currentPoint: null });
@@ -262,7 +270,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
     if ((spaceHeld && e.button === 0) || tool === 'pan') {
       setIsPanning(true);
       const rawPt = getSVGPoint(e);
-      setPanStart({ mx: rawPt.x, my: rawPt.y, vx: viewBox.x, vy: viewBox.y });
+      panStartRef.current = { mx: rawPt.x, my: rawPt.y, vx: viewBoxRef.current.x, vy: viewBoxRef.current.y };
       return;
     }
 
@@ -306,14 +314,17 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
       };
       addSymbol(sym);
     }
-  }, [tool, spaceHeld, getSVGPoint, viewBox, findSnapPoint, snapToGrid, drawing, applyOrtho, localActiveZone, addSegment, addSymbol, markDrawingComplete, pushHistory, stopDrawing]);
+  }, [tool, spaceHeld, getSVGPoint, findSnapPoint, snapToGrid, drawing, applyOrtho, localActiveZone, addSegment, addSymbol, markDrawingComplete, pushHistory, stopDrawing]);
 
   const handleMouseUp = useCallback(() => {
+    if (isPanning) {
+      setViewBox({ ...viewBoxRef.current });
+    }
     setIsPanning(false);
-    setPanStart(null);
+    panStartRef.current = null;
     setDraggingZone(null);
     setGuideLines([]);
-  }, []);
+  }, [isPanning]);
 
   const handleDoubleClick = useCallback(() => {
     if (drawing.isDrawing) stopDrawing();
@@ -444,6 +455,11 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
       h: Math.max(200, Math.min(3000, v.h * factor)),
     }));
   }, []);
+
+  // Keep viewBoxRef in sync with React state (after zoom / fitToView)
+  useEffect(() => {
+    viewBoxRef.current = viewBox;
+  }, [viewBox]);
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -705,7 +721,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
               <feDropShadow dx="0" dy="1" stdDeviation="1.5" floodColor="#000000" floodOpacity="0.6" />
             </filter>
           </defs>
-          <rect x={viewBox.x - 1000} y={viewBox.y - 1000} width={viewBox.w + 2000} height={viewBox.h + 2000} fill="url(#grid)" />
+          <rect x={-10000} y={-10000} width={20000} height={20000} fill="url(#grid)" />
 
           {/* Zones */}
           {cad.zones.map((zone) => {
