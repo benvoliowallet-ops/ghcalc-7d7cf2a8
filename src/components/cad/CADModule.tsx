@@ -270,7 +270,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
     if ((spaceHeld && e.button === 0) || tool === 'pan') {
       setIsPanning(true);
       const rawPt = getSVGPoint(e);
-      setPanStart({ mx: rawPt.x, my: rawPt.y, vx: viewBox.x, vy: viewBox.y });
+      panStartRef.current = { mx: rawPt.x, my: rawPt.y, vx: viewBoxRef.current.x, vy: viewBoxRef.current.y };
       return;
     }
 
