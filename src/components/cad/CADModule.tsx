@@ -173,10 +173,16 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     const rawPt = getSVGPoint(e);
 
-    if (isPanning && panStart) {
-      const dx = rawPt.x - panStart.mx;
-      const dy = rawPt.y - panStart.my;
-      setViewBox((v) => ({ ...v, x: panStart.vx - dx, y: panStart.vy - dy }));
+    if (isPanning && panStartRef.current) {
+      const ps = panStartRef.current;
+      const dx = rawPt.x - ps.mx;
+      const dy = rawPt.y - ps.my;
+      const nx = ps.vx - dx;
+      const ny = ps.vy - dy;
+      viewBoxRef.current = { ...viewBoxRef.current, x: nx, y: ny };
+      if (svgRef.current) {
+        svgRef.current.setAttribute('viewBox', `${nx} ${ny} ${viewBoxRef.current.w} ${viewBoxRef.current.h}`);
+      }
       return;
     }
 
