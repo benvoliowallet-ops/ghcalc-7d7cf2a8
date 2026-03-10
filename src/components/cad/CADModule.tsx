@@ -243,7 +243,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
       const lenM = Math.sqrt(dx * dx + dy * dy) / scale;
       setFloatLabel({ x: orthoEnd.x + 12, y: orthoEnd.y - 8, text: `${lenM.toFixed(1)} m` });
     }
-  }, [isPanning, panStart, draggingZone, drawing, findSnapPoint, snapToGrid, applyOrtho, scale, getSVGPoint, updateCADZonePosition, zoneOverlaps, cad.zones]);
+  }, [isPanning, draggingZone, drawing, findSnapPoint, snapToGrid, applyOrtho, scale, getSVGPoint, updateCADZonePosition, zoneOverlaps, cad.zones]);
 
   const stopDrawing = useCallback(() => {
     setDrawing({ isDrawing: false, startPoint: null, currentPoint: null });
