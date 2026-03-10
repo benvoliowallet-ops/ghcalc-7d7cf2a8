@@ -623,7 +623,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
           <p>↖ Výber → klikni prvok</p>
           <p>Del/⌫ = zmazať výber</p>
           <p>Dbl-klik = koniec čiary</p>
-          <p>Esc = zrušiť akciu</p>
+          <p>Tab = zrušiť akciu</p>
           <p>Ctrl+Z = undo</p>
           <p>SPACE = pan (drž)</p>
           {isFullscreen && <p className="text-orange-400">ESC 3s = ukončiť</p>}
