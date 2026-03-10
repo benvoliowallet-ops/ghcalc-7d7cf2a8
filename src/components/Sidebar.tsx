@@ -54,7 +54,7 @@ export function Sidebar({ view, setView, onNewProject, isAdmin }: SidebarProps) 
       {/* Nav items */}
       <nav className="flex-1 py-3 flex flex-col gap-0.5 px-2">
         {allItems.map(({ target, icon: Icon, label }) => {
-          const isActive = view === target || target === 'dashboard' && view === 'summary';
+          const isActive = view === target || (target === 'dashboard' && view === 'summary');
           return (
             <button
               key={target}
