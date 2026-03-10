@@ -716,7 +716,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
               <feDropShadow dx="0" dy="1" stdDeviation="1.5" floodColor="#000000" floodOpacity="0.6" />
             </filter>
           </defs>
-          <rect x={viewBox.x - 1000} y={viewBox.y - 1000} width={viewBox.w + 2000} height={viewBox.h + 2000} fill="url(#grid)" />
+          <rect x={-10000} y={-10000} width={20000} height={20000} fill="url(#grid)" />
 
           {/* Zones */}
           {cad.zones.map((zone) => {
