@@ -6,11 +6,20 @@ import type { SavedProject, ProjectState } from '../types';
 
 /** Loads all projects for the current user from the DB into the store */
 export function useLoadProjects() {
-  const { currentUser } = useAuthStore();
-  const { setSavedProjects } = useProjectStore();
+  const currentUserId = useAuthStore((s) => s.currentUser?.id);
+  const setSavedProjects = useProjectStore((s) => s.setSavedProjects);
+
+  // Stable ref so the async callback always uses the latest setter without re-triggering the effect
+  const setSavedProjectsRef = useRef(setSavedProjects);
+  setSavedProjectsRef.current = setSavedProjects;
+
+  // Track which userId we already loaded for — prevents re-fetch on object reference churn
+  const loadedForRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUserId) return;
+    if (loadedForRef.current === currentUserId) return;
+    loadedForRef.current = currentUserId;
 
     const loadProjects = async () => {
       const { data: projects, error } = await supabase
@@ -23,11 +32,11 @@ export function useLoadProjects() {
         return;
       }
       if (!projects || projects.length === 0) {
-        setSavedProjects([]);
+        setSavedProjectsRef.current([]);
         return;
       }
 
-      // Fetch profiles for all unique owner_ids
+      // Fetch profiles for all unique owner_ids in a single call
       const ownerIds = [...new Set(projects.map((p) => p.owner_id))];
       const { data: profiles } = await supabase
         .from('profiles')
@@ -51,11 +60,11 @@ export function useLoadProjects() {
         ownerName: profileMap.get(row.owner_id) ?? row.owner_id,
       }));
 
-      setSavedProjects(saved);
+      setSavedProjectsRef.current(saved);
     };
 
     loadProjects();
-  }, [currentUser, setSavedProjects]);
+  }, [currentUserId]); // stable primitive dep — fires exactly once per user login
 }
 
 /** Returns a save function that immediately upserts the current project to DB */

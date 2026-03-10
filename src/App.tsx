@@ -112,16 +112,8 @@ function AppInner() {
   useEffect(() => {
     let mounted = true;
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!mounted) return;
-      if (session?.user) {
-        loadProfile(session.user);
-      } else {
-        setCurrentUser(null);
-        setLoading(false);
-      }
-    });
-
+    // Single auth source-of-truth: onAuthStateChange fires INITIAL_SESSION immediately,
+    // so we don't need a separate getSession() call (which caused double loadProfile).
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
       if (session?.user) {

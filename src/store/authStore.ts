@@ -21,7 +21,7 @@ interface AuthStore {
   loadProfile: (user: SupabaseUser) => Promise<void>;
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
+export const useAuthStore = create<AuthStore>()((set, get) => ({
   currentUser: null,
   loading: true,
 
@@ -29,6 +29,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
   setLoading: (loading) => set({ loading }),
 
   loadProfile: async (user: SupabaseUser) => {
+    // Guard: skip if this user's profile is already loaded
+    if (get().currentUser?.id === user.id) return;
+
     try {
       const { data, error } = await supabase
         .from('profiles')
