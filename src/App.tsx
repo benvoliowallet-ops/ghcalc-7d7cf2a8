@@ -26,8 +26,9 @@ import { useLoadProjects, useAutoSave } from './hooks/useProjects';
 import { ConfirmProvider, useConfirm } from './hooks/useConfirm';
 import { VoraAIChat } from './components/VoraAIChat';
 import Portal from './pages/Portal';
+import TasksPage from './pages/Tasks';
 
-type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary';
+type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary' | 'tasks';
 
 const STEPS = [
 { num: 1, label: 'Nový projekt' },

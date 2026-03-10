@@ -1,9 +1,9 @@
 import React from 'react';
-import { FolderOpen, Package, ScrollText, Users, Plus, LogOut } from 'lucide-react';
+import { FolderOpen, Package, ScrollText, Users, Plus, LogOut, CheckSquare } from 'lucide-react';
 import sanfogLogoWhite from '../assets/sanfog-logo-white.svg';
 import { useAuthStore } from '../store/authStore';
 
-type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary';
+type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary' | 'tasks';
 
 interface SidebarProps {
   view: AppView;
@@ -20,6 +20,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
 { target: 'dashboard', icon: FolderOpen, label: 'Projekty' },
+{ target: 'tasks', icon: CheckSquare, label: 'Úlohy' },
 { target: 'stock', icon: Package, label: 'Sklad' },
 { target: 'changelog', icon: ScrollText, label: 'Zmeny' }];
 
