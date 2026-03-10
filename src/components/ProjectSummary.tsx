@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { useState, useCallback, useEffect } from 'react';
-import { MapPin, Printer, Download, Pencil, Check, Share2, FileText, Loader2, Copy, X, RefreshCw } from 'lucide-react';
+import { MapPin, Printer, Download, Pencil, Check, Share2, FileText, Loader2, Copy, X, RefreshCw, Plus, CheckSquare } from 'lucide-react';
 import { pdf } from '@react-pdf/renderer';
 import { useProjectStore } from '../store/projectStore';
 import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes, getTransportCost, getPMCost } from '../utils/calculations';
@@ -9,6 +9,11 @@ import { useNormistChecker } from '../hooks/useSupabaseItems';
 import { usePortal } from '../hooks/usePortal';
 import { ProjectPDF } from './pdf/ProjectPDF';
 import { InlineProjectComments } from './comments/ProjectComments';
+import { useTasks, useAllTasks, useTaskMutations, Task } from '../hooks/useTasks';
+import { TaskRow } from './tasks/TaskRow';
+import { TaskDetailModal } from './tasks/TaskDetailModal';
+import { NewTaskModal } from './tasks/NewTaskModal';
+import { isOverdue } from '../hooks/useTasks';
 
 interface ProjectSummaryProps {
   onOpenWizard: () => void;
@@ -632,12 +637,99 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
         </div>
       </div>
 
+      {/* Project Tasks */}
+      {openProjectId && (
+        <div className="mt-6">
+          <ProjectTasksSection projectId={openProjectId} />
+        </div>
+      )}
+
       {/* Project Comments */}
       {openProjectId && (
         <div className="mt-6">
           <InlineProjectComments projectId={openProjectId} />
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Inline project tasks section ──────────────────────────────────────────────
+
+function ProjectTasksSection({ projectId }: { projectId: string }) {
+  const [showCompleted, setShowCompleted] = useState(false);
+  const [newTaskOpen, setNewTaskOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  const { tasks, loading, refetch } = useTasks({ projectId, includeCompleted: showCompleted, parentTaskId: null });
+  const { tasks: allTasks, refetch: refetchAll } = useAllTasks();
+
+  const activeTasks = tasks.filter(t => t.status !== 'done');
+  const doneTasks = showCompleted ? allTasks.filter(t => t.project_id === projectId && t.status === 'done' && !t.parent_task_id) : [];
+
+  const handleRefresh = () => { refetch(); refetchAll(); };
+
+  return (
+    <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CheckSquare className="w-4 h-4" style={{ color: 'hsl(var(--teal))' }} />
+          <h2 className="font-bold text-foreground uppercase tracking-wide text-sm">Úlohy projektu</h2>
+          {!loading && activeTasks.length > 0 && (
+            <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">{activeTasks.length}</span>
+          )}
+        </div>
+        <div className="flex gap-2 items-center">
+          <button
+            onClick={() => setShowCompleted(v => !v)}
+            className={`px-2 py-1 text-xs rounded border transition-colors ${showCompleted ? 'border-teal text-teal' : 'border-border text-muted-foreground hover:border-teal'}`}
+            style={{ borderRadius: 'var(--radius)' }}
+          >
+            Dokončené
+          </button>
+          <button
+            onClick={() => setNewTaskOpen(true)}
+            className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded text-white hover:opacity-90 transition-opacity"
+            style={{ background: 'hsl(var(--teal))', borderRadius: 'var(--radius)' }}
+          >
+            <Plus className="w-3.5 h-3.5" /> Nová úloha
+          </button>
+        </div>
+      </div>
+      <div className="px-4 py-3">
+        {loading ? (
+          <p className="text-sm text-muted-foreground">Načítavam…</p>
+        ) : activeTasks.length === 0 && !showCompleted ? (
+          <p className="text-sm text-muted-foreground py-2">Žiadne aktívne úlohy pre tento projekt.</p>
+        ) : (
+          <>
+            {activeTasks.map(task => (
+              <TaskRow key={task.id} task={task} subtaskCount={allTasks.filter(t => t.parent_task_id === task.id).length} onClick={t => setSelectedTask(t)} />
+            ))}
+            {showCompleted && doneTasks.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-border">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Dokončené ({doneTasks.length})</p>
+                {doneTasks.map(task => (
+                  <TaskRow key={task.id} task={task} subtaskCount={allTasks.filter(t => t.parent_task_id === task.id).length} onClick={t => setSelectedTask(t)} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      <NewTaskModal
+        open={newTaskOpen}
+        onClose={() => setNewTaskOpen(false)}
+        onCreated={handleRefresh}
+        prefilledProjectId={projectId}
+      />
+      <TaskDetailModal
+        task={selectedTask}
+        open={!!selectedTask}
+        onClose={() => setSelectedTask(null)}
+        onRefresh={handleRefresh}
+      />
     </div>
   );
 }

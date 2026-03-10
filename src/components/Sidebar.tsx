@@ -1,9 +1,9 @@
 import React from 'react';
-import { FolderOpen, Package, ScrollText, Users, Plus, LogOut } from 'lucide-react';
+import { FolderOpen, Package, ScrollText, Users, Plus, LogOut, CheckSquare } from 'lucide-react';
 import sanfogLogoWhite from '../assets/sanfog-logo-white.svg';
 import { useAuthStore } from '../store/authStore';
 
-type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary';
+type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary' | 'tasks';
 
 interface SidebarProps {
   view: AppView;
@@ -20,6 +20,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
 { target: 'dashboard', icon: FolderOpen, label: 'Projekty' },
+{ target: 'tasks', icon: CheckSquare, label: 'Úlohy' },
 { target: 'stock', icon: Package, label: 'Sklad' },
 { target: 'changelog', icon: ScrollText, label: 'Zmeny' }];
 
@@ -30,6 +31,9 @@ export function Sidebar({ view, setView, onNewProject, isAdmin }: SidebarProps) 
   const allItems = isAdmin ?
   [...NAV_ITEMS, { target: 'users' as AppView, icon: Users, label: 'Používatelia' }] :
   NAV_ITEMS;
+
+  // 'summary' view should highlight the dashboard item
+  const resolvedView = (view === 'summary' ? 'dashboard' : view) as AppView;
 
   return (
     <aside className="fixed left-0 top-0 h-screen z-50 flex flex-col bg-navy border-r border-white/10 w-14 hover:w-52 transition-all duration-200 ease-in-out overflow-hidden group">
@@ -50,7 +54,7 @@ export function Sidebar({ view, setView, onNewProject, isAdmin }: SidebarProps) 
       {/* Nav items */}
       <nav className="flex-1 py-3 flex flex-col gap-0.5 px-2">
         {allItems.map(({ target, icon: Icon, label }) => {
-          const isActive = view === target || target === 'dashboard' && view === 'summary';
+          const isActive = view === target || (target === 'dashboard' && view === 'summary');
           return (
             <button
               key={target}
