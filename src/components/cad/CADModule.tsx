@@ -345,10 +345,14 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
       return;
     }
 
-    if (e.key === 'Escape') {
-      // Always cancel current drawing action
+    // Tab — cancel current drawing action
+    if (e.key === 'Tab') {
+      e.preventDefault();
       stopDrawing();
+      return;
+    }
 
+    if (e.key === 'Escape') {
       // If in fullscreen, start ESC hold countdown
       if (isFullscreen) {
         escHoldCompletedRef.current = false;
