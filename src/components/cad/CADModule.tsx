@@ -456,6 +456,11 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
     }));
   }, []);
 
+  // Keep viewBoxRef in sync with React state (after zoom / fitToView)
+  useEffect(() => {
+    viewBoxRef.current = viewBox;
+  }, [viewBox]);
+
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
