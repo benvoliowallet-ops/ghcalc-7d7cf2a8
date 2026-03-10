@@ -65,10 +65,12 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
     zoneCalcs, toggleCADZoneLock, setActiveZone,
   } = useProjectStore();
 
+  const viewBoxRef = useRef({ x: 0, y: 0, w: 1200, h: 700 });
+  const panStartRef = useRef<{ mx: number; my: number; vx: number; vy: number } | null>(null);
+
   const [tool, setTool] = useState<Tool>('pipe');
   const [viewBox, setViewBox] = useState({ x: 0, y: 0, w: 1200, h: 700 });
   const [isPanning, setIsPanning] = useState(false);
-  const [panStart, setPanStart] = useState<{ mx: number; my: number; vx: number; vy: number } | null>(null);
   const [drawing, setDrawing] = useState<DrawingState>({ isDrawing: false, startPoint: null, currentPoint: null });
   const [snapPoint, setSnapPoint] = useState<CADPoint | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
