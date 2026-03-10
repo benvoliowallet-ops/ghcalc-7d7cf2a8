@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { useState, useCallback, useEffect } from 'react';
-import { MapPin, Printer, Download, Pencil, Check, Share2, FileText, Loader2, Copy, X, RefreshCw } from 'lucide-react';
+import { MapPin, Printer, Download, Pencil, Check, Share2, FileText, Loader2, Copy, X, RefreshCw, Plus, CheckSquare } from 'lucide-react';
 import { pdf } from '@react-pdf/renderer';
 import { useProjectStore } from '../store/projectStore';
 import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes, getTransportCost, getPMCost } from '../utils/calculations';
@@ -9,6 +9,11 @@ import { useNormistChecker } from '../hooks/useSupabaseItems';
 import { usePortal } from '../hooks/usePortal';
 import { ProjectPDF } from './pdf/ProjectPDF';
 import { InlineProjectComments } from './comments/ProjectComments';
+import { useTasks, useAllTasks, useTaskMutations, Task } from '../hooks/useTasks';
+import { TaskRow } from './tasks/TaskRow';
+import { TaskDetailModal } from './tasks/TaskDetailModal';
+import { NewTaskModal } from './tasks/NewTaskModal';
+import { isOverdue } from '../hooks/useTasks';
 
 interface ProjectSummaryProps {
   onOpenWizard: () => void;

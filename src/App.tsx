@@ -191,6 +191,7 @@ function AppInner() {
       case 'summary':return <ProjectSummary onOpenWizard={() => setView('project')} onBack={() => setView('dashboard')} />;
       case 'stock':return <StockPage />;
       case 'changelog':return <ChangeLogPage />;
+      case 'tasks':return <TasksPage />;
       case 'users':return currentUser.role === 'admin' ? <UsersPage /> :
         <div className="max-w-xl mx-auto px-4 py-20 text-center">
           <p className="text-muted-foreground">Prístup zamietnutý – iba pre adminov.</p>
