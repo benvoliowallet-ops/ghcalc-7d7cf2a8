@@ -314,14 +314,17 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
       };
       addSymbol(sym);
     }
-  }, [tool, spaceHeld, getSVGPoint, viewBox, findSnapPoint, snapToGrid, drawing, applyOrtho, localActiveZone, addSegment, addSymbol, markDrawingComplete, pushHistory, stopDrawing]);
+  }, [tool, spaceHeld, getSVGPoint, findSnapPoint, snapToGrid, drawing, applyOrtho, localActiveZone, addSegment, addSymbol, markDrawingComplete, pushHistory, stopDrawing]);
 
   const handleMouseUp = useCallback(() => {
+    if (isPanning) {
+      setViewBox({ ...viewBoxRef.current });
+    }
     setIsPanning(false);
-    setPanStart(null);
+    panStartRef.current = null;
     setDraggingZone(null);
     setGuideLines([]);
-  }, []);
+  }, [isPanning]);
 
   const handleDoubleClick = useCallback(() => {
     if (drawing.isDrawing) stopDrawing();
