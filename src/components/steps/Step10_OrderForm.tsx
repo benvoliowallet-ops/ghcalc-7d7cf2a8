@@ -161,8 +161,10 @@ export function Step10_OrderForm() {
         <p className="text-sm text-muted-foreground">Ponuka: <strong>{project.quoteNumber}</strong> · {project.customerName}</p>
         <div className="flex gap-2">
           <Button variant="secondary" size="lg" onClick={exportOrderXLSX}><DownloadIcon /> Export XLSX</Button>
+          <Button variant="secondary" size="lg" onClick={exportOrderOberon} disabled={oberonExporting}><DownloadIcon /> {oberonExporting ? 'Exportujem…' : 'Export do Oberon'}</Button>
           <Button variant="primary" size="lg" onClick={printOrder}><PrintIcon /> Tlačiť</Button>
         </div>
+
       </div>
 
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
