@@ -819,6 +819,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
                   fill="white"
                   fontWeight="bold"
                   filter="url(#labelShadow)"
+                  clipPath={`url(#clip-zone-${zone.zoneIndex})`}
                   style={{ pointerEvents: 'none', userSelect: 'none' }}
                 >
                   {zoneData.name}
