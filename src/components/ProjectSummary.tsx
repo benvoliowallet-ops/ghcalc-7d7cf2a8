@@ -637,7 +637,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
           <p className="text-xs text-muted-foreground mb-3">
             Interný dokument bez NORMIST položiek · {attiLines.length} riadkov
           </p>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <button
               onClick={printBOM}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground text-sm font-semibold rounded hover:opacity-90 transition-opacity"
@@ -652,9 +652,18 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
             >
               <Download className="w-3.5 h-3.5" /> XLSX
             </button>
+            <button
+              onClick={exportAttiOberon}
+              disabled={oberonExporting}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-muted text-foreground text-sm font-semibold rounded hover:bg-muted/80 transition-colors disabled:opacity-60"
+              style={{ borderRadius: 'var(--radius)' }}
+            >
+              <Download className="w-3.5 h-3.5" /> {oberonExporting ? 'Exportujem…' : 'Export do Oberon'}
+            </button>
           </div>
         </div>
       </div>
+
 
       {/* Project Tasks */}
       {openProjectId && (
