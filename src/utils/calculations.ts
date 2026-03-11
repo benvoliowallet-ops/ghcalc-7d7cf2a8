@@ -1,5 +1,5 @@
 import type { ZoneParams, ZoneCalc, GlobalParams, CADDrawing, CADSegment, NozzleCombo, BracketBOMLine, ConcurrentInterval } from '../types';
-import { NOZZLE_BY_ORIFICE } from '../data/stockItems';
+import { NOZZLE_BY_ORIFICE, getStockPrice } from '../data/stockItems';
 export { NOZZLE_BY_ORIFICE };  // re-export for consumers
 
 // ─── Nozzle Flow Table (l/min) ────────────────────────────────────────────────
