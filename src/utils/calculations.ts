@@ -435,6 +435,7 @@ export function generateQuoteNumber(): string {
 }
 
 export function fmtN(n: number, decimals = 0): string {
+  if (n == null || isNaN(n)) return '—';
   return n.toLocaleString('sk-SK', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
