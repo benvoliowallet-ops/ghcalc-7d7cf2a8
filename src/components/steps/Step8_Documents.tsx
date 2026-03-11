@@ -89,7 +89,7 @@ export function Step8_Documents() {
   });
 
   if (cadHasPipes) {
-    bracketBOM.forEach(b => { const price = b.direction === 'racmet' ? 13.58 : 11.66; add('Držiaky', b.code, b.name, b.qty, 'ks', price); });
+    bracketBOM.forEach(b => { add('Držiaky', b.code, b.name, b.qty, 'ks', getStockPrice(b.code)); });
   }
 
   const installTechCost = (costInputs.installTechDays * costInputs.installTechCount + costInputs.installGreenhouseDays * costInputs.installGreenhouseCount + costInputs.diggingDays * costInputs.diggingCount + costInputs.commissioningDays * costInputs.commissioningCount) * 100;
@@ -97,15 +97,15 @@ export function Step8_Documents() {
   const accommodationCost = costInputs.accommodationCost;
   const salesTripsCost = (costInputs.salesTrips + costInputs.techTrips + costInputs.implTeamTrips) * 150;
 
-  if (installTechCost > 0) add('Montáž', 'SANFOG_MONTAZ', 'Práca montáž', installTechCost / 100, 'dní', 100);
-  if (dietsCost > 0) add('Montáž', 'SANFOG_DIETA', 'Diéty', dietsCost / 35, 'dní', 35);
+  if (installTechCost > 0) add('Montáž', 'SANFOG_MONTAZ', 'Práca montáž', installTechCost / 100, 'dní', getStockPrice('SANFOG_MONTAZ'));
+  if (dietsCost > 0) add('Montáž', 'SANFOG_DIETA', 'Diéty', dietsCost / 35, 'dní', getStockPrice('SANFOG_DIETA'));
   if (accommodationCost > 0) add('Montáž', 'SANFOG_UBYT', 'Ubytovanie', 1, 'ks', accommodationCost);
-  if (salesTripsCost > 0) add('Doprava', 'SANFOG_DOPRAVA', 'Doprava výjazdy', salesTripsCost / 150, 'výjazd', 150);
+  if (salesTripsCost > 0) add('Doprava', 'SANFOG_DOPRAVA', 'Doprava výjazdy', salesTripsCost / 150, 'výjazd', getStockPrice('SANFOG_DOPRAVA'));
   add('Doprava', 'SANFOG_PREPRAVA', `Preprava tovaru (${project.country})`, 1, 'ks', transpCost);
-  add('Ostatné', 'SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'ks', 400);
+  add('Ostatné', 'SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'ks', getStockPrice('SANFOG_PROJEKTO'));
   add('Ostatné', 'SANFOG_PM', 'Projektový manažér', 1, 'ks', pmCost);
   add('Ostatné', 'SANFOG_MAT', 'Montážny materiál', 1, 'ks', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
-  add('Ostatné', 'SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'ks', 1400);
+  add('Ostatné', 'SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'ks', getStockPrice('SANFOG_COLNICA'));
 
   const processedBomLines = bomLines.map((l) => isNormist(l.code) && l.code !== 'NORMIST' ? { ...l, price: 0 } : l);
   const bomTotal = processedBomLines.reduce((s, l) => s + l.qty * l.price, 0);
