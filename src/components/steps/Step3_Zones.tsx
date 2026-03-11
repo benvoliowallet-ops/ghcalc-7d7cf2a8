@@ -203,6 +203,15 @@ interface ZoneParamsTabProps {
 function ZoneParamsTab({ zone, zoneIndex, zones, globalParams, onUpdate, nozzleOrificeOptions, spacingOptions, controlOptions, connectionOptions, onOrificeChange, onCopyZone }: ZoneParamsTabProps) {
   const area = zone.length * zone.width * zone.numNaves;
   const pressure = globalParams.systemPressure;
+
+  // Pump capacity warning calculation
+  const WALL_OFFSET_M = 0.75;
+  const effectiveLength = Math.max(0, zone.length - 2 * WALL_OFFSET_M);
+  const spacingM = zone.nozzleSpacing / 100;
+  const nozzlesPerNaveRaw = effectiveLength > 0 && spacingM > 0 ? Math.floor(effectiveLength / spacingM) + 1 : 0;
+  const nozzlesPerNave = nozzlesPerNaveRaw % 2 === 0 ? nozzlesPerNaveRaw : nozzlesPerNaveRaw + 1;
+  const totalNozzles = nozzlesPerNave * zone.numNaves * 2;
+  const flowLpm = totalNozzles * zone.nozzleFlow;
   return (
     <div>
       {zones.length > 1 && (
@@ -230,6 +239,14 @@ function ZoneParamsTab({ zone, zoneIndex, zones, globalParams, onUpdate, nozzleO
             <p className="font-semibold text-primary">Plocha zóny: {fmtN(area, 1)} m²</p>
             <p className="text-primary/70">= {zone.length} × {zone.width} × {zone.numNaves} lodí</p>
           </div>
+          {flowLpm > 100 && (
+            <div className="mt-2 flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
+              <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-destructive">
+                ⚠️ Požadovaný prietok <strong>{flowLpm.toFixed(1)} LPM</strong> prekračuje maximálny výkon čerpadla (100 LPM). Zvážte rozdelenie zóny na viacero okruhov.
+              </p>
+            </div>
+          )}
           <div className="mt-4">
             <Select label="Prepoj na napájacie potrubie" value={zone.connectionType ?? 'T-kus'} onChange={(e) => onUpdate({ connectionType: e.target.value as ZoneParams['connectionType'] })} options={connectionOptions} />
           </div>
