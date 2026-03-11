@@ -325,7 +325,23 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
     XLSX.writeFile(wb, `BOM_Atti_${project.quoteNumber}.xlsx`);
   };
 
+  const [oberonExporting, setOberonExporting] = useState(false);
+  const exportAttiOberon = async () => {
+    setOberonExporting(true);
+    try {
+      await exportToOberon(
+        prepareBomForOberon(attiLines.map((l) => ({ code: l.code, qty: l.qty }))),
+        project.quoteNumber
+      );
+    } catch (e) {
+      alert(String(e));
+    } finally {
+      setOberonExporting(false);
+    }
+  };
+
   return (
+
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* Back */}
       <button
