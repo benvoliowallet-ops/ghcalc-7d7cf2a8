@@ -3,8 +3,18 @@ import { StepLayout } from '../ui/StepLayout';
 import { Input, Select, Card, Toggle, CalcRow } from '../ui/FormField';
 import { AlertTriangle } from 'lucide-react';
 
+const MAX_PUMP_LPM = 100;
+
 export function Step2_GlobalParams() {
-  const { globalParams, updateGlobalParams } = useProjectStore();
+  const { globalParams, updateGlobalParams, zones } = useProjectStore();
+
+  const zoneWarnings = zones
+    .map((z, i) => {
+      const area = z.length * z.width * z.numNaves;
+      const flowLpm = (globalParams.fogCapacity * area) / 60000;
+      return flowLpm > MAX_PUMP_LPM ? { index: i, name: z.name, flowLpm } : null;
+    })
+    .filter(Boolean) as { index: number; name: string; flowLpm: number }[];
 
   const zoneOptions = Array.from({ length: 12 }, (_, i) => ({
     value: i + 1,
