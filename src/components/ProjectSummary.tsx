@@ -14,6 +14,7 @@ import { TaskRow } from './tasks/TaskRow';
 import { TaskDetailModal } from './tasks/TaskDetailModal';
 import { NewTaskModal } from './tasks/NewTaskModal';
 import { isOverdue } from '../hooks/useTasks';
+import { exportToOberon, prepareBomForOberon } from '../utils/exportOberon';
 
 interface ProjectSummaryProps {
   onOpenWizard: () => void;
@@ -324,7 +325,23 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
     XLSX.writeFile(wb, `BOM_Atti_${project.quoteNumber}.xlsx`);
   };
 
+  const [oberonExporting, setOberonExporting] = useState(false);
+  const exportAttiOberon = async () => {
+    setOberonExporting(true);
+    try {
+      await exportToOberon(
+        prepareBomForOberon(attiLines.map((l) => ({ code: l.code, qty: l.qty }))),
+        project.quoteNumber
+      );
+    } catch (e) {
+      alert(String(e));
+    } finally {
+      setOberonExporting(false);
+    }
+  };
+
   return (
+
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* Back */}
       <button
@@ -620,7 +637,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
           <p className="text-xs text-muted-foreground mb-3">
             Interný dokument bez NORMIST položiek · {attiLines.length} riadkov
           </p>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <button
               onClick={printBOM}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground text-sm font-semibold rounded hover:opacity-90 transition-opacity"
@@ -635,9 +652,18 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
             >
               <Download className="w-3.5 h-3.5" /> XLSX
             </button>
+            <button
+              onClick={exportAttiOberon}
+              disabled={oberonExporting}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-muted text-foreground text-sm font-semibold rounded hover:bg-muted/80 transition-colors disabled:opacity-60"
+              style={{ borderRadius: 'var(--radius)' }}
+            >
+              <Download className="w-3.5 h-3.5" /> {oberonExporting ? 'Exportujem…' : 'Export do Oberon'}
+            </button>
           </div>
         </div>
       </div>
+
 
       {/* Project Tasks */}
       {openProjectId && (

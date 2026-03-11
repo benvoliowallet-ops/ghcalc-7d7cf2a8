@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
@@ -6,6 +6,7 @@ import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, getTransportCost, getPMCost, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from '../../utils/calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../../data/stockItems';
 import { useNormistChecker } from '../../hooks/useSupabaseItems';
+import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
 
 export function Step8_Documents() {
   const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, uvSystemNazli, cad, ropeOverrides, preOrderState } = useProjectStore();
@@ -172,7 +173,23 @@ export function Step8_Documents() {
     XLSX.writeFile(wb, `BOM_Atti_${project.quoteNumber}.xlsx`);
   };
 
+  const [oberonExporting, setOberonExporting] = useState(false);
+  const exportAttiOberon = async () => {
+    setOberonExporting(true);
+    try {
+      await exportToOberon(
+        prepareBomForOberon(attiLines.map((l) => ({ code: l.code, qty: l.qty }))),
+        project.quoteNumber
+      );
+    } catch (e) {
+      alert(String(e));
+    } finally {
+      setOberonExporting(false);
+    }
+  };
+
   return (
+
     <StepLayout stepNum={8} title="Generovanie výstupných dokumentov" subtitle="8A – Order Form pre NAZLI  ·  8B – BOM pre Attiho (OBERON)" canContinue={true}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card variant="info" title="8A — Order Form pre NAZLI (NORMIST)">
@@ -187,8 +204,12 @@ export function Step8_Documents() {
           <div className="flex gap-2 flex-wrap">
             <Button variant="primary" onClick={printBOM}><PrintIcon /> Tlačiť – BOM pre Attiho</Button>
             <Button variant="secondary" onClick={exportAttiBOMXLSX}><DownloadIcon /> Export XLSX</Button>
+            <Button variant="secondary" onClick={exportAttiOberon} disabled={oberonExporting}>
+              <DownloadIcon /> {oberonExporting ? 'Exportujem…' : 'Export do Oberon'}
+            </Button>
           </div>
         </Card>
+
       </div>
 
       {!cadHasPipes && (

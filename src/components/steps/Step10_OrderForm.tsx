@@ -1,9 +1,12 @@
 import * as XLSX from 'xlsx';
+import { useState } from 'react';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { NOZZLE_BY_ORIFICE, calcETNACapacity, selectMaxivarem, getTransportCost, getPMCost, PUMP_TABLE, fmtN, fmtE, detectConcurrentPipes } from '../../utils/calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../../data/stockItems';
+import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
+
 
 export function Step10_OrderForm() {
   const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad, ropeOverrides } = useProjectStore();
@@ -131,7 +134,17 @@ export function Step10_OrderForm() {
     XLSX.writeFile(wb, `Order_${project.quoteNumber}.xlsx`);
   };
 
+  const [oberonExporting, setOberonExporting] = useState(false);
+  const exportOrderOberon = async () => {
+    setOberonExporting(true);
+    try {
+      const attiLines = processedLines.filter((l) => !(l.supplier === 'NORMIST' && l.code !== 'NORMIST'));
+      await exportToOberon(prepareBomForOberon(attiLines.map((l) => ({ code: l.code, qty: l.qty }))), project.quoteNumber);
+    } catch (e) { alert(String(e)); } finally { setOberonExporting(false); }
+  };
+
   if (processedLines.length === 0) {
+
     return (
       <StepLayout stepNum={10} title="Objednávkový formulár pre Attiho (OBERON)" subtitle="Finálna objednávka." hideNav={true}>
         <div className="text-center py-24 bg-card border border-dashed border-border rounded-2xl">
@@ -148,8 +161,10 @@ export function Step10_OrderForm() {
         <p className="text-sm text-muted-foreground">Ponuka: <strong>{project.quoteNumber}</strong> · {project.customerName}</p>
         <div className="flex gap-2">
           <Button variant="secondary" size="lg" onClick={exportOrderXLSX}><DownloadIcon /> Export XLSX</Button>
+          <Button variant="secondary" size="lg" onClick={exportOrderOberon} disabled={oberonExporting}><DownloadIcon /> {oberonExporting ? 'Exportujem…' : 'Export do Oberon'}</Button>
           <Button variant="primary" size="lg" onClick={printOrder}><PrintIcon /> Tlačiť</Button>
         </div>
+
       </div>
 
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
