@@ -239,6 +239,14 @@ function ZoneParamsTab({ zone, zoneIndex, zones, globalParams, onUpdate, nozzleO
             <p className="font-semibold text-primary">Plocha zóny: {fmtN(area, 1)} m²</p>
             <p className="text-primary/70">= {zone.length} × {zone.width} × {zone.numNaves} lodí</p>
           </div>
+          {flowLpm > 100 && (
+            <div className="mt-2 flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
+              <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-destructive">
+                ⚠️ Požadovaný prietok <strong>{flowLpm.toFixed(1)} LPM</strong> prekračuje maximálny výkon čerpadla (100 LPM). Zvážte rozdelenie zóny na viacero okruhov.
+              </p>
+            </div>
+          )}
           <div className="mt-4">
             <Select label="Prepoj na napájacie potrubie" value={zone.connectionType ?? 'T-kus'} onChange={(e) => onUpdate({ connectionType: e.target.value as ZoneParams['connectionType'] })} options={connectionOptions} />
           </div>
