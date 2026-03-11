@@ -6,7 +6,7 @@ export { NOZZLE_BY_ORIFICE };  // re-export for consumers
 export const NOZZLE_FLOW_LPM: Record<number, Record<number, number>> = {
   0.15: { 50: 0.043, 60: 0.047, 70: 0.050, 80: 0.058, 90: 0.064, 100: 0.068, 110: 0.072 },
   0.20: { 50: 0.063, 60: 0.071, 70: 0.075, 80: 0.081, 90: 0.085, 100: 0.091, 110: 0.097 },
-  0.25: { 50: 0.077, 60: 0.087, 70: 0.085, 80: 0.092, 90: 0.103, 100: 0.111, 110: 0.117 },
+  0.25: { 50: 0.077, 60: 0.087, 70: 0.097, 80: 0.103, 90: 0.111, 100: 0.119, 110: 0.127 },
   0.30: { 50: 0.091, 60: 0.102, 70: 0.105, 80: 0.116, 90: 0.122, 100: 0.132, 110: 0.142 },
 };
 
@@ -432,8 +432,8 @@ export function detectConcurrentPipes(cad: CADDrawing): {
 
 export function generateQuoteNumber(): string {
   const year = new Date().getFullYear().toString().slice(2);
-  const seq = String(Math.floor(Math.random() * 9000) + 1000);
-  return `PP-${year}${seq}`;
+  const ms = String(Date.now() % 100000).padStart(5, '0');
+  return `PP-${year}${ms}`;
 }
 
 export function fmtN(n: number, decimals = 0): string {
