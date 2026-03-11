@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
@@ -6,6 +6,7 @@ import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, getTransportCost, getPMCost, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from '../../utils/calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../../data/stockItems';
 import { useNormistChecker } from '../../hooks/useSupabaseItems';
+import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
 
 export function Step8_Documents() {
   const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, uvSystemNazli, cad, ropeOverrides, preOrderState } = useProjectStore();
