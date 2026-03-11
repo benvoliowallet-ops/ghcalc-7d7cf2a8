@@ -1,5 +1,5 @@
 import type { ZoneParams, ZoneCalc, GlobalParams, CADDrawing, CADSegment, NozzleCombo, BracketBOMLine, ConcurrentInterval } from '../types';
-import { NOZZLE_BY_ORIFICE } from '../data/stockItems';
+import { NOZZLE_BY_ORIFICE, getStockPrice } from '../data/stockItems';
 export { NOZZLE_BY_ORIFICE };  // re-export for consumers
 
 // ─── Nozzle Flow Table (l/min) ────────────────────────────────────────────────
@@ -231,13 +231,15 @@ export function selectMaxivarem(
 }
 
 export function getTransportCost(country: 'SK' | 'CZ' | 'HU'): number {
-  return country === 'HU' ? 750 : 450;
+  if (country === 'HU') return getStockPrice('SANFOG_PREPRAVA_HU');
+  if (country === 'CZ') return getStockPrice('SANFOG_PREPRAVA_CZ');
+  return getStockPrice('SANFOG_PREPRAVA_SK');
 }
 
 export function getPMCost(area: number): number {
-  if (area <= 2) return 300;
-  if (area <= 4) return 600;
-  return 900;
+  if (area <= 2) return getStockPrice('SANFOG_PM_2Ha');
+  if (area <= 4) return getStockPrice('SANFOG_PM_4Ha');
+  return getStockPrice('SANFOG_PM_6Ha');
 }
 
 export function bracketPipeCount(nPipes: number): 2 | 4 | 6 {

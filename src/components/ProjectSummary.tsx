@@ -40,7 +40,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
   const etnaCapacity = calcETNACapacity(totalFlowMlH);
   const totalNozzles = zoneCalcs.reduce((s, c) => s + (c?.numNozzles ?? 0), 0);
 
-  const roughCost = normistPrice + 350 +
+  const roughCost = normistPrice + getStockPrice('SNFG.00001') +
     (costInputs.installTechDays * costInputs.installTechCount +
      costInputs.installGreenhouseDays * costInputs.installGreenhouseCount +
      costInputs.commissioningDays * costInputs.commissioningCount) * 100;
@@ -120,25 +120,27 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
 
   if (cadHasPipes) {
     bracketBOM.forEach(b => {
-      const price = b.direction === 'racmet' ? 13.58 : 11.66;
-      add('Držiaky', b.code, b.name, b.qty, 'ks', price);
+      add('Držiaky', b.code, b.name, b.qty, 'ks', getStockPrice(b.code));
     });
   }
 
-  const installTechCost = (costInputs.installTechDays * costInputs.installTechCount + costInputs.installGreenhouseDays * costInputs.installGreenhouseCount + costInputs.diggingDays * costInputs.diggingCount + costInputs.commissioningDays * costInputs.commissioningCount) * 100;
-  const dietsCost = (costInputs.installTechDays * costInputs.installTechCount + costInputs.installGreenhouseDays * costInputs.installGreenhouseCount + costInputs.diggingDays * costInputs.diggingCount + costInputs.commissioningDays * costInputs.commissioningCount) * 35;
+  const montazRate = getStockPrice('SANFOG_MONTAZ');
+  const dietaRate = getStockPrice('SANFOG_DIETA');
+  const dopravaRate = getStockPrice('SANFOG_DOPRAVA');
+  const installTechCost = (costInputs.installTechDays * costInputs.installTechCount + costInputs.installGreenhouseDays * costInputs.installGreenhouseCount + costInputs.diggingDays * costInputs.diggingCount + costInputs.commissioningDays * costInputs.commissioningCount) * montazRate;
+  const dietsCost = (costInputs.installTechDays * costInputs.installTechCount + costInputs.installGreenhouseDays * costInputs.installGreenhouseCount + costInputs.diggingDays * costInputs.diggingCount + costInputs.commissioningDays * costInputs.commissioningCount) * dietaRate;
   const accommodationCost = costInputs.accommodationCost;
-  const salesTripsCost = (costInputs.salesTrips + costInputs.techTrips + costInputs.implTeamTrips) * 150;
+  const salesTripsCost = (costInputs.salesTrips + costInputs.techTrips + costInputs.implTeamTrips) * dopravaRate;
 
-  if (installTechCost > 0) add('Montáž', 'SANFOG_MONTAZ', 'Práca montáž', installTechCost / 100, 'dní', 100);
-  if (dietsCost > 0) add('Montáž', 'SANFOG_DIETA', 'Diéty', dietsCost / 35, 'dní', 35);
+  if (installTechCost > 0) add('Montáž', 'SANFOG_MONTAZ', 'Práca montáž', installTechCost / montazRate, 'dní', montazRate);
+  if (dietsCost > 0) add('Montáž', 'SANFOG_DIETA', 'Diéty', dietsCost / dietaRate, 'dní', dietaRate);
   if (accommodationCost > 0) add('Montáž', 'SANFOG_UBYT', 'Ubytovanie', 1, 'ks', accommodationCost);
-  if (salesTripsCost > 0) add('Doprava', 'SANFOG_DOPRAVA', 'Doprava výjazdy', salesTripsCost / 150, 'výjazd', 150);
+  if (salesTripsCost > 0) add('Doprava', 'SANFOG_DOPRAVA', 'Doprava výjazdy', salesTripsCost / dopravaRate, 'výjazd', dopravaRate);
   add('Doprava', 'SANFOG_PREPRAVA', `Preprava tovaru (${project.country})`, 1, 'ks', transpCost);
-  add('Ostatné', 'SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'ks', 400);
+  add('Ostatné', 'SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'ks', getStockPrice('SANFOG_PROJEKTO'));
   add('Ostatné', 'SANFOG_PM', 'Projektový manažér', 1, 'ks', pmCost);
   add('Ostatné', 'SANFOG_MAT', 'Montážny materiál', 1, 'ks', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
-  add('Ostatné', 'SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'ks', 1400);
+  add('Ostatné', 'SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'ks', getStockPrice('SANFOG_COLNICA'));
 
   const processedBomLines = bomLines.map((l) => isNormist(l.code) && l.code !== 'NORMIST' ? { ...l, price: 0 } : l);
   const attiLines = processedBomLines.filter((l) => !isNormist(l.code));
