@@ -35,6 +35,7 @@ export function Step10_OrderForm() {
     }
   };
 
+  const totalFlowMlH = zoneCalcs.reduce((sum, c) => sum + (c?.zoneFlow ?? 0), 0);
   const transpCost = getTransportCost(project.country);
   const pmCost = getPMCost(costInputs.projectArea);
   const osmoticSS = globalParams.osmoticWater;
