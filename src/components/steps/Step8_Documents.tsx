@@ -173,7 +173,23 @@ export function Step8_Documents() {
     XLSX.writeFile(wb, `BOM_Atti_${project.quoteNumber}.xlsx`);
   };
 
+  const [oberonExporting, setOberonExporting] = useState(false);
+  const exportAttiOberon = async () => {
+    setOberonExporting(true);
+    try {
+      await exportToOberon(
+        prepareBomForOberon(attiLines.map((l) => ({ code: l.code, qty: l.qty }))),
+        project.quoteNumber
+      );
+    } catch (e) {
+      alert(String(e));
+    } finally {
+      setOberonExporting(false);
+    }
+  };
+
   return (
+
     <StepLayout stepNum={8} title="Generovanie výstupných dokumentov" subtitle="8A – Order Form pre NAZLI  ·  8B – BOM pre Attiho (OBERON)" canContinue={true}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card variant="info" title="8A — Order Form pre NAZLI (NORMIST)">
