@@ -4,7 +4,7 @@ import { MapPin, Printer, Download, Pencil, Check, Share2, FileText, Loader2, Co
 import { pdf } from '@react-pdf/renderer';
 import { useProjectStore } from '../store/projectStore';
 import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes, getTransportCost, getPMCost } from '../utils/calculations';
-import { getPipe10mmForSpacing } from '../data/stockItems';
+import { getPipe10mmForSpacing, getStockPrice } from '../data/stockItems';
 import { useNormistChecker } from '../hooks/useSupabaseItems';
 import { usePortal } from '../hooks/usePortal';
 import { ProjectPDF } from './pdf/ProjectPDF';
