@@ -40,7 +40,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
   const etnaCapacity = calcETNACapacity(totalFlowMlH);
   const totalNozzles = zoneCalcs.reduce((s, c) => s + (c?.numNozzles ?? 0), 0);
 
-  const roughCost = normistPrice + 350 +
+  const roughCost = normistPrice + getStockPrice('SNFG.00001') +
     (costInputs.installTechDays * costInputs.installTechCount +
      costInputs.installGreenhouseDays * costInputs.installGreenhouseCount +
      costInputs.commissioningDays * costInputs.commissioningCount) * 100;
