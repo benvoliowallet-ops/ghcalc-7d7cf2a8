@@ -14,6 +14,7 @@ import { TaskRow } from './tasks/TaskRow';
 import { TaskDetailModal } from './tasks/TaskDetailModal';
 import { NewTaskModal } from './tasks/NewTaskModal';
 import { isOverdue } from '../hooks/useTasks';
+import { exportToOberon, prepareBomForOberon } from '../utils/exportOberon';
 
 interface ProjectSummaryProps {
   onOpenWizard: () => void;
