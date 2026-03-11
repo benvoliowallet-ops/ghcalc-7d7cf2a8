@@ -903,7 +903,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
               <g key={sym.id}
                 transform={`translate(${sym.x}, ${sym.y})`}
                 opacity={isActive ? 1 : 0.3}
-                style={{ cursor: tool === 'select' ? 'pointer' : 'default' }}
+                style={{ cursor: drawing.isDrawing ? 'crosshair' : 'pointer' }}
                 onMouseDown={(e) => selectElement(sym.id, 'symbol', e)}
               >
                 {isSelected && <circle r={16} fill="none" stroke="#ef4444" strokeWidth={2} strokeDasharray="4,2" />}
