@@ -203,6 +203,15 @@ interface ZoneParamsTabProps {
 function ZoneParamsTab({ zone, zoneIndex, zones, globalParams, onUpdate, nozzleOrificeOptions, spacingOptions, controlOptions, connectionOptions, onOrificeChange, onCopyZone }: ZoneParamsTabProps) {
   const area = zone.length * zone.width * zone.numNaves;
   const pressure = globalParams.systemPressure;
+
+  // Pump capacity warning calculation
+  const WALL_OFFSET_M = 0.75;
+  const effectiveLength = Math.max(0, zone.length - 2 * WALL_OFFSET_M);
+  const spacingM = zone.nozzleSpacing / 100;
+  const nozzlesPerNaveRaw = effectiveLength > 0 && spacingM > 0 ? Math.floor(effectiveLength / spacingM) + 1 : 0;
+  const nozzlesPerNave = nozzlesPerNaveRaw % 2 === 0 ? nozzlesPerNaveRaw : nozzlesPerNaveRaw + 1;
+  const totalNozzles = nozzlesPerNave * zone.numNaves * 2;
+  const flowLpm = totalNozzles * zone.nozzleFlow;
   return (
     <div>
       {zones.length > 1 && (
