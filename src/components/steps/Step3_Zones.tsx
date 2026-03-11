@@ -38,7 +38,7 @@ function NumInput({ value, onChange, label, unit, hint, error, ...inputProps }: 
 const FLOW_PRESSURES = [50, 60, 70, 80, 90, 100, 110];
 
 export function Step3_Zones() {
-  const { zones, zoneCalcs, globalParams, updateZone, activeZoneIndex, setActiveZone, recalcAllZones, initCADZones, cad } = useProjectStore();
+  const { zones, zoneCalcs, globalParams, updateZone, activeZoneIndex, setActiveZone, recalcAllZones, initCADZones, setCADData, cad } = useProjectStore();
   const [activeTab, setActiveTab] = useState<'params' | 'cad' | 'results'>('params');
   const confirm = useConfirm();
 
@@ -76,12 +76,13 @@ export function Step3_Zones() {
     if (cad.segments.length > 0 || cad.zones.length > 0) {
       const ok = await confirm({
         title: 'Resetovať CAD výkres?',
-        description: 'Toto resetuje pozície zón v CAD náčrte. Akcia je nevratná.',
+        description: 'Toto resetuje všetky zóny aj ručne nakreslené čiary a symboly. Akcia je nevratná.',
         confirmLabel: 'Resetovať',
         variant: 'destructive',
       });
       if (!ok) return;
     }
+    setCADData([], []);
     initCADZones();
   };
 

@@ -77,6 +77,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
   const [selectedType, setSelectedType] = useState<SelectedType>(null);
   const [ghostLine, setGhostLine] = useState<{ start: CADPoint; end: CADPoint } | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [redoStack, setRedoStack] = useState<HistoryEntry[]>([]);
   const [layerVisibility, setLayerVisibility] = useState<Record<string, boolean>>({});
   const [draggingZone, setDraggingZone] = useState<{ index: number; startX: number; startY: number; origX: number; origY: number } | null>(null);
   const [floatLabel, setFloatLabel] = useState<{ x: number; y: number; text: string } | null>(null);
@@ -168,6 +169,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
 
   const pushHistory = useCallback(() => {
     setHistory((h) => [...h.slice(-29), { segments: [...cad.segments], symbols: [...cad.symbols] }]);
+    setRedoStack([]);
   }, [cad.segments, cad.symbols]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -391,19 +393,32 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
       }
     }
 
-    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
       e.preventDefault();
       const prev = history[history.length - 1];
       if (prev) {
+        setRedoStack((r) => [...r, { segments: [...cad.segments], symbols: [...cad.symbols] }]);
         setHistory((h) => h.slice(0, -1));
         setCADData(prev.segments, prev.symbols);
       }
+      return;
+    }
+
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+      e.preventDefault();
+      const next = redoStack[redoStack.length - 1];
+      if (next) {
+        setHistory((h) => [...h, { segments: [...cad.segments], symbols: [...cad.symbols] }]);
+        setRedoStack((r) => r.slice(0, -1));
+        setCADData(next.segments, next.symbols);
+      }
+      return;
     }
 
     if (e.key === 'Delete' || e.key === 'Backspace') {
       if (selectedId) deleteSelected();
     }
-  }, [history, selectedId, stopDrawing, deleteSelected, setCADData, isFullscreen, spaceHeld, tool, cancelEscHold]);
+  }, [history, redoStack, cad.segments, cad.symbols, selectedId, stopDrawing, deleteSelected, setCADData, isFullscreen, spaceHeld, tool, cancelEscHold]);
 
   const handleKeyUp = useCallback((e: KeyboardEvent) => {
     if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') return;
@@ -521,7 +536,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
 
   const selectElement = (id: string, type: SelectedType, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (tool === 'select') {
+    if (!drawing.isDrawing) {
       setSelectedId(id === selectedId ? null : id);
       setSelectedType(id === selectedId ? null : type);
     }
@@ -589,6 +604,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
             onClick={() => {
               const prev = history[history.length - 1];
               if (prev) {
+                setRedoStack((r) => [...r, { segments: [...cad.segments], symbols: [...cad.symbols] }]);
                 setHistory((h) => h.slice(0, -1));
                 setCADData(prev.segments, prev.symbols);
               }
@@ -597,6 +613,20 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
             className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Undo2 className="w-3.5 h-3.5" /> Undo ({history.length})
+          </button>
+          <button
+            onClick={() => {
+              const next = redoStack[redoStack.length - 1];
+              if (next) {
+                setHistory((h) => [...h, { segments: [...cad.segments], symbols: [...cad.symbols] }]);
+                setRedoStack((r) => r.slice(0, -1));
+                setCADData(next.segments, next.symbols);
+              }
+            }}
+            disabled={redoStack.length === 0}
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <Undo2 className="w-3.5 h-3.5 scale-x-[-1]" /> Redo ({redoStack.length})
           </button>
 
           <button
@@ -636,11 +666,12 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
         </div>
 
         <div className="text-xs text-gray-400 mt-1 space-y-0.5 leading-relaxed">
-          <p>↖ Výber → klikni prvok</p>
+          <p>Klikni čiaru = vyber</p>
           <p>Del/⌫ = zmazať výber</p>
           <p>Dbl-klik = koniec čiary</p>
           <p>Tab = zrušiť akciu</p>
           <p>Ctrl+Z = undo</p>
+          <p>Ctrl+Y = redo</p>
           <p>SPACE = pan (drž)</p>
           {isFullscreen && <p className="text-orange-400">ESC 3s = ukončiť</p>}
           <p>🟨 = dilatácia</p>
@@ -730,7 +761,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
             const color = ZONE_COLORS[zone.zoneIndex % ZONE_COLORS.length];
             const isActive = zone.zoneIndex === localActiveZone;
             const isVisible = isLayerVisible(zone.zoneIndex);
-            const labelSize = Math.min(20, Math.max(12, Math.round(zone.height / 5)));
+            const labelSize = Math.max(12, Math.round(Math.min(zone.width, zone.height) * 0.65));
 
             return (
               <g key={zone.zoneIndex} opacity={isVisible ? (isActive ? 1 : 0.4) : 0}>
@@ -835,7 +866,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
                   x1={seg.start.x} y1={seg.start.y}
                   x2={seg.end.x} y2={seg.end.y}
                   stroke="transparent" strokeWidth={12}
-                  style={{ cursor: tool === 'select' ? 'pointer' : 'default' }}
+                  style={{ cursor: drawing.isDrawing ? 'crosshair' : 'pointer' }}
                   onMouseDown={(e) => selectElement(seg.id, 'segment', e)}
                 />
                 <line
@@ -873,7 +904,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
               <g key={sym.id}
                 transform={`translate(${sym.x}, ${sym.y})`}
                 opacity={isActive ? 1 : 0.3}
-                style={{ cursor: tool === 'select' ? 'pointer' : 'default' }}
+                style={{ cursor: drawing.isDrawing ? 'crosshair' : 'pointer' }}
                 onMouseDown={(e) => selectElement(sym.id, 'symbol', e)}
               >
                 {isSelected && <circle r={16} fill="none" stroke="#ef4444" strokeWidth={2} strokeDasharray="4,2" />}
