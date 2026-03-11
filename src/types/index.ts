@@ -214,6 +214,17 @@ export interface SavedProject {
   snapshot: ProjectState;
   ownerId: string;
   ownerName: string;
+  status: 'in_progress' | 'completed';
+}
+
+// ─── Project Change Entry ─────────────────────────────────────────────────────
+export interface ProjectChangeEntry {
+  id: string;
+  projectId: string;
+  changedAt: string;
+  changedBy: string | null;
+  changedByEmail: string;
+  reason: string;
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────

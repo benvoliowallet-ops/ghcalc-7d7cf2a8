@@ -24,7 +24,7 @@ export function useLoadProjects() {
     const loadProjects = async () => {
       const { data: projects, error } = await supabase
         .from('projects')
-        .select('id, quote_number, customer_name, project_address, country, current_step, num_zones, snapshot, saved_at, owner_id')
+        .select('id, quote_number, customer_name, project_address, country, current_step, num_zones, snapshot, saved_at, owner_id, status')
         .order('saved_at', { ascending: false });
 
       if (error) {
