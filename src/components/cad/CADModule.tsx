@@ -732,7 +732,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
             const color = ZONE_COLORS[zone.zoneIndex % ZONE_COLORS.length];
             const isActive = zone.zoneIndex === localActiveZone;
             const isVisible = isLayerVisible(zone.zoneIndex);
-            const labelSize = Math.min(20, Math.max(12, Math.round(zone.height / 5)));
+            const labelSize = Math.max(12, Math.round(Math.min(zone.width, zone.height) * 0.65));
 
             return (
               <g key={zone.zoneIndex} opacity={isVisible ? (isActive ? 1 : 0.4) : 0}>
