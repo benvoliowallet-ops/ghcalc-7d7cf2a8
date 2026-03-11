@@ -208,6 +208,8 @@ export const useProjectStore = create<ProjectStore>()(
           // Ensure preOrderState exists for old snapshots without it
           preOrderState: saved.snapshot.preOrderState ?? defaultPreOrderState,
         });
+        // S10: Recalc zones after load to ensure zoneCalcs are fresh
+        get().recalcAllZones();
       },
 
       // NC6 FIX: return a Promise so callers can handle errors, and optimistic
@@ -259,9 +261,9 @@ export const useProjectStore = create<ProjectStore>()(
         set(s => {
           const zones = [...s.zones];
           zones[index] = { ...zones[index], ...zone };
-          return { zones };
+          const zoneCalcs = zones.map((z, i) => calcZone(z, s.globalParams, i, s.cad));
+          return { zones, zoneCalcs };
         });
-        setTimeout(() => get().recalcAllZones(), 0);
       },
 
       setActiveZone: (index) => set({ activeZoneIndex: index }),
@@ -275,13 +277,19 @@ export const useProjectStore = create<ProjectStore>()(
       },
 
       addSegment: (seg) => {
-        set(s => ({ cad: { ...s.cad, segments: [...s.cad.segments, seg] } }));
-        setTimeout(() => get().recalcAllZones(), 0);
+        set(s => {
+          const cad = { ...s.cad, segments: [...s.cad.segments, seg] };
+          const zoneCalcs = s.zones.map((z, i) => calcZone(z, s.globalParams, i, cad));
+          return { cad, zoneCalcs };
+        });
       },
 
       removeSegment: (id) => {
-        set(s => ({ cad: { ...s.cad, segments: s.cad.segments.filter(seg => seg.id !== id) } }));
-        setTimeout(() => get().recalcAllZones(), 0);
+        set(s => {
+          const cad = { ...s.cad, segments: s.cad.segments.filter(seg => seg.id !== id) };
+          const zoneCalcs = s.zones.map((z, i) => calcZone(z, s.globalParams, i, cad));
+          return { cad, zoneCalcs };
+        });
       },
 
       addSymbol: (sym) =>
@@ -291,8 +299,11 @@ export const useProjectStore = create<ProjectStore>()(
         set(s => ({ cad: { ...s.cad, symbols: s.cad.symbols.filter(sym => sym.id !== id) } })),
 
       setCADData: (segments, symbols) => {
-        set(s => ({ cad: { ...s.cad, segments, symbols } }));
-        setTimeout(() => get().recalcAllZones(), 0);
+        set(s => {
+          const cad = { ...s.cad, segments, symbols };
+          const zoneCalcs = s.zones.map((z, i) => calcZone(z, s.globalParams, i, cad));
+          return { cad, zoneCalcs };
+        });
       },
 
       updateCADZonePosition: (zoneIndex, x, y) =>
@@ -370,6 +381,22 @@ export const useProjectStore = create<ProjectStore>()(
           preOrderState: defaultPreOrderState,
         }),
     }),
-    { name: 'greenhouse-project' }
+    {
+      name: 'greenhouse-project',
+      partialize: (state) => ({
+        currentStep: state.currentStep,
+        project: state.project,
+        globalParams: state.globalParams,
+        zones: state.zones,
+        costInputs: state.costInputs,
+        normistPrice: state.normistPrice,
+        uvSystemCode: state.uvSystemCode,
+        ssFilter30: state.ssFilter30,
+        uvSystemNazli: state.uvSystemNazli,
+        ropeOverrides: state.ropeOverrides,
+        preOrderState: state.preOrderState,
+        openProjectId: state.openProjectId,
+      }),
+    }
   )
 );
