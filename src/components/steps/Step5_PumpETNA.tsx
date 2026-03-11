@@ -89,7 +89,7 @@ export function Step5_PumpETNA() {
                   <option value="">– bez UV systému –</option>
                   {uvItems.map((item) => (
                     <option key={item.code} value={item.code}>
-                      {item.name}
+                      {item.nameSk}
                     </option>
                   ))}
                 </select>

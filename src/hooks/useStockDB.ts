@@ -20,7 +20,6 @@ export function useStockItems() {
     const { data, error } = await supabase
       .from('stock_items')
       .select('code, name, additional_text, price, group, supplier')
-      .order('group')
       .order('name');
 
     setLoading(false);
@@ -34,15 +33,16 @@ export function useStockItems() {
       setItems(
         data.map((row) => ({
           code: row.code,
-          name: row.name,
-          additionalText: row.additional_text,
-          price: Number(row.price),
-          group: row.group,
-          supplier: row.supplier ?? undefined,
+          nameSk: row.name,
+          nameEn: row.additional_text ?? '',
+          unit: 'pcs',
+          unitSk: 'ks',
+          price: row.price != null ? Number(row.price) : null,
+          warehouse: (row.supplier === 'NORMIST' ? 'NORMIST' : 'ATTI') as 'ATTI' | 'NORMIST',
         }))
       );
     } else {
-      // DB is empty — seed with static data, but only if the user is admin (H4 FIX)
+      // DB is empty — seed with static data, but only if the user is admin
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
@@ -50,7 +50,6 @@ export function useStockItems() {
         .single();
 
       if (profile?.role !== 'admin') {
-        // Non-admin: just use static data silently
         setItems(STOCK_ITEMS);
       } else {
         console.log('[Stock] DB empty, seeding with', STOCK_ITEMS.length, 'items (admin)...');
@@ -58,11 +57,11 @@ export function useStockItems() {
         for (let i = 0; i < STOCK_ITEMS.length; i += batchSize) {
           const batch = STOCK_ITEMS.slice(i, i + batchSize).map((item) => ({
             code: item.code,
-            name: item.name,
-            additional_text: item.additionalText,
-            price: item.price,
-            group: item.group,
-            supplier: item.supplier ?? null,
+            name: item.nameSk,
+            additional_text: item.nameEn,
+            price: item.price ?? 0,
+            group: item.warehouse,
+            supplier: item.warehouse,
             created_by: currentUser.id,
             updated_by: currentUser.id,
           }));
@@ -89,28 +88,26 @@ export function useStockMutations(reload: () => void) {
     async (item: StockItem) => {
       if (!currentUser) return { ok: false, error: 'Nie ste prihlásený' };
 
-      // Insert stock item
       const { error: itemErr } = await supabase.from('stock_items').insert({
         code: item.code,
-        name: item.name,
-        additional_text: item.additionalText,
-        price: item.price,
-        group: item.group,
-        supplier: item.supplier ?? null,
+        name: item.nameSk,
+        additional_text: item.nameEn,
+        price: item.price ?? 0,
+        group: item.warehouse,
+        supplier: item.warehouse,
         created_by: currentUser.id,
         updated_by: currentUser.id,
       });
 
       if (itemErr) return { ok: false, error: itemErr.message };
 
-      // Log the change
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase as any).from('change_log').insert({
         user_id: currentUser.id,
         user_name: currentUser.name,
         action: 'create',
         item_code: item.code,
-        item_name: item.name,
+        item_name: item.nameSk,
         after_data: item,
       });
 
@@ -127,11 +124,11 @@ export function useStockMutations(reload: () => void) {
       const { error: updErr } = await supabase
         .from('stock_items')
         .update({
-          name: changes.name,
-          additional_text: changes.additionalText,
-          price: changes.price,
-          group: changes.group,
-          supplier: changes.supplier ?? null,
+          name: changes.nameSk,
+          additional_text: changes.nameEn,
+          price: changes.price ?? 0,
+          group: changes.warehouse,
+          supplier: changes.warehouse,
           updated_by: currentUser.id,
         })
         .eq('code', code);
@@ -146,7 +143,7 @@ export function useStockMutations(reload: () => void) {
         user_name: currentUser.name,
         action: 'update',
         item_code: code,
-        item_name: after.name ?? before.name,
+        item_name: after.nameSk ?? before.nameSk,
         before_data: before,
         after_data: after,
       });
@@ -174,7 +171,7 @@ export function useStockMutations(reload: () => void) {
         user_name: currentUser.name,
         action: 'delete',
         item_code: code,
-        item_name: item.name,
+        item_name: item.nameSk,
         before_data: item,
       });
 
