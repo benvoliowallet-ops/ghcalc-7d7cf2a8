@@ -666,11 +666,12 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
         </div>
 
         <div className="text-xs text-gray-400 mt-1 space-y-0.5 leading-relaxed">
-          <p>↖ Výber → klikni prvok</p>
+          <p>Klikni čiaru = vyber</p>
           <p>Del/⌫ = zmazať výber</p>
           <p>Dbl-klik = koniec čiary</p>
           <p>Tab = zrušiť akciu</p>
           <p>Ctrl+Z = undo</p>
+          <p>Ctrl+Y = redo</p>
           <p>SPACE = pan (drž)</p>
           {isFullscreen && <p className="text-orange-400">ESC 3s = ukončiť</p>}
           <p>🟨 = dilatácia</p>
