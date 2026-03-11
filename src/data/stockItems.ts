@@ -343,12 +343,13 @@ export function getStockItem(code: string): StockItem | undefined {
 }
 
 export function getStockPrice(code: string): number {
-  return STOCK_ITEMS.find(i => i.code === code)?.price ?? 0;
+  const resolved = migrateStockCode(code);
+  return STOCK_ITEMS.find(i => i.code === resolved)?.price ?? 0;
 }
 
 export function getPipe10mmForSpacing(spacingCm: number): { code: string; name: string; price: number } {
-  if (spacingCm <= 200) return { code: 'NOR 0311016', name: 'Rura D10x1.5-2000 AK', price: 6.40 };
-  if (spacingCm <= 250) return { code: 'NOR 0311017', name: 'Rura D10x1.5-2500 AK', price: 7.36 };
-  if (spacingCm <= 300) return { code: 'NOR 0311018', name: 'Rura D10x1.5-3000 AK', price: 8.32 };
-  return { code: 'NOR 0311019', name: 'Rura D10x1.5-4000 AK', price: 10.24 };
+  if (spacingCm <= 200) { const c = 'NOR 0311016'; return { code: c, name: 'Rura D10x1.5-2000 AK', price: getStockPrice(c) }; }
+  if (spacingCm <= 250) { const c = 'NOR 0311017'; return { code: c, name: 'Rura D10x1.5-2500 AK', price: getStockPrice(c) }; }
+  if (spacingCm <= 300) { const c = 'NOR 0311018'; return { code: c, name: 'Rura D10x1.5-3000 AK', price: getStockPrice(c) }; }
+  const c = 'NOR 0311019'; return { code: c, name: 'Rura D10x1.5-4000 AK', price: getStockPrice(c) };
 }
