@@ -31,6 +31,12 @@ export const LEGACY_CODE_MAP: Record<string, string> = {
   'snfg.0013910012.02': '0013910012.02',
   'NORMIST_UV_4LAMPS': 'snfg.001.0016',
   'NORMIST_UV_6OUTLETS': 'snfg.001.0017',
+  // BOM legacy codes → canonical stockItems codes
+  'ITALINOX': '10217-7',
+  'SVX_SS_NEREZ': 'SVX 84070703',
+  'snfg.006.0001': 'snfg.06.0001',
+  'Gripple Plus Medium': '14149',
+  'TELTONIKA_GSM': '91412039',
 };
 
 export function migrateStockCode(code: string): string {
