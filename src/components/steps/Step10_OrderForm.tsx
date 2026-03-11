@@ -1,11 +1,14 @@
 import * as XLSX from 'xlsx';
 import { useState } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 import { useProjectStore } from '../../store/projectStore';
+import { useAuthStore } from '../../store/authStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { NOZZLE_BY_ORIFICE, calcETNACapacity, selectMaxivarem, getTransportCost, getPMCost, PUMP_TABLE, fmtN, fmtE, detectConcurrentPipes } from '../../utils/calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../../data/stockItems';
 import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
+import { markProjectCompleted } from '../../hooks/useProjectChanges';
 
 
 export function Step10_OrderForm() {

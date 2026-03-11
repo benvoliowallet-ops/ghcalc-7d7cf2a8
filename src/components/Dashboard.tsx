@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
-import { Trash2, MapPin, Clock, FileText, Play, Plus, Search, X, User } from 'lucide-react';
+import { Trash2, MapPin, Clock, FileText, Play, Plus, Search, X, User, CheckCircle2, Pencil, History } from 'lucide-react';
 import { useProjectStore } from '../store/projectStore';
 import { useAuthStore } from '../store/authStore';
 import { useConfirm } from '../hooks/useConfirm';
+import { useProjectChanges, reopenProject } from '../hooks/useProjectChanges';
 import type { SavedProject } from '../types';
 
 const COUNTRY_FLAG: Record<string, string> = { SK: '🇸🇰', CZ: '🇨🇿', HU: '🇭🇺' };
@@ -35,7 +36,6 @@ function GreenhouseIcon({ className }: {className?: string;}) {
       strokeLinejoin="round"
       className={className}
       aria-hidden="true">
-      
       <polyline points="8,26 32,6 56,26" />
       <line x1="8" y1="26" x2="8" y2="56" />
       <line x1="56" y1="26" x2="56" y2="56" />
@@ -44,8 +44,8 @@ function GreenhouseIcon({ className }: {className?: string;}) {
       <rect x="12" y="30" width="10" height="8" rx="1" />
       <rect x="42" y="30" width="10" height="8" rx="1" />
       <line x1="32" y1="6" x2="32" y2="40" strokeDasharray="3 3" strokeWidth="1.5" />
-    </svg>);
-
+    </svg>
+  );
 }
 
 function StepProgress({ step }: {step: number;}) {
@@ -60,24 +60,74 @@ function StepProgress({ step }: {step: number;}) {
         <div
           className="h-full transition-all"
           style={{ width: `${pct}%`, backgroundColor: 'hsl(var(--teal))' }} />
-        
       </div>
-    </div>);
+    </div>
+  );
+}
 
+/** Modal for entering reopen reason */
+interface ReopenModalProps {
+  projectName: string;
+  onConfirm: (reason: string) => void;
+  onCancel: () => void;
+  loading: boolean;
+}
+function ReopenModal({ projectName, onConfirm, onCancel, loading }: ReopenModalProps) {
+  const [reason, setReason] = useState('');
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-card border border-border shadow-lg w-full max-w-md mx-4 p-6" style={{ borderRadius: 'var(--radius)' }}>
+        <h2 className="text-base font-bold text-foreground mb-1">Upraviť dokončený projekt</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Projekt <strong>{projectName}</strong> bude znovu otvorený na úpravu. Zadajte dôvod.
+        </p>
+        <label className="block text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">
+          Dôvod úpravy <span className="text-destructive">*</span>
+        </label>
+        <textarea
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder="Napr. zákazník zmenil počet zón…"
+          rows={3}
+          className="w-full px-3 py-2 border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+          style={{ borderRadius: 'var(--radius)' }}
+        />
+        <div className="flex gap-2 mt-4 justify-end">
+          <button
+            onClick={onCancel}
+            disabled={loading}
+            className="px-4 py-2 text-sm border border-border bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+            style={{ borderRadius: 'var(--radius)' }}>
+            Zrušiť
+          </button>
+          <button
+            onClick={() => onConfirm(reason.trim())}
+            disabled={!reason.trim() || loading}
+            className="px-4 py-2 text-sm bg-primary text-primary-foreground font-semibold transition-colors disabled:opacity-40"
+            style={{ borderRadius: 'var(--radius)' }}>
+            {loading ? 'Otváram…' : 'Potvrdiť a upraviť'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 interface ProjectCardProps {
   project: SavedProject;
-  currentUserId: string;
+  currentUser: { id: string; email: string } | null;
   onOpen: () => void;
+  onEdit: () => void;
   onDelete: () => void;
 }
 
-function ProjectCard({ project, currentUserId, onOpen, onDelete }: ProjectCardProps) {
+function ProjectCard({ project, currentUser, onOpen, onEdit, onDelete }: ProjectCardProps) {
   const confirm = useConfirm();
-  const done = project.currentStep === 10;
+  const completed = project.status === 'completed';
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const changes = useProjectChanges(showHistory ? project.id : null);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -93,7 +143,6 @@ function ProjectCard({ project, currentUserId, onOpen, onDelete }: ProjectCardPr
     try {
       await onDelete();
     } catch {
-      // NC6 FIX: show error to user if delete fails (project was reverted in store)
       setDeleteError('Chyba mazania. Skúste znova.');
       setDeleting(false);
     }
@@ -102,38 +151,43 @@ function ProjectCard({ project, currentUserId, onOpen, onDelete }: ProjectCardPr
   return (
     <div
       className={`bg-card border transition-shadow hover:shadow-sm p-5 flex flex-col gap-3 ${
-      done ? 'border-teal/40' : 'border-border'}`
-      }
+        completed ? 'border-green-500/40' : 'border-border'}`}
       style={{ borderRadius: 'var(--radius)' }}>
-      
+
       <div className="flex items-start justify-between">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="font-mono text-sm font-bold text-teal">{project.quoteNumber}</span>
             <span className="text-lg">{COUNTRY_FLAG[project.country] ?? ''}</span>
-            {done &&
-            <span
-              className="text-xs bg-teal/10 text-teal px-2 py-0.5 font-semibold border border-teal/30 uppercase tracking-wide"
-              style={{ borderRadius: 'var(--radius)' }}>
-              
-                Hotovo
+            {completed && (
+              <span
+                className="inline-flex items-center gap-1 text-xs px-2 py-0.5 font-semibold border uppercase tracking-wide"
+                style={{
+                  borderRadius: 'var(--radius)',
+                  backgroundColor: 'hsl(var(--success) / 0.12)',
+                  color: 'hsl(var(--success))',
+                  borderColor: 'hsl(var(--success) / 0.35)',
+                }}>
+                <CheckCircle2 className="w-3 h-3" />
+                Dokončený
               </span>
-            }
+            )}
           </div>
           {project.customerName ?
-          <p className="font-semibold text-foreground mt-0.5">{project.customerName}</p> :
-
-          <p className="text-muted-foreground text-sm italic mt-0.5">Bez zákazníka</p>
+            <p className="font-semibold text-foreground mt-0.5">{project.customerName}</p> :
+            <p className="text-muted-foreground text-sm italic mt-0.5">Bez zákazníka</p>
           }
           {project.projectAddress &&
-          <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1"><MapPin className="w-3 h-3 flex-shrink-0" />{project.projectAddress}</p>
+            <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+              <MapPin className="w-3 h-3 flex-shrink-0" />{project.projectAddress}
+            </p>
           }
           <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
             <User className="w-3 h-3 flex-shrink-0" />
-            Vytvoril: {project.ownerId === currentUserId ? 'Ja' : project.ownerName}
+            Vytvoril: {project.ownerId === currentUser?.id ? 'Ja' : project.ownerName}
           </p>
         </div>
-        {project.ownerId === currentUserId && (
+        {project.ownerId === currentUser?.id && (
           <button
             onClick={handleDelete}
             disabled={deleting}
@@ -145,7 +199,7 @@ function ProjectCard({ project, currentUserId, onOpen, onDelete }: ProjectCardPr
       </div>
 
       {deleteError &&
-      <p className="text-xs text-destructive bg-destructive/10 px-2 py-1 rounded">{deleteError}</p>
+        <p className="text-xs text-destructive bg-destructive/10 px-2 py-1 rounded">{deleteError}</p>
       }
 
       <div className="flex gap-4 text-xs text-muted-foreground">
@@ -158,15 +212,64 @@ function ProjectCard({ project, currentUserId, onOpen, onDelete }: ProjectCardPr
 
       <StepProgress step={project.currentStep} />
 
-      <button
-        onClick={onOpen}
-        className="mt-1 w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold uppercase tracking-wide transition-colors"
-        style={{ borderRadius: 'var(--radius)' }}>
-        
-        {done ? <span className="flex items-center justify-center gap-1.5"><FileText className="w-3.5 h-3.5" />Prehľad projektu</span> : <span className="flex items-center justify-center gap-1.5"><Play className="w-3.5 h-3.5" />Pokračovať</span>}
-      </button>
-    </div>);
+      <div className="flex gap-2 mt-1">
+        <button
+          onClick={onOpen}
+          className="flex-1 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold uppercase tracking-wide transition-colors"
+          style={{ borderRadius: 'var(--radius)' }}>
+          {completed
+            ? <span className="flex items-center justify-center gap-1.5"><FileText className="w-3.5 h-3.5" />Prehľad projektu</span>
+            : <span className="flex items-center justify-center gap-1.5"><Play className="w-3.5 h-3.5" />Pokračovať</span>
+          }
+        </button>
+        {completed && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onEdit(); }}
+            className="flex items-center gap-1.5 px-3 py-2.5 border border-border bg-muted hover:bg-muted/80 text-foreground text-sm font-semibold transition-colors"
+            style={{ borderRadius: 'var(--radius)' }}
+            title="Upraviť dokončený projekt">
+            <Pencil className="w-3.5 h-3.5" />
+            Upraviť
+          </button>
+        )}
+      </div>
 
+      {/* History toggle + list */}
+      {completed && (
+        <button
+          onClick={() => setShowHistory((v) => !v)}
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors self-start"
+        >
+          <History className="w-3.5 h-3.5" />
+          {showHistory ? 'Skryť históriu' : 'História úprav'}
+          {!showHistory && changes.length > 0 && (
+            <span className="ml-1 bg-muted border border-border text-xs px-1.5 rounded-full">{changes.length}</span>
+          )}
+        </button>
+      )}
+
+      {showHistory && completed && (
+        <div className="border border-border bg-muted/30 p-3 text-xs" style={{ borderRadius: 'var(--radius)' }}>
+          {changes.length === 0 ? (
+            <p className="text-muted-foreground italic">Žiadne záznamy o úpravách</p>
+          ) : (
+            <div className="space-y-2">
+              <p className="font-semibold text-foreground mb-2 uppercase tracking-wide text-xs">História úprav</p>
+              {changes.map((c) => (
+                <div key={c.id} className="border-l-2 border-border pl-2">
+                  <p className="text-muted-foreground">
+                    {new Date(c.changedAt).toLocaleString('sk-SK', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    {' · '}<span className="font-medium text-foreground">{c.changedByEmail}</span>
+                  </p>
+                  <p className="text-foreground mt-0.5">{c.reason}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 interface DashboardProps {
@@ -176,9 +279,12 @@ interface DashboardProps {
 }
 
 export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: DashboardProps) {
-  const { savedProjects, deleteSavedProject } = useProjectStore();
+  const { savedProjects, deleteSavedProject, setSavedProjects } = useProjectStore();
   const { currentUser } = useAuthStore();
   const [search, setSearch] = useState('');
+  const [reopenTarget, setReopenTarget] = useState<SavedProject | null>(null);
+  const [reopenLoading, setReopenLoading] = useState(false);
+  const [reopenError, setReopenError] = useState<string | null>(null);
 
   const sorted = [...savedProjects].sort(
     (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
@@ -195,8 +301,30 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
     );
   }, [sorted, search]);
 
-  const done = filtered.filter((p) => p.currentStep === 10);
-  const inProgress = filtered.filter((p) => p.currentStep < 10);
+  const completedProjects = filtered.filter((p) => p.status === 'completed');
+  const inProgress = filtered.filter((p) => p.status !== 'completed');
+
+  const handleReopen = async (reason: string) => {
+    if (!reopenTarget || !currentUser) return;
+    setReopenLoading(true);
+    setReopenError(null);
+    const { error } = await reopenProject(reopenTarget.id, reason, { id: currentUser.id, email: currentUser.email });
+    if (error) {
+      setReopenError(error);
+      setReopenLoading(false);
+      return;
+    }
+    // Update status in store
+    setSavedProjects(
+      savedProjects.map((p) =>
+        p.id === reopenTarget.id ? { ...p, status: 'in_progress' as const } : p
+      )
+    );
+    const target = reopenTarget;
+    setReopenTarget(null);
+    setReopenLoading(false);
+    onOpenProject(target.id);
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -205,8 +333,8 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
           <h1 className="text-2xl font-bold text-foreground uppercase tracking-wide">Projekty</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {sorted.length === 0 ?
-            'Žiadne uložené projekty' :
-            `${sorted.length} projektov · ${sorted.filter(p => p.currentStep === 10).length} dokončených`}
+              'Žiadne uložené projekty' :
+              `${sorted.length} projektov · ${sorted.filter(p => p.status === 'completed').length} dokončených`}
           </p>
         </div>
         <button
@@ -247,10 +375,9 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
       )}
 
       {sorted.length === 0 &&
-      <div
-        className="text-center py-24 bg-card border border-dashed border-border"
-        style={{ borderRadius: 'var(--radius)' }}>
-        
+        <div
+          className="text-center py-24 bg-card border border-dashed border-border"
+          style={{ borderRadius: 'var(--radius)' }}>
           <div className="flex justify-center mb-4">
             <GreenhouseIcon className="w-16 h-16 text-teal/40" />
           </div>
@@ -260,39 +387,56 @@ export function Dashboard({ onOpenProject, onOpenSummary, onNewProject }: Dashbo
       }
 
       {inProgress.length > 0 &&
-      <section className="mb-8">
+        <section className="mb-8">
           <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 border-b border-border pb-2">
             V procese ({inProgress.length})
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {inProgress.map((p) =>
-          <ProjectCard
-            key={p.id}
-            project={p}
-            currentUserId={currentUser?.id ?? ''}
-            onOpen={() => onOpenProject(p.id)}
-            onDelete={() => deleteSavedProject(p.id)} />
-          )}
+              <ProjectCard
+                key={p.id}
+                project={p}
+                currentUser={currentUser}
+                onOpen={() => onOpenProject(p.id)}
+                onEdit={() => setReopenTarget(p)}
+                onDelete={() => deleteSavedProject(p.id)} />
+            )}
           </div>
         </section>
       }
 
-      {done.length > 0 &&
-      <section>
+      {completedProjects.length > 0 &&
+        <section>
           <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 border-b border-border pb-2">
-            Dokončené ({done.length})
+            Dokončené ({completedProjects.length})
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {done.map((p) =>
-          <ProjectCard
-            key={p.id}
-            project={p}
-            currentUserId={currentUser?.id ?? ''}
-            onOpen={() => onOpenSummary(p.id)}
-            onDelete={() => deleteSavedProject(p.id)} />
-          )}
+            {completedProjects.map((p) =>
+              <ProjectCard
+                key={p.id}
+                project={p}
+                currentUser={currentUser}
+                onOpen={() => onOpenSummary(p.id)}
+                onEdit={() => setReopenTarget(p)}
+                onDelete={() => deleteSavedProject(p.id)} />
+            )}
           </div>
         </section>
       }
-    </div>);
+
+      {reopenTarget && (
+        <ReopenModal
+          projectName={`${reopenTarget.quoteNumber} – ${reopenTarget.customerName}`}
+          onConfirm={handleReopen}
+          onCancel={() => { setReopenTarget(null); setReopenError(null); }}
+          loading={reopenLoading}
+        />
+      )}
+      {reopenError && (
+        <div className="fixed bottom-6 right-6 bg-destructive text-destructive-foreground px-4 py-3 text-sm rounded shadow-lg">
+          {reopenError}
+        </div>
+      )}
+    </div>
+  );
 }
