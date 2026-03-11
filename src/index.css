@@ -14,6 +14,8 @@
   --white:       0 0% 100%;
   --light-gray:  210 20% 96%;     /* #f4f6f8 */
   --border-gray: 210 15% 88%;
+  --success:     142 72% 29%;     /* green for completed state */
+
 
   /* shadcn semantic tokens */
   --background:        210 20% 96%;

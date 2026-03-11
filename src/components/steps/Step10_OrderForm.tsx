@@ -1,15 +1,39 @@
 import * as XLSX from 'xlsx';
 import { useState } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 import { useProjectStore } from '../../store/projectStore';
+import { useAuthStore } from '../../store/authStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { NOZZLE_BY_ORIFICE, calcETNACapacity, selectMaxivarem, getTransportCost, getPMCost, PUMP_TABLE, fmtN, fmtE, detectConcurrentPipes } from '../../utils/calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../../data/stockItems';
 import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
+import { markProjectCompleted } from '../../hooks/useProjectChanges';
 
 
 export function Step10_OrderForm() {
-  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad, ropeOverrides } = useProjectStore();
+  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad, ropeOverrides, savedProjects, setSavedProjects } = useProjectStore();
+  const { currentUser } = useAuthStore();
+  const [completingProject, setCompletingProject] = useState(false);
+  const [completedSuccess, setCompletedSuccess] = useState(false);
+
+  const isProjectCompleted = savedProjects.find(p => p.id === project.id)?.status === 'completed';
+
+  const handleCompleteProject = async () => {
+    if (!project.id) return;
+    setCompletingProject(true);
+    const { error } = await markProjectCompleted(project.id);
+    setCompletingProject(false);
+    if (!error) {
+      setSavedProjects(
+        savedProjects.map((p) =>
+          p.id === project.id ? { ...p, status: 'completed' as const } : p
+        )
+      );
+      setCompletedSuccess(true);
+      setTimeout(() => setCompletedSuccess(false), 4000);
+    }
+  };
 
   const totalFlowMlH = zoneCalcs.reduce((sum, c) => sum + (c?.zoneFlow ?? 0), 0);
   const transpCost = getTransportCost(project.country);
@@ -157,14 +181,39 @@ export function Step10_OrderForm() {
 
   return (
     <StepLayout stepNum={10} title="Objednávkový formulár pre Attiho (OBERON)" subtitle="Finálna objednávka. Každá položka obsahuje Kód OBERON · Počet · MJ · Dodávateľ · Cena." hideNav={true}>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between flex-wrap gap-3">
         <p className="text-sm text-muted-foreground">Ponuka: <strong>{project.quoteNumber}</strong> · {project.customerName}</p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button variant="secondary" size="lg" onClick={exportOrderXLSX}><DownloadIcon /> Export XLSX</Button>
           <Button variant="secondary" size="lg" onClick={exportOrderOberon} disabled={oberonExporting}><DownloadIcon /> {oberonExporting ? 'Exportujem…' : 'Export do Oberon'}</Button>
           <Button variant="primary" size="lg" onClick={printOrder}><PrintIcon /> Tlačiť</Button>
+          {isProjectCompleted ? (
+            <span
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold border"
+              style={{
+                borderRadius: 'var(--radius)',
+                backgroundColor: 'hsl(var(--success) / 0.12)',
+                color: 'hsl(var(--success))',
+                borderColor: 'hsl(var(--success) / 0.35)',
+              }}>
+              <CheckCircle2 className="w-4 h-4" /> Projekt dokončený
+            </span>
+          ) : (
+            <button
+              onClick={handleCompleteProject}
+              disabled={completingProject}
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold border transition-colors disabled:opacity-50"
+              style={{
+                borderRadius: 'var(--radius)',
+                backgroundColor: completedSuccess ? 'hsl(var(--success) / 0.12)' : 'hsl(var(--success))',
+                color: completedSuccess ? 'hsl(var(--success))' : 'white',
+                borderColor: 'hsl(var(--success) / 0.6)',
+              }}>
+              <CheckCircle2 className="w-4 h-4" />
+              {completingProject ? 'Ukladám…' : completedSuccess ? '✓ Dokončené' : 'Dokončiť projekt'}
+            </button>
+          )}
         </div>
-
       </div>
 
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">

@@ -113,6 +113,41 @@ export type Database = {
         }
         Relationships: []
       }
+      project_changes: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          changed_by_email: string
+          id: string
+          project_id: string | null
+          reason: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          changed_by_email?: string
+          id?: string
+          project_id?: string | null
+          reason: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          changed_by_email?: string
+          id?: string
+          project_id?: string | null
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_comments: {
         Row: {
           author_id: string
@@ -183,6 +218,7 @@ export type Database = {
           quote_number: string
           saved_at: string
           snapshot: Json
+          status: string
           updated_at: string
         }
         Insert: {
@@ -197,6 +233,7 @@ export type Database = {
           quote_number?: string
           saved_at?: string
           snapshot?: Json
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -211,6 +248,7 @@ export type Database = {
           quote_number?: string
           saved_at?: string
           snapshot?: Json
+          status?: string
           updated_at?: string
         }
         Relationships: []
