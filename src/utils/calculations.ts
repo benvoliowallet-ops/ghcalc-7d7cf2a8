@@ -76,7 +76,7 @@ export function calcZone(
   const A = Math.PI * (D_inner / 2) ** 2;
   const Q_m3s = zoneFlow / 1000 / 3600 / 1000;
   const velocity = Q_m3s / A;
-  const lambda = 0.03;
+  const lambda = 0.015;
   const rho = 1000;
   const pressureDrop = (lambda * (supplyPipeLength / D_inner) * (rho * velocity ** 2 / 2)) / 1e5;
 
