@@ -5,10 +5,11 @@ import { useProjectStore } from '../../store/projectStore';
 import { useAuthStore } from '../../store/authStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
-import { NOZZLE_BY_ORIFICE, calcETNACapacity, selectMaxivarem, getTransportCost, getPMCost, PUMP_TABLE, fmtN, fmtE, detectConcurrentPipes } from '../../utils/calculations';
-import { getPipe10mmForSpacing, getStockPrice } from '../../data/stockItems';
+import { fmtN, fmtE } from '../../utils/calculations';
 import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
 import { markProjectCompleted } from '../../hooks/useProjectChanges';
+import { buildBomLines } from '../../utils/buildBom';
+import { useNormistChecker } from '../../hooks/useSupabaseItems';
 
 
 export function Step10_OrderForm() {
