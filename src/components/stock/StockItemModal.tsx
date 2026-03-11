@@ -7,22 +7,21 @@ import type { StockItem } from '../../types';
 interface Props {
   mode: 'add' | 'edit';
   item?: StockItem;
-  groups: string[];
   allItems: StockItem[];
   onClose: () => void;
 }
 
-export function StockItemModal({ mode, item, groups, allItems, onClose }: Props) {
+export function StockItemModal({ mode, item, allItems, onClose }: Props) {
   const { currentUser } = useAuthStore();
-
-  // NC1 FIX: pass onClose as reload so parent list refreshes immediately after mutation
   const { addItem, updateItem } = useStockMutations(onClose);
 
   const [code, setCode] = useState(item?.code ?? '');
-  const [name, setName] = useState(item?.name ?? '');
-  const [additionalText, setAdditionalText] = useState(item?.additionalText ?? '');
+  const [nameSk, setNameSk] = useState(item?.nameSk ?? '');
+  const [nameEn, setNameEn] = useState(item?.nameEn ?? '');
+  const [unit, setUnit] = useState(item?.unit ?? 'pcs');
+  const [unitSk, setUnitSk] = useState(item?.unitSk ?? 'ks');
   const [price, setPrice] = useState(item?.price?.toString() ?? '');
-  const [group, setGroup] = useState(item?.group ?? '');
+  const [warehouse, setWarehouse] = useState<'ATTI' | 'NORMIST'>(item?.warehouse ?? 'ATTI');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -32,12 +31,11 @@ export function StockItemModal({ mode, item, groups, allItems, onClose }: Props)
     setError('');
 
     const trimmedCode = code.trim();
-    const priceNum = parseFloat(price);
+    const priceNum = price.trim() === '' ? null : parseFloat(price);
 
     if (!trimmedCode) return setError('Kód je povinný');
-    if (isNaN(priceNum) || priceNum < 0) return setError('Zadajte platnú cenu (≥ 0)');
-    if (!name.trim()) return setError('Názov je povinný');
-    if (!group.trim()) return setError('Skupina je povinná');
+    if (priceNum !== null && (isNaN(priceNum) || priceNum < 0)) return setError('Zadajte platnú cenu (≥ 0)');
+    if (!nameSk.trim()) return setError('Slovenský názov je povinný');
 
     setSaving(true);
 
@@ -48,23 +46,24 @@ export function StockItemModal({ mode, item, groups, allItems, onClose }: Props)
       }
       const result = await addItem({
         code: trimmedCode,
-        name: name.trim(),
-        additionalText: additionalText.trim(),
+        nameSk: nameSk.trim(),
+        nameEn: nameEn.trim(),
+        unit: unit.trim() || 'pcs',
+        unitSk: unitSk.trim() || 'ks',
         price: priceNum,
-        group: group.trim(),
+        warehouse,
       });
       if (!result.ok) { setSaving(false); return setError(result.error ?? 'Chyba'); }
     } else {
       const result = await updateItem(
         item!.code,
-        { name: name.trim(), additionalText: additionalText.trim(), price: priceNum, group: group.trim() },
+        { nameSk: nameSk.trim(), nameEn: nameEn.trim(), unit: unit.trim(), unitSk: unitSk.trim(), price: priceNum, warehouse },
         item!
       );
       if (!result.ok) { setSaving(false); return setError(result.error ?? 'Chyba'); }
     }
 
     setSaving(false);
-    // onClose is invoked by the mutation's reload() callback — no explicit call needed
   };
 
   return (
@@ -89,40 +88,48 @@ export function StockItemModal({ mode, item, groups, allItems, onClose }: Props)
                 onChange={(e) => setCode(e.target.value)}
                 disabled={mode === 'edit'}
                 required
-                placeholder="NOR 0311018"
+                placeholder="ORFS214008049"
                 className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring disabled:bg-muted disabled:text-muted-foreground"
               />
               {mode === 'edit' && <p className="text-xs text-muted-foreground mt-1">Kód sa nedá zmeniť</p>}
             </div>
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1">Skupina *</label>
-              <input
-                list="modal-groups-list"
-                value={group}
-                onChange={(e) => setGroup(e.target.value)}
-                required
-                placeholder="napr. Trysky"
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">Sklad *</label>
+              <select
+                value={warehouse}
+                onChange={(e) => setWarehouse(e.target.value as 'ATTI' | 'NORMIST')}
                 className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-              <datalist id="modal-groups-list">
-                {groups.map((g) => <option key={g} value={g} />)}
-              </datalist>
+              >
+                <option value="ATTI">ATTI</option>
+                <option value="NORMIST">NORMIST</option>
+              </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1">Názov *</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Rura D10x1.5-3000 AK" className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">Názov (SK) *</label>
+            <input value={nameSk} onChange={(e) => setNameSk(e.target.value)} required placeholder="Hydraulická hadica DN25" className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1">Doplnkový text</label>
-            <input value={additionalText} onChange={(e) => setAdditionalText(e.target.value)} placeholder="Voliteľný popis" className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">Názov (EN)</label>
+            <input value={nameEn} onChange={(e) => setNameEn(e.target.value)} placeholder="Hydraulic hose DN25" className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">Jednotka</label>
+              <input value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="pcs" className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">Jednotka (SK)</label>
+              <input value={unitSk} onChange={(e) => setUnitSk(e.target.value)} placeholder="ks" className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+            </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1">Cena (€) *</label>
-            <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required step="0.001" min="0" placeholder="0.000" className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring" />
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">Cena (€) — prázdne = neznáma</label>
+            <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} step="0.001" min="0" placeholder="0.000" className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring" />
           </div>
 
           {error && (

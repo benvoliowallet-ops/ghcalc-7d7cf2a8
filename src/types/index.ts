@@ -1,5 +1,6 @@
 // ─── Stock Item ──────────────────────────────────────────────────────────────
 export type { StockItem } from '../data/stockItems';
+import type { StockItem } from '../data/stockItems';
 
 // ─── Bracket BOM (from concurrent-pipe CAD analysis) ─────────────────────────
 export interface BracketBOMLine {

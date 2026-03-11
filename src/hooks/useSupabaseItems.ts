@@ -4,9 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { STOCK_ITEMS } from '../data/stockItems';
 
 export function useItemsByGroup(group: string): StockItem[] {
-  const [items, setItems] = useState<StockItem[]>(() =>
-    STOCK_ITEMS.filter(i => i.group === group)
-  );
+  const [items, setItems] = useState<StockItem[]>([]);
 
   useEffect(() => {
     supabase
@@ -22,11 +20,12 @@ export function useItemsByGroup(group: string): StockItem[] {
           setItems(
             data.map((row) => ({
               code: row.code,
-              name: row.name,
-              additionalText: row.additional_text ?? '',
-              price: Number(row.price ?? 0),
-              group: row.group ?? group,
-              supplier: row.supplier ?? undefined,
+              nameSk: row.name,
+              nameEn: row.additional_text ?? '',
+              unit: 'pcs',
+              unitSk: 'ks',
+              price: row.price != null ? Number(row.price) : null,
+              warehouse: (row.supplier === 'NORMIST' ? 'NORMIST' : 'ATTI') as 'ATTI' | 'NORMIST',
             }))
           );
         }
@@ -56,7 +55,7 @@ export function useNormistChecker() {
         } else {
           // DB empty or not seeded — fall back to static data
           const staticNormist = new Set(
-            STOCK_ITEMS.filter(i => i.supplier === 'NORMIST').map(i => i.code)
+            STOCK_ITEMS.filter(i => i.warehouse === 'NORMIST').map(i => i.code)
           );
           setNormistCodes(staticNormist);
         }
@@ -65,14 +64,13 @@ export function useNormistChecker() {
   }, []);
 
   const isNormist = (code: string): boolean => {
-    // Always use loaded set (DB or static fallback) — never prefix-match alone
     if (loaded) {
       return normistCodes.has(code);
     }
-    // Pre-load fallback: check static data first, then prefix heuristic
+    // Pre-load fallback: check static data first
     const localItem = STOCK_ITEMS.find(i => i.code === code);
-    if (localItem) return localItem.supplier === 'NORMIST';
-    // Last resort prefix check (only covers items not in static list at all)
+    if (localItem) return localItem.warehouse === 'NORMIST';
+    // Last resort prefix check
     return (
       code.startsWith('NOR ') ||
       code.startsWith('NORMIST ') ||
