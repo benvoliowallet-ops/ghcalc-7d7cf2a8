@@ -418,7 +418,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
     if (e.key === 'Delete' || e.key === 'Backspace') {
       if (selectedId) deleteSelected();
     }
-  }, [history, selectedId, stopDrawing, deleteSelected, setCADData, isFullscreen, spaceHeld, tool, cancelEscHold]);
+  }, [history, redoStack, cad.segments, cad.symbols, selectedId, stopDrawing, deleteSelected, setCADData, isFullscreen, spaceHeld, tool, cancelEscHold]);
 
   const handleKeyUp = useCallback((e: KeyboardEvent) => {
     if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') return;
