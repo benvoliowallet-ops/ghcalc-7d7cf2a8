@@ -134,7 +134,17 @@ export function Step10_OrderForm() {
     XLSX.writeFile(wb, `Order_${project.quoteNumber}.xlsx`);
   };
 
+  const [oberonExporting, setOberonExporting] = useState(false);
+  const exportOrderOberon = async () => {
+    setOberonExporting(true);
+    try {
+      const attiLines = processedLines.filter((l) => !(l.supplier === 'NORMIST' && l.code !== 'NORMIST'));
+      await exportToOberon(prepareBomForOberon(attiLines.map((l) => ({ code: l.code, qty: l.qty }))), project.quoteNumber);
+    } catch (e) { alert(String(e)); } finally { setOberonExporting(false); }
+  };
+
   if (processedLines.length === 0) {
+
     return (
       <StepLayout stepNum={10} title="Objednávkový formulár pre Attiho (OBERON)" subtitle="Finálna objednávka." hideNav={true}>
         <div className="text-center py-24 bg-card border border-dashed border-border rounded-2xl">
