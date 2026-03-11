@@ -62,15 +62,15 @@ export function Step10_OrderForm() {
 
   Object.entries(totalPumpsByCode).forEach(([code, { name, qty }]) => add(code, name, qty, 'ks', 'NORMIST', 0));
 
-  add('0204013A', 'Solenoid Valve Kit 70 Bar', N, 'ks', 'NORMIST', 157.44);
-  add('0104003-kit', 'Pressure Switch Kit', N, 'ks', 'NORMIST', 48);
-  add('204091', 'Keller Pressure Transmitter 0/160 Bar', N, 'ks', 'NORMIST', 71.55);
-  add('4072000024', 'Bypass ventil VRT100', N, 'ks', 'TECNOMEC', 76.43);
-  add('60.0525.00', 'Poistný ventil VS220', N, 'ks', 'TECNOMEC', 29.25);
-  add('snfg.006.0001', 'Prepoj čerpadlo → hl. vedenie DN25 3m', N, 'ks', 'SANFOG', 39.728);
-  add('TELTONIKA_GSM', 'Teltonika GSM brána', 1, 'ks', 'TELTONIKA', 200);
-  add('BPONG-005-P2PWE', 'Náhradný rukávový filter 5 mic', 1, 'ks', 'Eftech', 4.57);
-  add('NORMIST_DANFOSS', 'DANFOSS Drive', 1, 'ks', 'DANFOSS', 954);
+  add('0204013A', 'Solenoid Valve Kit 70 Bar', N, 'ks', 'NORMIST', getStockPrice('0204013A'));
+  add('0104003-kit', 'Pressure Switch Kit', N, 'ks', 'NORMIST', getStockPrice('0104003-kit'));
+  add('204091', 'Keller Pressure Transmitter 0/160 Bar', N, 'ks', 'NORMIST', getStockPrice('204091'));
+  add('4072000024', 'Bypass ventil VRT100', N, 'ks', 'TECNOMEC', getStockPrice('4072000024'));
+  add('60.0525.00', 'Poistný ventil VS220', N, 'ks', 'TECNOMEC', getStockPrice('60.0525.00'));
+  add('snfg.006.0001', 'Prepoj čerpadlo → hl. vedenie DN25 3m', N, 'ks', 'SANFOG', getStockPrice('snfg.006.0001'));
+  add('TELTONIKA_GSM', 'Teltonika GSM brána', 1, 'ks', 'TELTONIKA', getStockPrice('TELTONIKA_GSM'));
+  add('BPONG-005-P2PWE', 'Náhradný rukávový filter 5 mic', 1, 'ks', 'Eftech', getStockPrice('BPONG-005-P2PWE'));
+  add('NORMIST_DANFOSS', 'DANFOSS Drive', 1, 'ks', 'DANFOSS', getStockPrice('NORMIST_DANFOSS'));
 
   Object.entries(totalNozzles).forEach(([code, qty]) => { const orifice = Object.entries(NOZZLE_BY_ORIFICE).find(([, v]) => v === code)?.[0]; add(code, `Tryska D${orifice}mm AK SS`, qty, 'ks', 'NORMIST', 1.23); });
   add('NOR 301188', 'Swivel adaptér', zoneCalcs.reduce((s, c) => s + c.numSwivel, 0), 'ks', 'NORMIST', 1.5);
