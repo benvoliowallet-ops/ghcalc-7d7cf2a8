@@ -751,6 +751,16 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
             <filter id="labelShadow" x="-20%" y="-20%" width="140%" height="140%">
               <feDropShadow dx="0" dy="1" stdDeviation="1.5" floodColor="#000000" floodOpacity="0.6" />
             </filter>
+            {cad.zones.map(zone => (
+              <clipPath key={zone.zoneIndex} id={`clip-zone-${zone.zoneIndex}`}>
+                <rect
+                  x={zone.x + 4}
+                  y={zone.y + 4}
+                  width={zone.width - 8}
+                  height={zone.height - 8}
+                />
+              </clipPath>
+            ))}
           </defs>
           <rect x={-10000} y={-10000} width={20000} height={20000} fill="url(#grid)" />
 
@@ -761,7 +771,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
             const color = ZONE_COLORS[zone.zoneIndex % ZONE_COLORS.length];
             const isActive = zone.zoneIndex === localActiveZone;
             const isVisible = isLayerVisible(zone.zoneIndex);
-            const labelSize = Math.max(12, Math.round(Math.min(zone.width, zone.height) * 0.65));
+            const labelSize = Math.max(14, Math.min(zone.width, zone.height) * 0.25);
 
             return (
               <g key={zone.zoneIndex} opacity={isVisible ? (isActive ? 1 : 0.4) : 0}>
