@@ -865,7 +865,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
                   x1={seg.start.x} y1={seg.start.y}
                   x2={seg.end.x} y2={seg.end.y}
                   stroke="transparent" strokeWidth={12}
-                  style={{ cursor: tool === 'select' ? 'pointer' : 'default' }}
+                  style={{ cursor: drawing.isDrawing ? 'crosshair' : 'pointer' }}
                   onMouseDown={(e) => selectElement(seg.id, 'segment', e)}
                 />
                 <line
