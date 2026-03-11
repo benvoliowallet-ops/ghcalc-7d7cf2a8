@@ -12,9 +12,29 @@ import { markProjectCompleted } from '../../hooks/useProjectChanges';
 
 
 export function Step10_OrderForm() {
-  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad, ropeOverrides } = useProjectStore();
+  const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad, ropeOverrides, savedProjects, setSavedProjects } = useProjectStore();
+  const { currentUser } = useAuthStore();
+  const [completingProject, setCompletingProject] = useState(false);
+  const [completedSuccess, setCompletedSuccess] = useState(false);
 
-  const totalFlowMlH = zoneCalcs.reduce((sum, c) => sum + (c?.zoneFlow ?? 0), 0);
+  const isProjectCompleted = savedProjects.find(p => p.id === project.id)?.status === 'completed';
+
+  const handleCompleteProject = async () => {
+    if (!project.id) return;
+    setCompletingProject(true);
+    const { error } = await markProjectCompleted(project.id);
+    setCompletingProject(false);
+    if (!error) {
+      setSavedProjects(
+        savedProjects.map((p) =>
+          p.id === project.id ? { ...p, status: 'completed' as const } : p
+        )
+      );
+      setCompletedSuccess(true);
+      setTimeout(() => setCompletedSuccess(false), 4000);
+    }
+  };
+
   const transpCost = getTransportCost(project.country);
   const pmCost = getPMCost(costInputs.projectArea);
   const osmoticSS = globalParams.osmoticWater;
