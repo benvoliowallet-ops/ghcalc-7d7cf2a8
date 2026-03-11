@@ -3,7 +3,7 @@ import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { NOZZLE_BY_ORIFICE, calcETNACapacity, selectMaxivarem, getTransportCost, getPMCost, PUMP_TABLE, fmtN, fmtE, detectConcurrentPipes } from '../../utils/calculations';
-import { getPipe10mmForSpacing } from '../../data/stockItems';
+import { getPipe10mmForSpacing, getStockPrice } from '../../data/stockItems';
 
 export function Step10_OrderForm() {
   const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, cad, ropeOverrides } = useProjectStore();
@@ -20,14 +20,14 @@ export function Step10_OrderForm() {
     if (qty > 0) lines.push({ code, name, qty, unit, supplier, priceUnit: price, total: qty * price });
   };
 
-  add('SNFG.00001', 'Balné', 1, 'ks', 'SANFOG', 350);
+  add('SNFG.00001', 'Balné', 1, 'ks', 'SANFOG', getStockPrice('SNFG.00001'));
   if (normistPrice > 0) add('NORMIST', `FOGSYSTEM NORMIST (${osmoticSS ? 'SS' : 'STD'})`, 1, 'ks', 'NORMIST/NAZLI', normistPrice);
-  add('snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', 'ETNA', osmoticSS ? 3200 : 2800);
+  add('snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', 'ETNA', getStockPrice('snfg.001.0021'));
   add(maxivaremInfo.code, maxivaremInfo.label, 1, 'ks', 'MAXTRA CONTROL', maxivaremInfo.price);
-  add('ETNA_ACC', 'Príslušenstvo k ETNA-NOR', 1, 'ks', 'ETNA', 200);
-  add('ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'ks', 'ETNA', 300);
-  add('SNFG.TLK.001', 'Trojcestná armatúra', 1, 'ks', 'SANFOG', 150);
-  add('ETNA_MONTAZ', 'Montáž ETNA', 1, 'hod', 'SANFOG', 300);
+  add('ETNA_ACC', 'Príslušenstvo k ETNA-NOR', 1, 'ks', 'ETNA', getStockPrice('ETNA_ACC'));
+  add('ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'ks', 'ETNA', getStockPrice('ETNA_VODA'));
+  add('SNFG.TLK.001', 'Trojcestná armatúra', 1, 'ks', 'SANFOG', getStockPrice('SNFG.TLK.001'));
+  add('ETNA_MONTAZ', 'Montáž ETNA', 1, 'hod', 'SANFOG', getStockPrice('ETNA_MONTAZ'));
 
   const N = globalParams.numberOfZones;
 
@@ -62,45 +62,45 @@ export function Step10_OrderForm() {
 
   Object.entries(totalPumpsByCode).forEach(([code, { name, qty }]) => add(code, name, qty, 'ks', 'NORMIST', 0));
 
-  add('0204013A', 'Solenoid Valve Kit 70 Bar', N, 'ks', 'NORMIST', 157.44);
-  add('0104003-kit', 'Pressure Switch Kit', N, 'ks', 'NORMIST', 48);
-  add('204091', 'Keller Pressure Transmitter 0/160 Bar', N, 'ks', 'NORMIST', 71.55);
-  add('4072000024', 'Bypass ventil VRT100', N, 'ks', 'TECNOMEC', 76.43);
-  add('60.0525.00', 'Poistný ventil VS220', N, 'ks', 'TECNOMEC', 29.25);
-  add('snfg.006.0001', 'Prepoj čerpadlo → hl. vedenie DN25 3m', N, 'ks', 'SANFOG', 39.728);
-  add('TELTONIKA_GSM', 'Teltonika GSM brána', 1, 'ks', 'TELTONIKA', 200);
-  add('BPONG-005-P2PWE', 'Náhradný rukávový filter 5 mic', 1, 'ks', 'Eftech', 4.57);
-  add('NORMIST_DANFOSS', 'DANFOSS Drive', 1, 'ks', 'DANFOSS', 954);
+  add('0204013A', 'Solenoid Valve Kit 70 Bar', N, 'ks', 'NORMIST', getStockPrice('0204013A'));
+  add('0104003-kit', 'Pressure Switch Kit', N, 'ks', 'NORMIST', getStockPrice('0104003-kit'));
+  add('204091', 'Keller Pressure Transmitter 0/160 Bar', N, 'ks', 'NORMIST', getStockPrice('204091'));
+  add('4072000024', 'Bypass ventil VRT100', N, 'ks', 'TECNOMEC', getStockPrice('4072000024'));
+  add('60.0525.00', 'Poistný ventil VS220', N, 'ks', 'TECNOMEC', getStockPrice('60.0525.00'));
+  add('snfg.006.0001', 'Prepoj čerpadlo → hl. vedenie DN25 3m', N, 'ks', 'SANFOG', getStockPrice('snfg.006.0001'));
+  add('TELTONIKA_GSM', 'Teltonika GSM brána', 1, 'ks', 'TELTONIKA', getStockPrice('TELTONIKA_GSM'));
+  add('BPONG-005-P2PWE', 'Náhradný rukávový filter 5 mic', 1, 'ks', 'Eftech', getStockPrice('BPONG-005-P2PWE'));
+  add('NORMIST_DANFOSS', 'DANFOSS Drive', 1, 'ks', 'DANFOSS', getStockPrice('NORMIST_DANFOSS'));
 
-  Object.entries(totalNozzles).forEach(([code, qty]) => { const orifice = Object.entries(NOZZLE_BY_ORIFICE).find(([, v]) => v === code)?.[0]; add(code, `Tryska D${orifice}mm AK SS`, qty, 'ks', 'NORMIST', 1.23); });
-  add('NOR 301188', 'Swivel adaptér', zoneCalcs.reduce((s, c) => s + c.numSwivel, 0), 'ks', 'NORMIST', 1.5);
-  Object.entries(totalPipesByCode).forEach(([code, { name, qty, price }]) => add(code, name, qty, 'ks', 'NORMIST', price));
-  add('NORMIST 0311002SS-180', 'Fitting SS 180°', totalFitting180, 'ks', 'NORMIST', 2.4);
-  add('NORMIST 0311008SS', 'End plug 10mm SS', totalEndPlug, 'ks', 'NORMIST', 0.73);
-  if (totalRopeSS > 0) add('SVX_SS_NEREZ', 'Nerezové lano 3mm', totalRopeSS, 'm', 'SVX', 0.15);
-  if (totalRopeOCEL > 0) add('SVX 201143', 'Oceľové lano 3mm', totalRopeOCEL, 'm', 'SVX', 0.099);
-  add('MVUZTLN400MMAKNS', 'Závesný diel 400mm AK NS', totalHangers, 'ks', 'NORMIST', 0.23);
-  add('Gripple Plus Medium', 'GRIPPLE stredný', totalGripple, 'ks', 'GRIPPLE', 1.18);
-  add('NORMIST 201142', 'Záves drziak trysky D10', totalNozzleHangers, 'ks', 'NORMIST', 0.15);
-  add('NORMIST 201142M', 'Záves stred rúr D10', totalPipeHangers, 'ks', 'NORMIST', 0.12);
-  add('ITALINOX', 'Trubka A304 TIG 22×1,5 [SS]', Math.ceil(totalInoxPipe), 'm', 'ITALINOX', 3.0);
-  add('183022000', 'VT Spojka P22F AK [SS]', totalInoxConnectors, 'ks', 'RACMET', 2.836);
-  add('RACMET 182022000', 'VT T-kus P22F AK [SS]', totalTJunctions, 'ks', 'RACMET', 6.81);
-  bracketBOM.forEach(b => add(b.code, b.name, b.qty, 'ks', 'SANFOG', b.direction === 'racmet' ? 13.58 : 11.66));
-  add('snfg.05.0002', 'Dilatácia hydraulická DN25 2m [SS]', totalDilations, 'ks', 'SANFOG', 37.328);
-  add('snfg.05.0014', 'Zostava vyprázdňovania', totalDrain, 'ks', 'SANFOG', 34.47);
-  add('MVVMVGG1.2FG1.2FAK', 'Ventil ihlový G1/2F [SS]', totalNeedles, 'ks', 'SANFOG', 15);
-  add('MVEMKCS2X1PVCW', 'CYSY 2×1 PVC Biely', Math.ceil(totalCYSY), 'm', 'Kábel SK', 0.367);
-  add('EKR000001481', 'Rozbočovacia krabica A1', totalBoxes, 'ks', 'OBERON', 0.48);
-  add('ESV000001630', 'WAGO svorky 221-413', totalWago, 'ks', 'OBERON', 0.38);
+  Object.entries(totalNozzles).forEach(([code, qty]) => { const orifice = Object.entries(NOZZLE_BY_ORIFICE).find(([, v]) => v === code)?.[0]; add(code, `Tryska D${orifice}mm AK SS`, qty, 'ks', 'NORMIST', getStockPrice(code)); });
+  add('NOR 301188', 'Swivel adaptér', zoneCalcs.reduce((s, c) => s + c.numSwivel, 0), 'ks', 'NORMIST', getStockPrice('NOR 301188'));
+  Object.entries(totalPipesByCode).forEach(([code, { name, qty }]) => add(code, name, qty, 'ks', 'NORMIST', getStockPrice(code)));
+  add('NORMIST 0311002SS-180', 'Fitting SS 180°', totalFitting180, 'ks', 'NORMIST', getStockPrice('NORMIST 0311002SS-180'));
+  add('NORMIST 0311008SS', 'End plug 10mm SS', totalEndPlug, 'ks', 'NORMIST', getStockPrice('NORMIST 0311008SS'));
+  if (totalRopeSS > 0) add('SVX_SS_NEREZ', 'Nerezové lano 3mm', totalRopeSS, 'm', 'SVX', getStockPrice('SVX_SS_NEREZ'));
+  if (totalRopeOCEL > 0) add('SVX 201143', 'Oceľové lano 3mm', totalRopeOCEL, 'm', 'SVX', getStockPrice('SVX 201143'));
+  add('MVUZTLN400MMAKNS', 'Závesný diel 400mm AK NS', totalHangers, 'ks', 'NORMIST', getStockPrice('MVUZTLN400MMAKNS'));
+  add('Gripple Plus Medium', 'GRIPPLE stredný', totalGripple, 'ks', 'GRIPPLE', getStockPrice('Gripple Plus Medium'));
+  add('NORMIST 201142', 'Záves drziak trysky D10', totalNozzleHangers, 'ks', 'NORMIST', getStockPrice('NORMIST 201142'));
+  add('NORMIST 201142M', 'Záves stred rúr D10', totalPipeHangers, 'ks', 'NORMIST', getStockPrice('NORMIST 201142M'));
+  add('ITALINOX', 'Trubka A304 TIG 22×1,5 [SS]', Math.ceil(totalInoxPipe), 'm', 'ITALINOX', getStockPrice('ITALINOX'));
+  add('183022000', 'VT Spojka P22F AK [SS]', totalInoxConnectors, 'ks', 'RACMET', getStockPrice('183022000'));
+  add('RACMET 182022000', 'VT T-kus P22F AK [SS]', totalTJunctions, 'ks', 'RACMET', getStockPrice('RACMET 182022000'));
+  bracketBOM.forEach(b => add(b.code, b.name, b.qty, 'ks', 'SANFOG', getStockPrice(b.code)));
+  add('snfg.05.0002', 'Dilatácia hydraulická DN25 2m [SS]', totalDilations, 'ks', 'SANFOG', getStockPrice('snfg.05.0002'));
+  add('snfg.05.0014', 'Zostava vyprázdňovania', totalDrain, 'ks', 'SANFOG', getStockPrice('snfg.05.0014'));
+  add('MVVMVGG1.2FG1.2FAK', 'Ventil ihlový G1/2F [SS]', totalNeedles, 'ks', 'SANFOG', getStockPrice('MVVMVGG1.2FG1.2FAK'));
+  add('MVEMKCS2X1PVCW', 'CYSY 2×1 PVC Biely', Math.ceil(totalCYSY), 'm', 'Kábel SK', getStockPrice('MVEMKCS2X1PVCW'));
+  add('EKR000001481', 'Rozbočovacia krabica A1', totalBoxes, 'ks', 'OBERON', getStockPrice('EKR000001481'));
+  add('ESV000001630', 'WAGO svorky 221-413', totalWago, 'ks', 'OBERON', getStockPrice('ESV000001630'));
 
   const installTechCost = (costInputs.installTechDays * costInputs.installTechCount + costInputs.installGreenhouseDays * costInputs.installGreenhouseCount + costInputs.diggingDays * costInputs.diggingCount + costInputs.commissioningDays * costInputs.commissioningCount) * 100;
-  if (installTechCost > 0) add('SANFOG_MONTAZ', 'Práca montáž', installTechCost / 100, 'dní', 'SANFOG', 100);
+  if (installTechCost > 0) add('SANFOG_MONTAZ', 'Práca montáž', installTechCost / 100, 'dní', 'SANFOG', getStockPrice('SANFOG_MONTAZ'));
   add('SANFOG_PREPRAVA', `Preprava tovaru ${project.country}`, 1, 'ks', 'Dopravca', transpCost);
-  add('SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'ks', 'SANFOG', 400);
+  add('SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'ks', 'SANFOG', getStockPrice('SANFOG_PROJEKTO'));
   add('SANFOG_PM', 'Projektový manažér', 1, 'ks', 'SANFOG', pmCost);
   add('SANFOG_MAT', 'Montážny materiál', 1, 'ks', 'SANFOG', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
-  add('SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'ks', 'SANFOG', 1400);
+  add('SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'ks', 'SANFOG', getStockPrice('SANFOG_COLNICA'));
 
   const processedLines = lines.map((l) => l.supplier === 'NORMIST' && l.code !== 'NORMIST' ? { ...l, priceUnit: 0, total: 0 } : l);
   const grandTotal = processedLines.reduce((s, l) => s + l.total, 0);

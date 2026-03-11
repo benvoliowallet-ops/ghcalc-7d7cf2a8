@@ -31,6 +31,12 @@ export const LEGACY_CODE_MAP: Record<string, string> = {
   'snfg.0013910012.02': '0013910012.02',
   'NORMIST_UV_4LAMPS': 'snfg.001.0016',
   'NORMIST_UV_6OUTLETS': 'snfg.001.0017',
+  // BOM legacy codes → canonical stockItems codes
+  'ITALINOX': '10217-7',
+  'SVX_SS_NEREZ': 'SVX 84070703',
+  'snfg.006.0001': 'snfg.06.0001',
+  'Gripple Plus Medium': '14149',
+  'TELTONIKA_GSM': '91412039',
 };
 
 export function migrateStockCode(code: string): string {
@@ -52,7 +58,7 @@ export const stockItems: StockItem[] = [
   { code: `V170200`, nameEn: `200 LT 10 BAR EXPANSION VESSEL`, nameSk: `200 lt pn10 tlaková nádoba`, unit: `pcs`, unitSk: `ks`, price: 130.0, warehouse: 'ATTI' },
   { code: `PT-06.`, nameEn: `3/8" brine tube`, nameSk: `3/8" nizkotlakova hadica`, unit: `m`, unitSk: `m`, price: 0.94, warehouse: 'ATTI' },
   { code: `V170750`, nameEn: `750 lt pn10 Expansion vessel`, nameSk: `750 lt pn10 tlaková nádoba`, unit: `pcs`, unitSk: `ks`, price: 238.813, warehouse: 'ATTI' },
-  { code: `SNFG.00001`, nameEn: `Packaging`, nameSk: `Balné`, unit: `pcs`, unitSk: `ks`, price: 5.9765, warehouse: 'ATTI' },
+  { code: `SNFG.00001`, nameEn: `Packaging`, nameSk: `Balné`, unit: `pcs`, unitSk: `ks`, price: 350.0, warehouse: 'ATTI' },
   { code: `snfg.04.0008`, nameEn: `Concrete`, nameSk: `Betón`, unit: `m3`, unitSk: `m3`, price: 60.0, warehouse: 'ATTI' },
   { code: `4072000024`, nameEn: `UNLOADER VALVE VRT100 G1/2F - 19MPa WITH KNOB 170 BAR - 100LPM, IN G1/2" F - OUT G1/2" F`, nameSk: `Bypass ventil VRT100 - 100LPM @170bar, IN G1/2" F - OUT G1/2" F`, unit: `pcs`, unitSk: `ks`, price: 76.43, warehouse: 'ATTI' },
   { code: `SANFOG_COLNICA`, nameEn: `Colné poplatky`, nameSk: `Colné poplatky`, unit: `pcs`, unitSk: `ks`, price: 1400.0, warehouse: 'ATTI' },
@@ -337,12 +343,13 @@ export function getStockItem(code: string): StockItem | undefined {
 }
 
 export function getStockPrice(code: string): number {
-  return STOCK_ITEMS.find(i => i.code === code)?.price ?? 0;
+  const resolved = migrateStockCode(code);
+  return STOCK_ITEMS.find(i => i.code === resolved)?.price ?? 0;
 }
 
 export function getPipe10mmForSpacing(spacingCm: number): { code: string; name: string; price: number } {
-  if (spacingCm <= 200) return { code: 'NOR 0311016', name: 'Rura D10x1.5-2000 AK', price: 6.40 };
-  if (spacingCm <= 250) return { code: 'NOR 0311017', name: 'Rura D10x1.5-2500 AK', price: 7.36 };
-  if (spacingCm <= 300) return { code: 'NOR 0311018', name: 'Rura D10x1.5-3000 AK', price: 8.32 };
-  return { code: 'NOR 0311019', name: 'Rura D10x1.5-4000 AK', price: 10.24 };
+  if (spacingCm <= 200) { const c = 'NOR 0311016'; return { code: c, name: 'Rura D10x1.5-2000 AK', price: getStockPrice(c) }; }
+  if (spacingCm <= 250) { const c = 'NOR 0311017'; return { code: c, name: 'Rura D10x1.5-2500 AK', price: getStockPrice(c) }; }
+  if (spacingCm <= 300) { const c = 'NOR 0311018'; return { code: c, name: 'Rura D10x1.5-3000 AK', price: getStockPrice(c) }; }
+  const c = 'NOR 0311019'; return { code: c, name: 'Rura D10x1.5-4000 AK', price: getStockPrice(c) };
 }
