@@ -169,6 +169,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
 
   const pushHistory = useCallback(() => {
     setHistory((h) => [...h.slice(-29), { segments: [...cad.segments], symbols: [...cad.symbols] }]);
+    setRedoStack([]);
   }, [cad.segments, cad.symbols]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
