@@ -77,6 +77,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
   const [selectedType, setSelectedType] = useState<SelectedType>(null);
   const [ghostLine, setGhostLine] = useState<{ start: CADPoint; end: CADPoint } | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [redoStack, setRedoStack] = useState<HistoryEntry[]>([]);
   const [layerVisibility, setLayerVisibility] = useState<Record<string, boolean>>({});
   const [draggingZone, setDraggingZone] = useState<{ index: number; startX: number; startY: number; origX: number; origY: number } | null>(null);
   const [floatLabel, setFloatLabel] = useState<{ x: number; y: number; text: string } | null>(null);
