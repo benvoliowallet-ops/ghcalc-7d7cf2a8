@@ -148,6 +148,20 @@ export function Step2_GlobalParams() {
             value={globalParams.steelRope === 'SS_NEREZ' ? 'SS NEREZ' : 'OCEĽ'}
           />
         </Card>
+
+        {zoneWarnings.length > 0 && (
+          <div className="md:col-span-2 bg-destructive/10 border border-destructive/40 rounded-lg p-4 flex gap-3">
+            <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-destructive text-sm mb-1">Upozornenie — výkon čerpadla</p>
+              {zoneWarnings.map((w) => (
+                <p key={w.index} className="text-destructive text-sm">
+                  {w.name}: požadovaný prietok <strong>{w.flowLpm.toFixed(1)} LPM</strong> prekračuje maximálny výkon čerpadla (100 LPM). Rozdeľte zónu na viacero okruhov.
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </StepLayout>
   );
