@@ -393,13 +393,26 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
       }
     }
 
-    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
       e.preventDefault();
       const prev = history[history.length - 1];
       if (prev) {
+        setRedoStack((r) => [...r, { segments: [...cad.segments], symbols: [...cad.symbols] }]);
         setHistory((h) => h.slice(0, -1));
         setCADData(prev.segments, prev.symbols);
       }
+      return;
+    }
+
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+      e.preventDefault();
+      const next = redoStack[redoStack.length - 1];
+      if (next) {
+        setHistory((h) => [...h, { segments: [...cad.segments], symbols: [...cad.symbols] }]);
+        setRedoStack((r) => r.slice(0, -1));
+        setCADData(next.segments, next.symbols);
+      }
+      return;
     }
 
     if (e.key === 'Delete' || e.key === 'Backspace') {
