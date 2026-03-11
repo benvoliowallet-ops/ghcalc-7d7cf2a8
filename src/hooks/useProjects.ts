@@ -58,6 +58,7 @@ export function useLoadProjects() {
         snapshot: row.snapshot as unknown as ProjectState,
         ownerId: row.owner_id,
         ownerName: profileMap.get(row.owner_id) ?? row.owner_id,
+        status: ((row as any).status ?? 'in_progress') as 'in_progress' | 'completed',
       }));
 
       setSavedProjectsRef.current(saved);

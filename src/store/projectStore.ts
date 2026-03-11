@@ -192,6 +192,7 @@ export const useProjectStore = create<ProjectStore>()(
           snapshot,
           ownerId: '',
           ownerName: '',
+          status: 'in_progress' as const,
         };
         set(prev => ({
           savedProjects: [entry, ...prev.savedProjects.filter(p => p.id !== entry.id)],
