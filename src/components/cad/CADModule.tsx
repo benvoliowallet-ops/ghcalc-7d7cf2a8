@@ -536,7 +536,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
 
   const selectElement = (id: string, type: SelectedType, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (tool === 'select') {
+    if (!drawing.isDrawing) {
       setSelectedId(id === selectedId ? null : id);
       setSelectedType(id === selectedId ? null : type);
     }
