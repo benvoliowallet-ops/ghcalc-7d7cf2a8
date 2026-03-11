@@ -57,26 +57,26 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
     if (qty > 0) bomLines.push({ section, code, name, qty, unit, price });
   };
 
-  add('Balné', 'SNFG.00001', 'Balné', 1, 'ks', 350);
+  add('Balné', 'SNFG.00001', 'Balné', 1, 'ks', getStockPrice('SNFG.00001'));
   if (normistPrice > 0) add('FOGSYSTEM NORMIST', 'NORMIST', `FOGSYSTEM NORMIST (${osmoticSS ? 'SS' : 'STD'})`, 1, 'ks', normistPrice);
-  add('ETNA', 'snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', osmoticSS ? 3200 : 2800);
+  add('ETNA', 'snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', getStockPrice('snfg.001.0021'));
   const maxivaremInfo = selectMaxivarem(etnaCapacity, osmoticSS);
   add('ETNA', maxivaremInfo.code, maxivaremInfo.label, 1, 'ks', maxivaremInfo.price);
-  add('ETNA', 'ETNA_ACC', 'Príslušenstvo k ETNA-NOR (≤10m)', 1, 'ks', 200);
-  add('ETNA', 'ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'ks', 300);
-  add('ETNA', 'SNFG.TLK.001', 'Trojcestná armatúra', 1, 'ks', 150);
-  add('ETNA', 'ETNA_MONTAZ', 'Montáž ETNA', 1, 'hod', 300);
-  add('Čerpadlo', '0204013A', 'Solenoid Valve Kit 70 Bar', N, 'ks', 157.44);
-  add('Čerpadlo', '0104003-kit', 'Pressure Switch Kit', N, 'ks', 48);
-  add('Čerpadlo', '204091', 'Keller Pressure Transmitter 0/160 Bar', N, 'ks', 71.55);
-  add('Čerpadlo', '4072000024', 'Bypass ventil VRT100-100LPM@170bar', N, 'ks', 76.43);
-  add('Čerpadlo', '60.0525.00', 'Poistný ventil VS220 G3/8F', N, 'ks', 29.25);
-  add('Čerpadlo', 'snfg.006.0001', 'Prepoj čerpadlo → hl. vedenie DN25 3m [SS]', N, 'ks', 39.728);
-  add('Systém', 'TELTONIKA_GSM', 'Teltonika GSM brána', 1, 'ks', 200);
-  add('Systém', 'BPONG-005-P2PWE', 'Náhradný rukávový filter 5 mic', 1, 'ks', 4.57);
-  add('Systém', 'NORMIST_DANFOSS', 'DANFOSS Drive', 1, 'ks', 954);
-  if (uvSystemCode) add('Systém', uvSystemCode, 'UV System', 1, 'ks', 1500);
-  if (ssFilter30) add('Systém', 'NORMIST_30SS_FILTER', 'SS Filter 30" Unit', 1, 'ks', 800);
+  add('ETNA', 'ETNA_ACC', 'Príslušenstvo k ETNA-NOR (≤10m)', 1, 'ks', getStockPrice('ETNA_ACC'));
+  add('ETNA', 'ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'ks', getStockPrice('ETNA_VODA'));
+  add('ETNA', 'SNFG.TLK.001', 'Trojcestná armatúra', 1, 'ks', getStockPrice('SNFG.TLK.001'));
+  add('ETNA', 'ETNA_MONTAZ', 'Montáž ETNA', 1, 'hod', getStockPrice('ETNA_MONTAZ'));
+  add('Čerpadlo', '0204013A', 'Solenoid Valve Kit 70 Bar', N, 'ks', getStockPrice('0204013A'));
+  add('Čerpadlo', '0104003-kit', 'Pressure Switch Kit', N, 'ks', getStockPrice('0104003-kit'));
+  add('Čerpadlo', '204091', 'Keller Pressure Transmitter 0/160 Bar', N, 'ks', getStockPrice('204091'));
+  add('Čerpadlo', '4072000024', 'Bypass ventil VRT100-100LPM@170bar', N, 'ks', getStockPrice('4072000024'));
+  add('Čerpadlo', '60.0525.00', 'Poistný ventil VS220 G3/8F', N, 'ks', getStockPrice('60.0525.00'));
+  add('Čerpadlo', 'snfg.006.0001', 'Prepoj čerpadlo → hl. vedenie DN25 3m [SS]', N, 'ks', getStockPrice('snfg.006.0001'));
+  add('Systém', 'TELTONIKA_GSM', 'Teltonika GSM brána', 1, 'ks', getStockPrice('TELTONIKA_GSM'));
+  add('Systém', 'BPONG-005-P2PWE', 'Náhradný rukávový filter 5 mic', 1, 'ks', getStockPrice('BPONG-005-P2PWE'));
+  add('Systém', 'NORMIST_DANFOSS', 'DANFOSS Drive', 1, 'ks', getStockPrice('NORMIST_DANFOSS'));
+  if (uvSystemCode) add('Systém', uvSystemCode, 'UV System', 1, 'ks', getStockPrice(uvSystemCode));
+  if (ssFilter30) add('Systém', 'NORMIST_30SS_FILTER', 'SS Filter 30" Unit', 1, 'ks', getStockPrice('NORMIST_30SS_FILTER'));
 
   zoneCalcs.forEach((calc, i) => {
     const zone = zones[i];

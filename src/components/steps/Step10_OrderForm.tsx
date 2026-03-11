@@ -20,14 +20,14 @@ export function Step10_OrderForm() {
     if (qty > 0) lines.push({ code, name, qty, unit, supplier, priceUnit: price, total: qty * price });
   };
 
-  add('SNFG.00001', 'Balné', 1, 'ks', 'SANFOG', 350);
+  add('SNFG.00001', 'Balné', 1, 'ks', 'SANFOG', getStockPrice('SNFG.00001'));
   if (normistPrice > 0) add('NORMIST', `FOGSYSTEM NORMIST (${osmoticSS ? 'SS' : 'STD'})`, 1, 'ks', 'NORMIST/NAZLI', normistPrice);
-  add('snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', 'ETNA', osmoticSS ? 3200 : 2800);
+  add('snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', 'ETNA', getStockPrice('snfg.001.0021'));
   add(maxivaremInfo.code, maxivaremInfo.label, 1, 'ks', 'MAXTRA CONTROL', maxivaremInfo.price);
-  add('ETNA_ACC', 'Príslušenstvo k ETNA-NOR', 1, 'ks', 'ETNA', 200);
-  add('ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'ks', 'ETNA', 300);
-  add('SNFG.TLK.001', 'Trojcestná armatúra', 1, 'ks', 'SANFOG', 150);
-  add('ETNA_MONTAZ', 'Montáž ETNA', 1, 'hod', 'SANFOG', 300);
+  add('ETNA_ACC', 'Príslušenstvo k ETNA-NOR', 1, 'ks', 'ETNA', getStockPrice('ETNA_ACC'));
+  add('ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'ks', 'ETNA', getStockPrice('ETNA_VODA'));
+  add('SNFG.TLK.001', 'Trojcestná armatúra', 1, 'ks', 'SANFOG', getStockPrice('SNFG.TLK.001'));
+  add('ETNA_MONTAZ', 'Montáž ETNA', 1, 'hod', 'SANFOG', getStockPrice('ETNA_MONTAZ'));
 
   const N = globalParams.numberOfZones;
 
