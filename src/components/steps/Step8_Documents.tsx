@@ -204,8 +204,12 @@ export function Step8_Documents() {
           <div className="flex gap-2 flex-wrap">
             <Button variant="primary" onClick={printBOM}><PrintIcon /> Tlačiť – BOM pre Attiho</Button>
             <Button variant="secondary" onClick={exportAttiBOMXLSX}><DownloadIcon /> Export XLSX</Button>
+            <Button variant="secondary" onClick={exportAttiOberon} disabled={oberonExporting}>
+              <DownloadIcon /> {oberonExporting ? 'Exportujem…' : 'Export do Oberon'}
+            </Button>
           </div>
         </Card>
+
       </div>
 
       {!cadHasPipes && (
