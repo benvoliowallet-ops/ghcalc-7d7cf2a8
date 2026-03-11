@@ -604,6 +604,7 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
             onClick={() => {
               const prev = history[history.length - 1];
               if (prev) {
+                setRedoStack((r) => [...r, { segments: [...cad.segments], symbols: [...cad.symbols] }]);
                 setHistory((h) => h.slice(0, -1));
                 setCADData(prev.segments, prev.symbols);
               }
@@ -612,6 +613,20 @@ export function CADModule({ activeZoneIndex }: CADModuleProps) {
             className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Undo2 className="w-3.5 h-3.5" /> Undo ({history.length})
+          </button>
+          <button
+            onClick={() => {
+              const next = redoStack[redoStack.length - 1];
+              if (next) {
+                setHistory((h) => [...h, { segments: [...cad.segments], symbols: [...cad.symbols] }]);
+                setRedoStack((r) => r.slice(0, -1));
+                setCADData(next.segments, next.symbols);
+              }
+            }}
+            disabled={redoStack.length === 0}
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <Undo2 className="w-3.5 h-3.5 scale-x-[-1]" /> Redo ({redoStack.length})
           </button>
 
           <button
