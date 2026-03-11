@@ -242,8 +242,10 @@ export const stockItems: StockItem[] = [
   { code: `0013910012.01`, nameEn: `Connect the main line and the distribution T-piece (22 mm – 1/2" – 22 mm); the other side is a straight compression fitting.`, nameSk: `Prepoj hlavné vedenie a distribučné T-kus (22mm-1/2"-22mm) druha strana rovná compr`, unit: `pcs`, unitSk: `ks`, price: 23.748, warehouse: 'ATTI' },
   { code: `0013910012.02`, nameEn: `Connect the main line to the distribution T-piece (22 mm – 1/2" – 22 mm); the other side is a compressed T-piece.`, nameSk: `Prepoj hlavné vedenie a distribučné T-kus (22mm-1/2"-22mm) druha strana T kus compressed`, unit: `pcs`, unitSk: `ks`, price: 28.5944, warehouse: 'ATTI' },
   // --- NORMIST POLOŽKY PRÍDU V ČASTI 3/3 ---
+];
 
 // Backward-compat alias
+
 export const STOCK_ITEMS = stockItems;
 
 // Map orifice → nozzle code
