@@ -52,7 +52,7 @@ export function calcZone(
   const ropeRaw = (L + 10) * N;
   const ropeLength = Math.ceil(ropeRaw / 500) * 500;
   const ropeWaste = ropeLength - ropeRaw;
-  const numHangers = Math.floor(L / Rkrat) * N;
+  const numHangers = Math.floor(L / globalParams.trellisSpacing) * N; // rozostup kratovnic z globalParams
   const numGripple = N * 2;
   const numNozzleHangers = numHolders;               // 1 hanger per holder
   const L_pipe = numPipes10mmPerNave > 0 ? effectiveLength / numPipes10mmPerNave : 0;
