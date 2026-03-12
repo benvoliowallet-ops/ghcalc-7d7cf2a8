@@ -114,6 +114,17 @@ export function Step2_GlobalParams() {
               </div>
             </div>
           </div>
+          <Input
+            label="Rozostup medzi kratovnicami"
+            unit="m"
+            type="number"
+            min={1}
+            max={20}
+            step={0.5}
+            value={globalParams.trellisSpacing}
+            onChange={(e) => updateGlobalParams({ trellisSpacing: Number(e.target.value) })}
+            hint="Vzdialenosť medzi kratovnicami — určuje počet závisných dielov lana (MVUZTLN400MMAKNS)"
+          />
         </Card>
 
         <Card variant="info" title="Pravidlá materiálov">
