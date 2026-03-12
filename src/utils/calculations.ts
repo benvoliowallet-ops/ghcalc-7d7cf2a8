@@ -39,17 +39,15 @@ export function calcZone(
   const nozzlesPerNaveRaw = effectiveLength > 0 && nozzleSpacingM > 0
     ? Math.floor(effectiveLength / nozzleSpacingM) + 1
     : 0;
-  const nozzlesPerNave = nozzlesPerNaveRaw % 2 === 0
-    ? nozzlesPerNaveRaw
-    : nozzlesPerNaveRaw + 1;
+  const nozzlesPerNave = nozzlesPerNaveRaw;
   const numHolders = nozzlesPerNave * N;
   const numNozzles = numHolders * 2;
   const numSwivel = N * 3;
 
-  const numPipes10mmPerNave = nozzlesPerNave;        // 1 pipe segment per holder (no /2)
+  const numPipes10mmPerNave = Math.max(0, nozzlesPerNave - 1); // 1 rurka medzi 2 susednymi drzjakmi; posledna rurka nesie 2 drzjaky
   const numPipes10mmTotal = numPipes10mmPerNave * N;
-  const numFitting180 = Math.ceil(numHolders / 2);
-  const numEndPlug = N * 2;
+  const numFitting180 = numHolders; // kazdy holder je double (180deg)
+  const numEndPlug = N; // 1 zaslepka na koniec poslednej rurky per lod
 
   const ropeRaw = (L + 10) * N;
   const ropeLength = Math.ceil(ropeRaw / 500) * 500;
@@ -57,7 +55,7 @@ export function calcZone(
   const numHangers = Math.floor(L / Rkrat) * N;
   const numGripple = N * 2;
   const numNozzleHangers = numHolders;               // 1 hanger per holder
-  const L_pipe = numPipes10mmPerNave > 0 ? L / numPipes10mmPerNave : 0;
+  const L_pipe = numPipes10mmPerNave > 0 ? effectiveLength / numPipes10mmPerNave : 0;
   const numPipeHangers = L_pipe <= 3.5 ? numPipes10mmTotal * 1 : numPipes10mmTotal * 2;
 
   const zoneSegments = cad.segments.filter(
