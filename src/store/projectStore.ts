@@ -35,6 +35,7 @@ const defaultGlobalParams: GlobalParams = {
   pumpLocation: 'NÁVRH',
   osmoticWater: false,
   steelRope: 'SS_NEREZ',
+  trellisSpacing: 5,
 };
 
 const defaultZone: ZoneParams = {
