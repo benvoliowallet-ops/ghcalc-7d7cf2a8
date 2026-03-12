@@ -92,10 +92,10 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     if (!data.user) return { ok: false, error: 'Registrácia zlyhala' };
 
     // Update role to admin — trigger creates the profile but with defaults
-    await supabase
-      .from('profiles')
-      .update({ role: 'admin', name })
-      .eq('id', data.user.id);
+    const { error: upsertErr } = await supabase
+        .from('profiles')
+        .upsert({ id: data.user.id, email, name, role: 'admin' });
+      if (upsertErr) return { ok: false, error: upsertErr.message };
 
     // onAuthStateChange will fire and call loadProfile automatically
     return { ok: true };
