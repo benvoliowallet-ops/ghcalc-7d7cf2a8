@@ -29,6 +29,55 @@ export function useStockItems() {
       return;
     }
 
+    // Always sync: upsert any static items missing from DB (admin only)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', currentUser.id)
+      .single();
+
+    if (profile?.role === 'admin') {
+      const dbCodes = new Set((data ?? []).map((r) => r.code));
+      const missing = STOCK_ITEMS.filter((item) => !dbCodes.has(item.code));
+      if (missing.length > 0) {
+        console.log('[Stock] Syncing', missing.length, 'missing items to DB...');
+        const batchSize = 20;
+        for (let i = 0; i < missing.length; i += batchSize) {
+          const batch = missing.slice(i, i + batchSize).map((item) => ({
+            code: item.code,
+            name: item.nameSk,
+            additional_text: item.nameEn,
+            price: item.price ?? 0,
+            group: item.warehouse,
+            supplier: item.warehouse,
+            created_by: currentUser.id,
+            updated_by: currentUser.id,
+          }));
+          await supabase.from('stock_items').upsert(batch);
+        }
+        console.log('[Stock] Sync complete');
+        // Reload after sync
+        const { data: fresh } = await supabase
+          .from('stock_items')
+          .select('code, name, additional_text, price, group, supplier')
+          .order('name');
+        if (fresh && fresh.length > 0) {
+          setItems(
+            fresh.map((row) => ({
+              code: row.code,
+              nameSk: row.name,
+              nameEn: row.additional_text ?? '',
+              unit: 'pcs',
+              unitSk: 'ks',
+              price: row.price != null ? Number(row.price) : null,
+              warehouse: (row.supplier === 'NORMIST' ? 'NORMIST' : 'ATTI') as 'ATTI' | 'NORMIST',
+            }))
+          );
+        }
+        return;
+      }
+    }
+
     if (data && data.length > 0) {
       setItems(
         data.map((row) => ({
@@ -42,34 +91,7 @@ export function useStockItems() {
         }))
       );
     } else {
-      // DB is empty — seed with static data, but only if the user is admin
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', currentUser.id)
-        .single();
-
-      if (profile?.role !== 'admin') {
-        setItems(STOCK_ITEMS);
-      } else {
-        console.log('[Stock] DB empty, seeding with', STOCK_ITEMS.length, 'items (admin)...');
-        const batchSize = 20;
-        for (let i = 0; i < STOCK_ITEMS.length; i += batchSize) {
-          const batch = STOCK_ITEMS.slice(i, i + batchSize).map((item) => ({
-            code: item.code,
-            name: item.nameSk,
-            additional_text: item.nameEn,
-            price: item.price ?? 0,
-            group: item.warehouse,
-            supplier: item.warehouse,
-            created_by: currentUser.id,
-            updated_by: currentUser.id,
-          }));
-          await supabase.from('stock_items').upsert(batch);
-        }
-        console.log('[Stock] Seeding complete');
-        setItems(STOCK_ITEMS);
-      }
+      setItems(STOCK_ITEMS);
     }
   }, [currentUser]);
 

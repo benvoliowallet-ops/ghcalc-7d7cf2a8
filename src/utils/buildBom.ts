@@ -105,7 +105,7 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
     add(sec, 'NORMIST 201142M', 'Záves stred rúr D10', calc.numPipeHangers, 'ks', getStockPrice('NORMIST 201142M'));
     add(sec, 'ITALINOX', 'Trubka A304 TIG 22×1,5 [SS]', Math.ceil(calc.inoxPipeLength), 'm', getStockPrice('ITALINOX'));
     add(sec, '183022000', 'VT Spojka P22F AK [SS]', calc.numInoxConnectors, 'ks', getStockPrice('183022000'));
-    add(sec, 'RACMET 182022000', 'VT T-kus P22F AK [SS]', calc.numTJunctions, 'ks', getStockPrice('RACMET 182022000'));
+    add(sec, '189102022', 'VT T-kus P22F G1/2F P22F AK [SS]', calc.numTJunctions, 'ks', getStockPrice('189102022'));
     add(sec, 'snfg.05.0002', 'Dilatácia hydraulická DN25 2m [SS]', calc.numDilations, 'ks', getStockPrice('snfg.05.0002'));
     add(sec, 'snfg.05.0014', 'Zostava vyprázdňovania 0-90bar', calc.numDrainAssemblies, 'ks', getStockPrice('snfg.05.0014'));
     add(sec, 'MVVMVGG1.2FG1.2FAK', 'Ventil ihlový G1/2F [SS]', calc.numNeedleValves, 'ks', getStockPrice('MVVMVGG1.2FG1.2FAK'));
