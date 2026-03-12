@@ -52,6 +52,7 @@ export interface GlobalParams {
   pumpLocation: 'POTVRDENÉ' | 'NÁVRH';
   osmoticWater: boolean;
   steelRope: 'SS_NEREZ' | 'OCEĽ';
+  trellisSpacing: number; // rozostup medzi kratovnicami (m) — pre výpočet závisných dielov lana
 }
 
 // ─── Zone Parameters ─────────────────────────────────────────────────────────
