@@ -7,6 +7,8 @@ export interface StockItem {
   unitSk: string;
   price: number | null;
   warehouse: 'ATTI' | 'NORMIST';
+  bomCondition?: string;
+  bomQtyLogic?: string;
 }
 
 // ─── Legacy code migration map ─────────────────────────────────────────────

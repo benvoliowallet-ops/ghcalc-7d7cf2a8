@@ -19,7 +19,7 @@ export function useStockItems() {
 
     const { data, error } = await supabase
       .from('stock_items')
-      .select('code, name, additional_text, price, group, supplier')
+      .select('code, name, name_en, additional_text, price, group, supplier, bom_condition, bom_qty_logic')
       .order('name');
 
     setLoading(false);
@@ -59,18 +59,20 @@ export function useStockItems() {
         // Reload after sync
         const { data: fresh } = await supabase
           .from('stock_items')
-          .select('code, name, additional_text, price, group, supplier')
+          .select('code, name, name_en, additional_text, price, group, supplier, bom_condition, bom_qty_logic')
           .order('name');
         if (fresh && fresh.length > 0) {
           setItems(
             fresh.map((row) => ({
               code: row.code,
               nameSk: row.name,
-              nameEn: row.additional_text ?? '',
+              nameEn: row.name_en ?? row.additional_text ?? '',
               unit: 'pcs',
               unitSk: 'ks',
               price: row.price != null ? Number(row.price) : null,
               warehouse: (row.supplier === 'NORMIST' ? 'NORMIST' : 'ATTI') as 'ATTI' | 'NORMIST',
+              bomCondition: row.bom_condition ?? '',
+              bomQtyLogic: row.bom_qty_logic ?? '',
             }))
           );
         }
@@ -83,11 +85,13 @@ export function useStockItems() {
         data.map((row) => ({
           code: row.code,
           nameSk: row.name,
-          nameEn: row.additional_text ?? '',
+          nameEn: row.name_en ?? row.additional_text ?? '',
           unit: 'pcs',
           unitSk: 'ks',
           price: row.price != null ? Number(row.price) : null,
           warehouse: (row.supplier === 'NORMIST' ? 'NORMIST' : 'ATTI') as 'ATTI' | 'NORMIST',
+          bomCondition: row.bom_condition ?? '',
+          bomQtyLogic: row.bom_qty_logic ?? '',
         }))
       );
     } else {
