@@ -121,7 +121,9 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
     add(sec, '189102022', 'VT T-kus P22F G1/2F P22F AK [SS]', calc.numTJunctions, 'ks', getStockPrice('189102022'));
     add(sec, 'snfg.05.0002', 'Dilatácia hydraulická DN25 2m [SS]', calc.numDilations, 'ks', getStockPrice('snfg.05.0002'));
     add(sec, 'snfg.05.0014', 'Zostava vyprázdňovania 0-90bar', calc.numDrainAssemblies, 'ks', getStockPrice('snfg.05.0014'));
-    add(sec, 'MVVMVGG1.2FG1.2FAK', 'Ventil ihlový G1/2F [SS]', calc.numNeedleValves, 'ks', getStockPrice('MVVMVGG1.2FG1.2FAK'));
+    if (calc.numDrainAssemblies > 0) {
+      add(sec, 'snfg.004.002', 'Ihlový ventil G1/2F', calc.numDrainAssemblies, 'ks', getStockPrice('snfg.004.002'));
+    }
 
     // Prepoj na napájacie potrubie - rovný alebo T-kus
     if (zone.connectionType === 'T-kus') {
