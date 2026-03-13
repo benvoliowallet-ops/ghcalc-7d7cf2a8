@@ -100,7 +100,7 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
       add(sec, 'NOR 0311002-180', 'Fitting Ni 180°', calc.numPipes10mmTotal + 1, 'ks', getStockPrice('NOR 0311002-180'));
     }
 
-    const endPlugQty = (zone.connectionType === 'T-kus') ? calc.numEndPlug * 2 : calc.numEndPlug;
+    const endPlugQty = ((zone.connectionType ?? 'T-kus') === 'T-kus') ? calc.numEndPlug * 2 : calc.numEndPlug;
     if (osmoticSS) {
       add(sec, 'NOR 0311008SS', 'End plug 10mm SS', endPlugQty, 'ks', getStockPrice('NOR 0311008SS'));
     } else {
@@ -126,7 +126,7 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
     }
 
     // Prepoj na napájacie potrubie - rovný alebo T-kus
-    if (zone.connectionType === 'T-kus') {
+    if ((zone.connectionType ?? 'T-kus') === 'T-kus') {
       add(sec, '0013910012.02', 'Prepoj hl. vedenie → T-kus (compressed)', 1, 'ks', getStockPrice('0013910012.02'));
     } else {
       add(sec, '0013910012.01', 'Prepoj hl. vedenie → rovný spoj (compressed)', 1, 'ks', getStockPrice('0013910012.01'));
