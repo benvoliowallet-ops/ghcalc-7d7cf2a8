@@ -54,6 +54,8 @@ export function StockItemModal({ mode, item, allItems, onClose }: Props) {
         unitSk: unitSk.trim() || 'ks',
         price: priceNum,
         warehouse,
+        bomCondition: bomCondition.trim() || undefined,
+        bomQtyLogic: bomQtyLogic.trim() || undefined,
       });
       if (!result.ok) { setSaving(false); return setError(result.error ?? 'Chyba'); }
     } else {
