@@ -29,6 +29,13 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
     openProjectId,
   } = useProjectStore();
 
+  const normistCodes = new Set(STOCK_ITEMS.filter(s => s.warehouse === 'NORMIST').map(s => s.code));
+  const isNormist = (code: string) => {
+    if (code === 'NORMIST') return true;
+    if (code.startsWith('NORMIST_PUMP_')) return true;
+    return normistCodes.has(code);
+  };
+
   const { portal, loading: portalLoading, loadPortal, createPortal, revokePortal } = usePortal(openProjectId ?? null);
   const [shareModal, setShareModal] = useState<{ link: string; password: string } | null>(null);
   const [pdfGenerating, setPdfGenerating] = useState(false);
