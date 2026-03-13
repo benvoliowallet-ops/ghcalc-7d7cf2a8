@@ -11,7 +11,8 @@ import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
 
 export function Step8_Documents() {
   const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, uvSystemNazli, cad, ropeOverrides, preOrderState } = useProjectStore();
-  const { isNormist } = useNormistChecker();
+  const normistCodes = new Set(STOCK_ITEMS.filter(s => s.warehouse === 'NORMIST').map(s => s.code));
+  const isNormist = (code: string) => normistCodes.has(code);
   const bomRef = useRef<HTMLDivElement>(null);
   const orderRef = useRef<HTMLDivElement>(null);
 
