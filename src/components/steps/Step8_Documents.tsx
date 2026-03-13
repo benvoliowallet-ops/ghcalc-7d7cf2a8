@@ -4,18 +4,15 @@ import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { PUMP_TABLE, selectMaxivarem, getTransportCost, getPMCost, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from '../../utils/calculations';
-import { getPipe10mmForSpacing, getStockPrice, STOCK_ITEMS, LEGACY_CODE_MAP } from '../../data/stockItems';
+import { STOCK_ITEMS } from '../data/stockItems';
 import { buildBomLines } from '../../utils/buildBom';
 import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
 
 export function Step8_Documents() {
   const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, uvSystemNazli, cad, ropeOverrides, preOrderState } = useProjectStore();
-  const normistCodes = new Set(STOCK_ITEMS.filter(s => s.warehouse === 'NORMIST').map(s => s.code));
-  // Resolve legacy codes first, then check warehouse; also treat 'NORMIST' (whole system line) as NORMIST
   const isNormist = (code: string) => {
     if (code === 'NORMIST') return true;
     if (code.startsWith('NORMIST_PUMP_')) return true;
-    const resolved = LEGACY_CODE_MAP[code] ?? code;
     return normistCodes.has(resolved);
   };
   const bomRef = useRef<HTMLDivElement>(null);
@@ -39,8 +36,8 @@ export function Step8_Documents() {
 
   const processedBomLines = bomLines.map((l) => isNormist(l.code) && l.code !== 'NORMIST' ? { ...l, price: 0 } : l);
   const bomTotal = processedBomLines.reduce((s, l) => s + l.qty * l.price, 0);
-  const normistLines = processedBomLines.filter((l) => isNormist(l.code));
-  const attiLines = processedBomLines.filter((l) => !isNormist(l.code));
+  const normistLines = processedBomLines.filter((l) => l.code.startsWith('NORMIST_PUMP_') || STOCK_ITEMS.find(s => s.code === l.code)?.warehouse === 'NORMIST');
+  const attiLines = processedBomLines.filter((l) => !l.code.startsWith('NORMIST_PUMP_') && STOCK_ITEMS.find(s => s.code === l.code)?.warehouse !== 'NORMIST');
 
   const aggregatedNazliLines = (() => {
     const m = new Map<string, { code: string; name: string; qty: number; unit: string }>();
