@@ -89,7 +89,7 @@ export function Step10_OrderForm() {
     setOberonExporting(true);
     try {
       const attiLines = processedLines.filter(l => !l.isNormistRef);
-      await exportToOberon(prepareBomForOberon(attiLines.map(l => ({ code: l.code, qty: l.qty }))), project.quoteNumber);
+      await exportToOberon(prepareBomForOberon(attiLines.map(l => ({ code: l.code, name: l.name, qty: l.qty }))), project.quoteNumber);
     } catch (e) { alert(String(e)); } finally { setOberonExporting(false); }
   };
 
