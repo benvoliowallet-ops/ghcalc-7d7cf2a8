@@ -1,6 +1,6 @@
 import { Document, Page, Text, View, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import type { ProjectState } from '../../types';
-import { PUMP_TABLE, fmtN, calcETNACapacity, NOZZLE_BY_ORIFICE } from '../../utils/calculations';
+import { PUMP_TABLE, fmtN, NOZZLE_BY_ORIFICE } from '../../utils/calculations';
 import { getPipe10mmForSpacing } from '../../data/stockItems';
 
 Font.register({

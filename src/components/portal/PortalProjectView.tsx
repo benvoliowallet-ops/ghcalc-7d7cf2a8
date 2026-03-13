@@ -1,7 +1,7 @@
 import { MapPin, Droplets, Gauge, Layers } from 'lucide-react';
 import sanfogLogoColor from '../../assets/sanfog-logo-color.svg';
 import type { ProjectState, ZoneCalc, ZoneParams } from '../../types';
-import { PUMP_TABLE, fmtN, calcETNACapacity, NOZZLE_BY_ORIFICE } from '../../utils/calculations';
+import { PUMP_TABLE, fmtN, NOZZLE_BY_ORIFICE } from '../../utils/calculations';
 import { getPipe10mmForSpacing } from '../../data/stockItems';
 
 interface PortalProjectData {
