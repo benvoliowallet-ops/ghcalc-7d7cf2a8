@@ -6,7 +6,7 @@ import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { PUMP_TABLE, selectMaxivarem, getTransportCost, getPMCost, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from '../../utils/calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../../data/stockItems';
 import { buildBomLines } from '../../utils/buildBom';
-import { useNormistChecker } from '../../hooks/useSupabaseItems';
+import { STOCK_ITEMS } from '../../data/stockItems';
 import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
 
 export function Step8_Documents() {
