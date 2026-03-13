@@ -155,9 +155,12 @@ export function useStockMutations(reload: () => void) {
         .update({
           name: changes.nameSk,
           additional_text: changes.nameEn,
+          name_en: changes.nameEn,
           price: changes.price ?? 0,
           group: changes.warehouse,
           supplier: changes.warehouse,
+          bom_condition: changes.bomCondition ?? null,
+          bom_qty_logic: changes.bomQtyLogic ?? null,
           updated_by: currentUser.id,
         })
         .eq('code', code);
