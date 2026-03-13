@@ -6,7 +6,7 @@ import { useProjectStore } from '../store/projectStore';
 import { PUMP_TABLE, selectMaxivarem, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes, getTransportCost, getPMCost } from '../utils/calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../data/stockItems';
 import { buildBomLines } from '../utils/buildBom';
-import { useNormistChecker } from '../hooks/useSupabaseItems';
+import { STOCK_ITEMS, LEGACY_CODE_MAP } from '../data/stockItems';
 import { usePortal } from '../hooks/usePortal';
 import { ProjectPDF } from './pdf/ProjectPDF';
 import { InlineProjectComments } from './comments/ProjectComments';
@@ -28,7 +28,13 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
     costInputs, ropeOverrides, uvSystemCode, ssFilter30, uvSystemNazli, cad, preOrderState,
     openProjectId,
   } = useProjectStore();
-  const { isNormist } = useNormistChecker();
+  const normistCodes = new Set(STOCK_ITEMS.filter(s => s.warehouse === 'NORMIST').map(s => s.code));
+  const isNormist = (code: string) => {
+    if (code === 'NORMIST') return true;
+    if (code.startsWith('NORMIST_PUMP_')) return true;
+    const resolved = LEGACY_CODE_MAP[code] ?? code;
+    return normistCodes.has(resolved);
+  };
 
   const { portal, loading: portalLoading, loadPortal, createPortal, revokePortal } = usePortal(openProjectId ?? null);
   const [shareModal, setShareModal] = useState<{ link: string; password: string } | null>(null);
