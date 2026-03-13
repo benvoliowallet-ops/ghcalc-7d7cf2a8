@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
-import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, getTransportCost, getPMCost, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from '../../utils/calculations';
+import { PUMP_TABLE, selectMaxivarem, getTransportCost, getPMCost, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from '../../utils/calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../../data/stockItems';
 import { buildBomLines } from '../../utils/buildBom';
 import { useNormistChecker } from '../../hooks/useSupabaseItems';
