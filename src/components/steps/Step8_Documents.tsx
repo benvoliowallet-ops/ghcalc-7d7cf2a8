@@ -4,16 +4,17 @@ import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { PUMP_TABLE, selectMaxivarem, getTransportCost, getPMCost, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from '../../utils/calculations';
-import { STOCK_ITEMS } from '../data/stockItems';
+import { STOCK_ITEMS } from '../../data/stockItems';
 import { buildBomLines } from '../../utils/buildBom';
 import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
 
 export function Step8_Documents() {
   const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, uvSystemNazli, cad, ropeOverrides, preOrderState } = useProjectStore();
+  const normistCodes = new Set(STOCK_ITEMS.filter(s => s.warehouse === 'NORMIST').map(s => s.code));
   const isNormist = (code: string) => {
     if (code === 'NORMIST') return true;
     if (code.startsWith('NORMIST_PUMP_')) return true;
-    return normistCodes.has(resolved);
+    return normistCodes.has(code);
   };
   const bomRef = useRef<HTMLDivElement>(null);
   const orderRef = useRef<HTMLDivElement>(null);
