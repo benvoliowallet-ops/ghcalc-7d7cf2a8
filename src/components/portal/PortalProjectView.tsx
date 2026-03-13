@@ -90,7 +90,7 @@ export function PortalProjectView({ projectData }: PortalProjectViewProps) {
 
   const totalArea = zoneCalcs.reduce((s, c) => s + (c?.area ?? 0), 0);
   const totalFlowMlH = zoneCalcs.reduce((s, c) => s + (c?.zoneFlow ?? 0), 0);
-  const etnaCapacity = calcETNACapacity(totalFlowMlH);
+  const etnaCapacity = totalFlowMlH / 1e6;
   const totalNozzles = zoneCalcs.reduce((s, c) => s + (c?.numNozzles ?? 0), 0);
 
   return (
