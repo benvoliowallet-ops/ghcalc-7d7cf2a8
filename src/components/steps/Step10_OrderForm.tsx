@@ -9,12 +9,18 @@ import { fmtN, fmtE } from '../../utils/calculations';
 import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
 import { markProjectCompleted } from '../../hooks/useProjectChanges';
 import { buildBomLines } from '../../utils/buildBom';
-import { useNormistChecker } from '../../hooks/useSupabaseItems';
+import { STOCK_ITEMS, LEGACY_CODE_MAP } from '../../data/stockItems';
 
 export function Step10_OrderForm() {
   const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, uvSystemNazli, cad, ropeOverrides, savedProjects, setSavedProjects } = useProjectStore();
   const { currentUser } = useAuthStore();
-  const { isNormist } = useNormistChecker();
+  const normistCodes = new Set(STOCK_ITEMS.filter(s => s.warehouse === 'NORMIST').map(s => s.code));
+  const isNormist = (code: string) => {
+    if (code === 'NORMIST') return true;
+    if (code.startsWith('NORMIST_PUMP_')) return true;
+    const resolved = LEGACY_CODE_MAP[code] ?? code;
+    return normistCodes.has(resolved);
+  };
   const [completingProject, setCompletingProject] = useState(false);
   const [completedSuccess, setCompletedSuccess] = useState(false);
 
