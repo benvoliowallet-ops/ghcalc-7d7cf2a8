@@ -44,7 +44,7 @@ export function Step10_OrderForm() {
   // Transform BomLine → OrderLine (suppress price for NORMIST lines)
   type OrderLine = { code: string; name: string; qty: number; unit: string; priceUnit: number; total: number; isNormistRef: boolean };
   const processedLines: OrderLine[] = bomLines.map(l => {
-    const isNormistRef = isNormist(l.code) && l.code !== 'NORMIST';
+    const isNormistRef = l.code === 'NORMIST' || l.code.startsWith('NORMIST_PUMP_') || !!STOCK_ITEMS.find(s => s.code === l.code && s.warehouse === 'NORMIST');
     const priceUnit = isNormistRef ? 0 : l.price;
     return { code: l.code, name: l.name, qty: l.qty, unit: l.unit, priceUnit, total: l.qty * priceUnit, isNormistRef };
   });
@@ -87,7 +87,7 @@ export function Step10_OrderForm() {
   const exportOrderOberon = async () => {
     setOberonExporting(true);
     try {
-  const attiLines = processedBomLines.filter((l) => !l.code.startsWith('NORMIST_PUMP_') && STOCK_ITEMS.find(s => s.code === l.code)?.warehouse !== 'NORMIST');
+  const attiLines = processedLines.filter(l => !l.isNormistRef);
       await exportToOberon(prepareBomForOberon(attiLines.map(l => ({ code: l.code, name: l.name, qty: l.qty }))), project.quoteNumber);
     } catch (e) { alert(String(e)); } finally { setOberonExporting(false); }
   };
