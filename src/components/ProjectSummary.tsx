@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { MapPin, Printer, Download, Pencil, Check, Share2, FileText, Loader2, Copy, X, RefreshCw, Plus, CheckSquare } from 'lucide-react';
 import { pdf } from '@react-pdf/renderer';
 import { useProjectStore } from '../store/projectStore';
-import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes, getTransportCost, getPMCost } from '../utils/calculations';
+import { PUMP_TABLE, selectMaxivarem, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes, getTransportCost, getPMCost } from '../utils/calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../data/stockItems';
 import { buildBomLines } from '../utils/buildBom';
 import { useNormistChecker } from '../hooks/useSupabaseItems';
@@ -39,7 +39,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
 
   const totalArea = zoneCalcs.reduce((s, c) => s + (c?.area ?? 0), 0);
   const totalFlowMlH = zoneCalcs.reduce((s, c) => s + (c?.zoneFlow ?? 0), 0);
-  const etnaCapacity = calcETNACapacity(totalFlowMlH);
+  const etnaCapacity = totalFlowMlH / 1e6;
   const totalNozzles = zoneCalcs.reduce((s, c) => s + (c?.numNozzles ?? 0), 0);
 
   const roughCost = normistPrice + getStockPrice('SNFG.00001') +

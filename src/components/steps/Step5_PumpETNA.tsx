@@ -19,10 +19,12 @@ export function Step5_PumpETNA() {
   } = useProjectStore();
 
   const totalFlowMlH = zoneCalcs.reduce((sum, c) => sum + (c?.zoneFlow ?? 0), 0);
-  const etnaCapacity = calcETNACapacity(totalFlowMlH);
+  const totalFlowM1H = totalFlowMlH / 1e6;
+  const etnaResult = calcETNACapacity(totalFlowM1H);
+  const etnaCapacity = totalFlowM1H;
   const osmoticSS = globalParams.osmoticWater;
 
-  const maxivaremInfo = selectMaxivarem(etnaCapacity, osmoticSS);
+  const maxivaremInfo = selectMaxivarem(totalFlowM1H, osmoticSS);
   const etnaLabel = osmoticSS
     ? 'HF KI-ST 32/2-30 SS variant (snfg.001.0021)'
     : 'HF KI-ST 32/2-30 ŠTANDARD (snfg.001.0021)';

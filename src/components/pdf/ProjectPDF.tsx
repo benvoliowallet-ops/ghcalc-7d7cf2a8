@@ -1,6 +1,6 @@
 import { Document, Page, Text, View, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import type { ProjectState } from '../../types';
-import { PUMP_TABLE, fmtN, calcETNACapacity, NOZZLE_BY_ORIFICE } from '../../utils/calculations';
+import { PUMP_TABLE, fmtN, NOZZLE_BY_ORIFICE } from '../../utils/calculations';
 import { getPipe10mmForSpacing } from '../../data/stockItems';
 
 Font.register({
@@ -214,7 +214,7 @@ export function ProjectPDF({ snapshot, quoteNumber, customerName, projectAddress
 
   const totalArea = zoneCalcs.reduce((s, c) => s + (c?.area ?? 0), 0);
   const totalFlowMlH = zoneCalcs.reduce((s, c) => s + (c?.zoneFlow ?? 0), 0);
-  const etnaCapacity = calcETNACapacity(totalFlowMlH);
+  const etnaCapacity = totalFlowMlH / 1e6;
   const totalNozzles = zoneCalcs.reduce((s, c) => s + (c?.numNozzles ?? 0), 0);
 
   const today = new Date().toLocaleDateString('sk-SK', { day: '2-digit', month: '2-digit', year: 'numeric' });

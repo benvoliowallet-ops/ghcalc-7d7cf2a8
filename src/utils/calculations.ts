@@ -204,28 +204,33 @@ export function selectPump(zoneFlowMlH: number): PumpOption | null {
   return PUMP_TABLE.find(p => p.maxFlow >= lpm) ?? null;
 }
 
-export function calcETNACapacity(totalFlowMlH: number): number {
-  return (totalFlowMlH / 1000 / 1000) * 1.5;
+export const ETNA_MAX_FLOW = 35;
+
+export function calcETNACapacity(totalFlowM1H: number): {
+  pumpCode: string; pumpName: string; capacityWarning: boolean;
+} {
+  if (totalFlowM1H <= 15) {
+    return { pumpCode: '0881490000B', pumpName: 'HF KI-ST 16/3-30 (15m³/h)', capacityWarning: false };
+  } else if (totalFlowM1H <= 25) {
+    return { pumpCode: 'snfg.001.0021', pumpName: 'HF KI-ST 32/2-30 (25m³/h)', capacityWarning: false };
+  } else if (totalFlowM1H <= 35) {
+    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35m³/h)', capacityWarning: false };
+  } else {
+    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35m³/h)', capacityWarning: true };
+  }
 }
 
 export function selectMaxivarem(
-  etnaCapacityM3h: number,
-  osmoticSS: boolean
-): { code: string; label: string; sizeL: 300 | 500 | 750; price: number } {
-  const sizeL: 300 | 500 | 750 =
-    etnaCapacityM3h <= 15 ? 300 : etnaCapacityM3h <= 25 ? 500 : 750;
-  const variant = osmoticSS ? 'SS' : 'STANDARD';
-  const code = `MAXTRA_${sizeL}_${variant}`;
-  const label = `MAXIVAREM ${osmoticSS ? 'SS' : 'ŠTANDARD'} (${sizeL}L)`;
-  const PRICES: Record<string, number> = {
-    MAXTRA_300_STANDARD: 305.02,
-    MAXTRA_300_SS: 380.0,
-    MAXTRA_500_STANDARD: 500.0,
-    MAXTRA_500_SS: 600.0,
-    MAXTRA_750_STANDARD: 700.0,
-    MAXTRA_750_SS: 850.0,
-  };
-  return { code, label, sizeL, price: PRICES[code] ?? 0 };
+  etnaCapacityM1H: number,
+  osmoticWater: boolean
+): { code: string; label: string; price: number } {
+  if (etnaCapacityM1H <= 15) {
+    return { code: '4271051', label: 'MAXIVAREM LS 300V PN10', price: 305.02 };
+  } else if (etnaCapacityM1H <= 25) {
+    return { code: '4271052', label: 'MAXIVAREM LS 500V PN10', price: 585.37 };
+  } else {
+    return { code: '4271053', label: 'MAXIVAREM LS 750V PN10', price: 1432.93 };
+  }
 }
 
 export function getTransportCost(country: 'SK' | 'CZ' | 'HU'): number {

@@ -1,7 +1,7 @@
 import { MapPin, Droplets, Gauge, Layers } from 'lucide-react';
 import sanfogLogoColor from '../../assets/sanfog-logo-color.svg';
 import type { ProjectState, ZoneCalc, ZoneParams } from '../../types';
-import { PUMP_TABLE, fmtN, calcETNACapacity, NOZZLE_BY_ORIFICE } from '../../utils/calculations';
+import { PUMP_TABLE, fmtN, NOZZLE_BY_ORIFICE } from '../../utils/calculations';
 import { getPipe10mmForSpacing } from '../../data/stockItems';
 
 interface PortalProjectData {
@@ -90,7 +90,7 @@ export function PortalProjectView({ projectData }: PortalProjectViewProps) {
 
   const totalArea = zoneCalcs.reduce((s, c) => s + (c?.area ?? 0), 0);
   const totalFlowMlH = zoneCalcs.reduce((s, c) => s + (c?.zoneFlow ?? 0), 0);
-  const etnaCapacity = calcETNACapacity(totalFlowMlH);
+  const etnaCapacity = totalFlowMlH / 1e6;
   const totalNozzles = zoneCalcs.reduce((s, c) => s + (c?.numNozzles ?? 0), 0);
 
   return (
