@@ -122,7 +122,7 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
     add(sec, 'snfg.05.0002', 'Dilatácia hydraulická DN25 2m [SS]', calc.numDilations, 'ks', getStockPrice('snfg.05.0002'));
     add(sec, 'snfg.05.0014', 'Zostava vyprázdňovania 0-90bar', calc.numDrainAssemblies, 'ks', getStockPrice('snfg.05.0014'));
     if (calc.numDrainAssemblies > 0) {
-      add(sec, 'snfg.004.002', 'Ihlový ventil G1/2F', calc.numDrainAssemblies, 'ks', getStockPrice('snfg.004.002'));
+      add(sec, 'snfg.004.002', '1/2" BSP vnútorný závit, vysokotlakový ihlový ventil SS 304', calc.numDrainAssemblies, 'ks', getStockPrice('snfg.004.002'));
     }
 
     // Prepoj na napájacie potrubie - rovný alebo T-kus
