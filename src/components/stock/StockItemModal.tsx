@@ -61,7 +61,7 @@ export function StockItemModal({ mode, item, allItems, onClose }: Props) {
     } else {
       const result = await updateItem(
         item!.code,
-        { nameSk: nameSk.trim(), nameEn: nameEn.trim(), unit: unit.trim(), unitSk: unitSk.trim(), price: priceNum, warehouse },
+        { nameSk: nameSk.trim(), nameEn: nameEn.trim(), unit: unit.trim(), unitSk: unitSk.trim(), price: priceNum, warehouse, bomCondition: bomCondition.trim() || undefined, bomQtyLogic: bomQtyLogic.trim() || undefined },
         item!
       );
       if (!result.ok) { setSaving(false); return setError(result.error ?? 'Chyba'); }
