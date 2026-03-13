@@ -22,6 +22,8 @@ export function StockItemModal({ mode, item, allItems, onClose }: Props) {
   const [unitSk, setUnitSk] = useState(item?.unitSk ?? 'ks');
   const [price, setPrice] = useState(item?.price?.toString() ?? '');
   const [warehouse, setWarehouse] = useState<'ATTI' | 'NORMIST'>(item?.warehouse ?? 'ATTI');
+  const [bomCondition, setBomCondition] = useState(item?.bomCondition ?? '');
+  const [bomQtyLogic, setBomQtyLogic] = useState(item?.bomQtyLogic ?? '');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
