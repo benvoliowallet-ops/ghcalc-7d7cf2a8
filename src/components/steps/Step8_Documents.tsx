@@ -4,15 +4,19 @@ import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { PUMP_TABLE, selectMaxivarem, getTransportCost, getPMCost, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from '../../utils/calculations';
-import { getPipe10mmForSpacing, getStockPrice } from '../../data/stockItems';
+import { getPipe10mmForSpacing, getStockPrice, STOCK_ITEMS, LEGACY_CODE_MAP } from '../../data/stockItems';
 import { buildBomLines } from '../../utils/buildBom';
-import { STOCK_ITEMS } from '../../data/stockItems';
 import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
 
 export function Step8_Documents() {
   const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, uvSystemNazli, cad, ropeOverrides, preOrderState } = useProjectStore();
   const normistCodes = new Set(STOCK_ITEMS.filter(s => s.warehouse === 'NORMIST').map(s => s.code));
-  const isNormist = (code: string) => normistCodes.has(code);
+  // Resolve legacy codes first, then check warehouse; also treat 'NORMIST' (whole system line) as NORMIST
+  const isNormist = (code: string) => {
+    if (code === 'NORMIST') return true;
+    const resolved = LEGACY_CODE_MAP[code] ?? code;
+    return normistCodes.has(resolved);
+  };
   const bomRef = useRef<HTMLDivElement>(null);
   const orderRef = useRef<HTMLDivElement>(null);
 
