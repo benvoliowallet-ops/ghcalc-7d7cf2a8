@@ -72,6 +72,33 @@ export function useLoadProjects() {
 export function useProjectSaver() {
   const { currentUser } = useAuthStore();
   const setSaveStatus = useProjectStore((s) => s.setSaveStatus);
+  const lastSavedRef = useRef<ProjectState | null>(null);
+
+  function computeDiff(prev: ProjectState, next: ProjectState): string[] {
+    const changes: string[] = [];
+    const p = prev.project;
+    const n = next.project;
+    if (p.customerName !== n.customerName)
+      changes.push(`Zákazník: ${p.customerName} → ${n.customerName}`);
+    if (p.projectAddress !== n.projectAddress)
+      changes.push(`Adresa: ${p.projectAddress} → ${n.projectAddress}`);
+    if (p.country !== n.country)
+      changes.push(`Krajina: ${p.country} → ${n.country}`);
+    if ((prev.zones?.length ?? 0) !== (next.zones?.length ?? 0))
+      changes.push(`Zóny: ${prev.zones?.length} → ${next.zones?.length}`);
+    if (prev.currentStep !== next.currentStep)
+      changes.push(`Krok: ${prev.currentStep} → ${next.currentStep}`);
+    if (JSON.stringify(prev.zones) !== JSON.stringify(next.zones))
+      changes.push("Zmenené parametre zón");
+    if (JSON.stringify(prev.globalParams) !== JSON.stringify(next.globalParams))
+      changes.push("Zmenené globálne parametre");
+    if (JSON.stringify(prev.costInputs) !== JSON.stringify(next.costInputs))
+      changes.push("Zmenené náklady");
+    if (prev.normistPrice !== next.normistPrice)
+      changes.push(`Cena NORMIST: ${prev.normistPrice} → ${next.normistPrice}`);
+    return changes;
+  }
+
 
   const save = useCallback(
     async (snapshot: ProjectState) => {
@@ -100,6 +127,22 @@ export function useProjectSaver() {
       } else {
         setSaveStatus('saved');
         setTimeout(() => setSaveStatus('idle'), 3000);
+        // Record change diff
+        const prev = lastSavedRef.current;
+        lastSavedRef.current = snapshot;
+        if (prev && prev.project?.id) {
+          const diffs = computeDiff(prev, snapshot);
+          if (diffs.length > 0) {
+            supabase.from('project_changes').insert({
+              project_id: prev.project.id,
+              changed_by: currentUser?.id ?? null,
+              changed_by_email: currentUser?.email ?? 'unknown',
+              reason: diffs.join('; '),
+            }).then(({ error: chErr }) => {
+              if (chErr) console.error('[Changes] insert error:', chErr.message);
+            });
+          }
+        }
       }
     },
     [currentUser, setSaveStatus]
