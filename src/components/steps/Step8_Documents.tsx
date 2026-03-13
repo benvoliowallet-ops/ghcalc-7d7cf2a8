@@ -103,19 +103,16 @@ export function Step8_Documents() {
   };
 
   const [oberonExporting, setOberonExporting] = useState(false);
-  const exportAttiOberon = async () => {
-    setOberonExporting(true);
+  const exportAttiOberon = () => {
     try {
-      await exportToOberon(
-        prepareBomForOberon(attiLines.map((l) => ({ code: l.code, qty: l.qty }))),
+      exportToOberon(
+        prepareBomForOberon(attiLines.map((l) => ({ code: l.code, name: l.name, qty: l.qty }))),
         project.quoteNumber
       );
     } catch (e) {
       alert(String(e));
-    } finally {
-      setOberonExporting(false);
     }
-  };
+  }
 
   return (
 
