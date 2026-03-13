@@ -60,17 +60,17 @@ export function Step8_Documents() {
   const printBOM = () => {
     const w = window.open('', '_blank');
     if (!w) return;
-    w.document.write(`<html><head><title>BOM â ${project.quoteNumber}</title><style>body{font-family:Arial;font-size:11px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:4px 6px}th{background:#f3f4f6}h2{font-size:14px;margin-top:16px}tfoot td{font-weight:bold}.rope-note{background:#f0fdf4;border-left:3px solid #16a34a;padding:6px 10px;margin:8px 0;font-size:11px}</style></head><body>`);
-    w.document.write(`<h1>BOM â ObjednÃ¡vka pre Attiho</h1><p>Ponuka: ${project.quoteNumber} | ZÃ¡kaznÃ­k: ${project.customerName}</p>`);
+    w.document.write(`<html><head><title>BOM – ${project.quoteNumber}</title><style>body{font-family:Arial;font-size:11px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:4px 6px}th{background:#f3f4f6}h2{font-size:14px;margin-top:16px}tfoot td{font-weight:bold}.rope-note{background:#f0fdf4;border-left:3px solid #16a34a;padding:6px 10px;margin:8px 0;font-size:11px}</style></head><body>`);
+    w.document.write(`<h1>BOM – Objednávka pre Attiho</h1><p>Ponuka: ${project.quoteNumber} | Zákazník: ${project.customerName}</p>`);
     const attiSections = [...new Set(attiLines.map((l) => l.section))];
     attiSections.forEach((sec) => {
       const lines = attiLines.filter((l) => l.section === sec);
       const secTotal = lines.reduce((s, l) => s + l.qty * l.price, 0);
-      w.document.write(`<h2>${sec}</h2><table><thead><tr><th>KÃ³d</th><th>Popis</th><th>Qty</th><th>MJ</th><th>Cena/MJ</th><th>Celkom</th></tr></thead><tbody>`);
-      lines.forEach((l) => w.document.write(`<tr><td>${l.code}</td><td>${l.name}</td><td>${fmtN(l.qty, 1)}</td><td>${l.unit}</td><td>${fmtN(l.price, 2)} â¬</td><td>${fmtN(l.qty * l.price, 2)} â¬</td></tr>`));
-      w.document.write(`</tbody><tfoot><tr><td colspan="5">SPOLU ${sec}</td><td>${fmtN(secTotal, 2)} â¬</td></tr></tfoot></table>`);
+      w.document.write(`<h2>${sec}</h2><table><thead><tr><th>Kód</th><th>Popis</th><th>Qty</th><th>MJ</th><th>Cena/MJ</th><th>Celkom</th></tr></thead><tbody>`);
+      lines.forEach((l) => w.document.write(`<tr><td>${l.code}</td><td>${l.name}</td><td>${fmtN(l.qty, 1)}</td><td>${l.unit}</td><td>${fmtN(l.price, 2)} €</td><td>${fmtN(l.qty * l.price, 2)} €</td></tr>`));
+      w.document.write(`</tbody><tfoot><tr><td colspan="5">SPOLU ${sec}</td><td>${fmtN(secTotal, 2)} €</td></tr></tfoot></table>`);
     });
-    w.document.write(`<div class="rope-note"><strong>Lano celkom (zaokrÃºhlenÃ© nahor na 500 m):</strong> ${fmtN(ropeCeiled, 0)} m = ${ropeSpools} Ã cievka 500 m</div>`);
+    w.document.write(`<div class="rope-note"><strong>Lano celkom (zaokrúhlené nahor na 500 m):</strong> ${fmtN(ropeCeiled, 0)} m = ${ropeSpools} × cievka 500 m</div>`);
     w.document.write(`<h2>TOTAL: ${fmtE(attiLines.reduce((s, l) => s + l.qty * l.price, 0))}</h2></body></html>`);
     w.document.close(); w.print();
   };
@@ -78,8 +78,8 @@ export function Step8_Documents() {
   const printOrderNazli = () => {
     const w = window.open('', '_blank');
     if (!w) return;
-    w.document.write(`<html><head><title>Order NAZLI â ${project.quoteNumber}</title><style>body{font-family:Arial;font-size:11px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:4px 6px}th{background:#1e3a5f;color:#fff}</style></head><body>`);
-    w.document.write(`<h1>ORDER FORM â NOR ELEKTRONIK, Istanbul</h1><table style="margin-bottom:12px"><tr><td><b>SHIPPER:</b> Sanfog s.r.o.</td><td><b>CUSTOMER:</b> NOR ELEKTRONIK</td></tr><tr><td><b>DATE:</b> ${project.quoteDate}</td><td><b>REF:</b> ${project.quoteNumber}</td></tr></table>`);
+    w.document.write(`<html><head><title>Order NAZLI – ${project.quoteNumber}</title><style>body{font-family:Arial;font-size:11px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:4px 6px}th{background:#1e3a5f;color:#fff}</style></head><body>`);
+    w.document.write(`<h1>ORDER FORM – NOR ELEKTRONIK, Istanbul</h1><table style="margin-bottom:12px"><tr><td><b>SHIPPER:</b> Sanfog s.r.o.</td><td><b>CUSTOMER:</b> NOR ELEKTRONIK</td></tr><tr><td><b>DATE:</b> ${project.quoteDate}</td><td><b>REF:</b> ${project.quoteNumber}</td></tr></table>`);
     w.document.write('<table><thead><tr><th>#</th><th>CODE</th><th>DESCRIPTION</th><th>QTY</th><th>UNIT</th></tr></thead><tbody>');
     aggregatedNazliLines.forEach((nl, i) => w.document.write(`<tr><td>${i + 1}</td><td>${nl.code.startsWith('NORMIST_PUMP_') ? '' : nl.code}</td><td>${nl.name}</td><td>${fmtN(nl.qty, 1)}</td><td>${nl.unit}</td></tr>`));
     w.document.write('</tbody></table></body></html>'); w.document.close(); w.print();
@@ -94,8 +94,8 @@ export function Step8_Documents() {
   };
 
   const exportAttiBOMXLSX = () => {
-    const rows = attiLines.map((l, i) => ({ '#': i + 1, Sekcia: l.section, KÃ³d: l.code, Popis: l.name, Qty: l.qty, MJ: l.unit, 'Cena/MJ': l.price, Celkom: +(l.qty * l.price).toFixed(2) }));
-    rows.push({ '#': rows.length + 1, Sekcia: 'Lano', KÃ³d: 'INFO', Popis: `Lano zaokrÃºhlenÃ© nahor na 500 m: ${fmtN(ropeCeiled, 0)} m = ${ropeSpools} Ã cievka 500 m`, Qty: ropeCeiled, MJ: 'm', 'Cena/MJ': 0, Celkom: 0 });
+    const rows = attiLines.map((l, i) => ({ '#': i + 1, Sekcia: l.section, Kód: l.code, Popis: l.name, Qty: l.qty, MJ: l.unit, 'Cena/MJ': l.price, Celkom: +(l.qty * l.price).toFixed(2) }));
+    rows.push({ '#': rows.length + 1, Sekcia: 'Lano', Kód: 'INFO', Popis: `Lano zaokrúhlené nahor na 500 m: ${fmtN(ropeCeiled, 0)} m = ${ropeSpools} × cievka 500 m`, Qty: ropeCeiled, MJ: 'm', 'Cena/MJ': 0, Celkom: 0 });
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'BOM Atti');
@@ -116,22 +116,22 @@ export function Step8_Documents() {
 
   return (
 
-    <StepLayout stepNum={8} title="Generovanie vÃ½stupnÃ½ch dokumentov" subtitle="8A â Order Form pre NAZLI  Â·  8B â BOM pre Attiho (OBERON)" canContinue={true}>
+    <StepLayout stepNum={8} title="Generovanie výstupných dokumentov" subtitle="8A – Order Form pre NAZLI  ·  8B – BOM pre Attiho (OBERON)" canContinue={true}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card variant="info" title="8A â Order Form pre NAZLI (NORMIST)">
-          <p className="text-sm text-muted-foreground mb-4">Proforma faktÃºra pre NOR ELEKTRONIK Istanbul ({aggregatedNazliLines.length} kÃ³dov).</p>
+        <Card variant="info" title="8A — Order Form pre NAZLI (NORMIST)">
+          <p className="text-sm text-muted-foreground mb-4">Proforma faktúra pre NOR ELEKTRONIK Istanbul ({aggregatedNazliLines.length} kódov).</p>
           <div className="flex gap-2 flex-wrap">
-            <Button variant="primary" onClick={printOrderNazli}><PrintIcon /> TlaÄiÅ¥ â Order Form NAZLI</Button>
+            <Button variant="primary" onClick={printOrderNazli}><PrintIcon /> Tlačiť – Order Form NAZLI</Button>
             <Button variant="secondary" onClick={exportNazliXLSX}><DownloadIcon /> Export XLSX</Button>
           </div>
         </Card>
-        <Card title="8B â BOM pre Attiho (OBERON)">
-          <p className="text-xs text-amber-800 bg-amber-50 border-l-2 border-amber-400 p-2 pl-3 rounded-r mb-3">InternÃ½ dokument â obsahuje poloÅ¾ky bez NORMIST ({attiLines.length} riadkov)</p>
+        <Card title="8B — BOM pre Attiho (OBERON)">
+          <p className="text-xs text-amber-800 bg-amber-50 border-l-2 border-amber-400 p-2 pl-3 rounded-r mb-3">Interný dokument – obsahuje položky bez NORMIST ({attiLines.length} riadkov)</p>
           <div className="flex gap-2 flex-wrap">
-            <Button variant="primary" onClick={printBOM}><PrintIcon /> TlaÄiÅ¥ â BOM pre Attiho</Button>
+            <Button variant="primary" onClick={printBOM}><PrintIcon /> Tlačiť – BOM pre Attiho</Button>
             <Button variant="secondary" onClick={exportAttiBOMXLSX}><DownloadIcon /> Export XLSX</Button>
             <Button variant="secondary" onClick={exportAttiOberon} disabled={oberonExporting}>
-              <DownloadIcon /> {oberonExporting ? 'Exportujemâ¦' : 'Export do Oberon'}
+              <DownloadIcon /> {oberonExporting ? 'Exportujem…' : 'Export do Oberon'}
             </Button>
           </div>
         </Card>
@@ -140,13 +140,13 @@ export function Step8_Documents() {
 
       {!cadHasPipes && (
         <div className="mb-4 p-3 bg-amber-50 border border-amber-200 border-l-4 border-l-amber-400 rounded-r-lg text-sm text-amber-800">
-          <strong>DrÅ¾iaky neboli vypoÄÃ­tanÃ©</strong> â CAD vÃ½kres (krok 3G) neobsahuje Å¾iadne potrubia.
+          <strong>Držiaky neboli vypočítané</strong> – CAD výkres (krok 3G) neobsahuje žiadne potrubia.
         </div>
       )}
 
       <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         <div className="p-4 border-b border-border flex items-center justify-between">
-          <h3 className="font-bold text-foreground">NÃ¡hÄ¾ad BOM</h3>
+          <h3 className="font-bold text-foreground">Náhľad BOM</h3>
           <div className="text-sm text-muted-foreground flex gap-4">
             <span>Riadkov: <strong>{processedBomLines.length}</strong></span>
             <span className="text-primary">NORMIST: <strong>{normistLines.length}</strong></span>
@@ -158,13 +158,13 @@ export function Step8_Documents() {
             <thead>
               <tr className="bg-muted text-muted-foreground">
                 <th className="text-left p-3 w-1/4">Sekcia</th>
-                <th className="text-left p-3">KÃ³d</th>
+                <th className="text-left p-3">Kód</th>
                 <th className="text-left p-3">Popis</th>
                 <th className="text-right p-3">Qty</th>
                 <th className="text-right p-3">MJ</th>
                 <th className="text-right p-3">Cena/MJ</th>
                 <th className="text-right p-3">Celkom</th>
-                <th className="text-center p-3">DodÃ¡vateÄ¾</th>
+                <th className="text-center p-3">Dodávateľ</th>
               </tr>
             </thead>
             <tbody>
@@ -177,8 +177,8 @@ export function Step8_Documents() {
                     <td className="p-2 text-foreground">{line.name}</td>
                     <td className="p-2 text-right font-mono">{fmtN(line.qty, 1)}</td>
                     <td className="p-2 text-right text-muted-foreground">{line.unit}</td>
-                    <td className="p-2 text-right text-muted-foreground">{isNazliRef ? 'â' : `${fmtN(line.price, 2)} â¬`}</td>
-                    <td className="p-2 text-right font-semibold text-muted-foreground">{isNazliRef ? 'â' : `${fmtN(line.qty * line.price, 2)} â¬`}</td>
+                    <td className="p-2 text-right text-muted-foreground">{isNazliRef ? '—' : `${fmtN(line.price, 2)} €`}</td>
+                    <td className="p-2 text-right font-semibold text-muted-foreground">{isNazliRef ? '—' : `${fmtN(line.qty * line.price, 2)} €`}</td>
                     <td className="p-2 text-center">
                       {isNormist(line.code)
                         ? <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded font-semibold">NORMIST</span>
@@ -191,7 +191,7 @@ export function Step8_Documents() {
             </tbody>
             <tfoot>
               <tr className="bg-teal/10 border-t-2 border-teal/30">
-                <td colSpan={7} className="p-3 font-bold text-foreground text-sm">TOTAL NÃKLADY</td>
+                <td colSpan={7} className="p-3 font-bold text-foreground text-sm">TOTAL NÁKLADY</td>
                 <td className="p-3 text-right font-bold text-teal text-base">{fmtE(bomTotal)}</td>
               </tr>
             </tfoot>
