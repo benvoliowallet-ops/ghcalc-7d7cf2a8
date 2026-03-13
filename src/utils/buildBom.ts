@@ -1,5 +1,5 @@
 import type { Project, GlobalParams, ZoneParams, ZoneCalc, CostInputs, CADDrawing } from '../types';
-import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, getTransportCost, getPMCost, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from './calculations';
+import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from './calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../data/stockItems';
 
 export interface BomSnapshot {
@@ -38,10 +38,12 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
   }
 
   const totalFlowMlH = zoneCalcs.reduce((sum, c) => sum + (c?.zoneFlow ?? 0), 0);
-  const etnaCapacity = calcETNACapacity(totalFlowMlH);
-  const maxivaremInfo = selectMaxivarem(etnaCapacity, globalParams.osmoticWater);
-  const transpCost = getTransportCost(project.country);
-  const pmCost = getPMCost(costInputs.projectArea);
+  const totalFlowM1H = totalFlowMlH / 1000 / 1000;
+  const etnaResult = calcETNACapacity(totalFlowM1H);
+  if (etnaResult.capacityWarning) {
+    console.warn(`[BOM] ETNA capacity warning: designFlow ${totalFlowM1H.toFixed(1)} m³/h exceeds max ETNA capacity (35 m³/h)`);
+  }
+  const maxivaremInfo = selectMaxivarem(totalFlowM1H, globalParams.osmoticWater);
   const osmoticSS = globalParams.osmoticWater;
   const N = globalParams.numberOfZones;
   const { bracketBOM } = detectConcurrentPipes(cad);
@@ -50,7 +52,7 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
   // ── System / Station ────────────────────────────────────────────────────────
   add('Balné', 'SNFG.00001', 'Balné', 1, 'ks', getStockPrice('SNFG.00001'));
   if (normistPrice > 0) add('FOGSYSTEM NORMIST', 'NORMIST', `FOGSYSTEM NORMIST (${osmoticSS ? 'SS' : 'STD'})`, 1, 'ks', normistPrice);
-  add('ETNA', 'snfg.001.0021', `ETNA HF KI-ST 32/2-30 ${osmoticSS ? 'SS' : 'ŠTANDARD'}`, 1, 'ks', getStockPrice('snfg.001.0021'));
+  add('ETNA', etnaResult.pumpCode, `${etnaResult.pumpName} ${osmoticSS ? '[SS]' : '[ŠTANDARD]'}`, 1, 'ks', getStockPrice(etnaResult.pumpCode));
   add('ETNA', maxivaremInfo.code, maxivaremInfo.label, 1, 'ks', maxivaremInfo.price);
   add('ETNA', 'ETNA_ACC', 'Príslušenstvo k ETNA-NOR (≤10m)', 1, 'ks', getStockPrice('ETNA_ACC'));
   add('ETNA', 'ETNA_VODA', 'Vodoinstalačný materiál ETNA-NOR', 1, 'ks', getStockPrice('ETNA_VODA'));
@@ -63,11 +65,13 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
   add('Čerpadlo', '204091', 'Keller Pressure Transmitter 0/160 Bar', N, 'ks', getStockPrice('204091'));
   add('Čerpadlo', '4072000024', 'Bypass ventil VRT100-100LPM@170bar', N, 'ks', getStockPrice('4072000024'));
   add('Čerpadlo', '60.0525.00', 'Poistný ventil VS220 G3/8F', N, 'ks', getStockPrice('60.0525.00'));
-  add('Čerpadlo', 'snfg.006.0001', 'Prepoj čerpadlo → hl. vedenie DN25 3m [SS]', N, 'ks', getStockPrice('snfg.006.0001'));
+  add('Čerpadlo', 'snfg.06.0001', 'Prepoj čerpadlo → hl. vedenie DN25 3m [SS]', 1, 'ks', getStockPrice('snfg.06.0001'));
 
   // ── System extras ────────────────────────────────────────────────────────────
   add('Systém', 'TELTONIKA_GSM', 'Teltonika GSM brána', 1, 'ks', getStockPrice('TELTONIKA_GSM'));
   add('Systém', 'BPONG-005-P2PWE', 'Náhradný rukávový filter 5 mic', 1, 'ks', getStockPrice('BPONG-005-P2PWE'));
+  add('Systém', 'NOR EGE', '1¼" EGE 7 nízkotlaková hadica', N * 5, 'm', getStockPrice('NOR EGE'));
+  add('Systém', 'NOR 204090', 'Keller snímač tlaku 10bar', N, 'ks', getStockPrice('NOR 204090'));
   add('Systém', 'NORMIST_DANFOSS', 'DANFOSS Drive', 1, 'ks', getStockPrice('NORMIST_DANFOSS'));
   if (uvSystemCode) add('Systém', uvSystemCode, 'UV System', 1, 'ks', getStockPrice(uvSystemCode));
   if (ssFilter30) add('Systém', 'NORMIST_30SS_FILTER', 'SS Filter 30" Unit', 1, 'ks', getStockPrice('NORMIST_30SS_FILTER'));
@@ -90,9 +94,18 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
     const pipe10mm = getPipe10mmForSpacing(zone.nozzleSpacing);
     add(sec, pipe10mm.code, pipe10mm.name, calc.numPipes10mmTotal, 'ks', pipe10mm.price);
 
-    add(sec, 'NORMIST 0311002SS-180', 'Fitting SS 180°', calc.numFitting180, 'ks', getStockPrice('NORMIST 0311002SS-180'));
-    add(sec, 'NORMIST 0311008SS', 'End plug 10mm SS', calc.numEndPlug, 'ks', getStockPrice('NORMIST 0311008SS'));
-    add(sec, 'NORMIST 0311001SS', 'Drziak trysky 1 tryska SS', calc.numHolders - calc.numFitting180, 'ks', getStockPrice('NORMIST 0311001SS'));
+    if (osmoticSS) {
+      add(sec, 'NOR 0311002SS-180', 'Fitting SS 180°', calc.numPipes10mmTotal + 1, 'ks', getStockPrice('NOR 0311002SS-180'));
+    } else {
+      add(sec, 'NOR 0311002-180', 'Fitting Ni 180°', calc.numPipes10mmTotal + 1, 'ks', getStockPrice('NOR 0311002-180'));
+    }
+
+    const endPlugQty = (zone.connectionType === 'T-kus') ? 2 : 1;
+    if (osmoticSS) {
+      add(sec, 'NOR 0311008SS', 'End plug 10mm SS', endPlugQty, 'ks', getStockPrice('NOR 0311008SS'));
+    } else {
+      add(sec, '0311008', 'End plug 10mm Ni', endPlugQty, 'ks', getStockPrice('0311008'));
+    }
 
     const ropeCode = globalParams.steelRope === 'SS_NEREZ' ? 'SVX_SS_NEREZ' : 'SVX 201143';
     const ropeName = globalParams.steelRope === 'SS_NEREZ' ? 'Nerezové lano 3mm' : 'Oceľové lano 3mm';
@@ -109,7 +122,18 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
     add(sec, 'snfg.05.0002', 'Dilatácia hydraulická DN25 2m [SS]', calc.numDilations, 'ks', getStockPrice('snfg.05.0002'));
     add(sec, 'snfg.05.0014', 'Zostava vyprázdňovania 0-90bar', calc.numDrainAssemblies, 'ks', getStockPrice('snfg.05.0014'));
     add(sec, 'MVVMVGG1.2FG1.2FAK', 'Ventil ihlový G1/2F [SS]', calc.numNeedleValves, 'ks', getStockPrice('MVVMVGG1.2FG1.2FAK'));
-    add(sec, 'MVEMKCS2X1PVCW', 'CYSY 2×1 PVC Biely', Math.ceil(calc.cysyLength), 'm', getStockPrice('MVEMKCS2X1PVCW'));
+
+    // Prepoj na napájacie potrubie - rovný alebo T-kus
+    if (zone.connectionType === 'T-kus') {
+      add(sec, '0013910012.02', 'Prepoj hl. vedenie → T-kus (compressed)', 1, 'ks', getStockPrice('0013910012.02'));
+    } else {
+      add(sec, '0013910012.01', 'Prepoj hl. vedenie → rovný spoj (compressed)', 1, 'ks', getStockPrice('0013910012.01'));
+    }
+    // CYSY kábel - nahradzuje MVEMKCS2X1PVCW
+    if (zone.drainMagnet) {
+      add(sec, 'KOH000000606', 'Kábel H05VV-F 2x1 PVC biely', Math.ceil(calc.cysyLength), 'm', getStockPrice('KOH000000606'));
+    }
+
     add(sec, 'EKR000001481', 'Rozbočovacia krabica A1', calc.numJunctionBoxes, 'ks', getStockPrice('EKR000001481'));
     add(sec, 'ESV000001630', 'WAGO svorky 221-413', calc.numWago, 'ks', getStockPrice('ESV000001630'));
 
@@ -147,9 +171,22 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
   if (dietsCost > 0) add('Montáž', 'SANFOG_DIETA', 'Diéty', dietsCost / dietaRate, 'dní', dietaRate);
   if (accommodationCost > 0) add('Montáž', 'SANFOG_UBYT', 'Ubytovanie', 1, 'ks', accommodationCost);
   if (salesTripsCost > 0) add('Doprava', 'SANFOG_DOPRAVA', 'Doprava výjazdy', salesTripsCost / dopravaRate, 'výjazd', dopravaRate);
-  add('Doprava', 'SANFOG_PREPRAVA', `Preprava tovaru (${project.country})`, 1, 'ks', transpCost);
+
+  const prepravaCode = project.country === 'CZ' ? 'SANFOG_PREPRAVA_CZ'
+    : project.country === 'HU' ? 'SANFOG_PREPRAVA_HU'
+    : 'SANFOG_PREPRAVA_SK';
+  add('Doprava', prepravaCode, `Preprava tovaru (${project.country})`, 1, 'ks', getStockPrice(prepravaCode));
+
   add('Ostatné', 'SANFOG_PROJEKTO', 'Obhliadka + projektovanie', 1, 'ks', getStockPrice('SANFOG_PROJEKTO'));
-  add('Ostatné', 'SANFOG_PM', 'Projektový manažér', 1, 'ks', pmCost);
+
+  if (costInputs.projectArea <= 2) {
+    add('Ostatné', 'SANFOG_PM_2Ha', 'Projektový manažér ≤2Ha', 1, 'ks', getStockPrice('SANFOG_PM_2Ha'));
+  } else if (costInputs.projectArea <= 4) {
+    add('Ostatné', 'SANFOG_PM_4Ha', 'Projektový manažér ≤4Ha', 1, 'ks', getStockPrice('SANFOG_PM_4Ha'));
+  } else {
+    add('Ostatné', 'SANFOG_PM_6Ha', 'Projektový manažér >4Ha', 1, 'ks', getStockPrice('SANFOG_PM_6Ha'));
+  }
+
   add('Ostatné', 'SANFOG_MAT', 'Montážny materiál', 1, 'ks', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
   add('Ostatné', 'SANFOG_COLNICA', 'Ďalšie náklady, colnica', 1, 'ks', getStockPrice('SANFOG_COLNICA'));
 
