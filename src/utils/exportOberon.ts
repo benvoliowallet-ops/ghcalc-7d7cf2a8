@@ -39,28 +39,37 @@ export function prepareBomForOberon(
  *   B = Slovak name
  *   C, D = empty (reserved by Oberon)
  *   E = quantity
- * Downloads the file immediately.
+ * Downloads the file using Blob URL (avoids any atob/writeFile browser issues).
  */
 export function exportToOberon(rows: OberonRow[], projectName: string): void {
-  const headerRow = ['Číslo', 'Názov', '', '', 'Množstvo'];
+  const headerRow = ['\u010c\u00edslo', 'N\u00e1zov', '', '', 'Mno\u017estvo'];
   const dataRows = rows.map((r) => [r.code, r.name, '', '', r.quantity]);
 
   const ws = XLSX.utils.aoa_to_sheet([headerRow, ...dataRows]);
 
   ws['!cols'] = [
-    { wch: 28 }, // A – code
-    { wch: 50 }, // B – name SK
-    { wch: 5 },  // C – empty
-    { wch: 5 },  // D – empty
-    { wch: 12 }, // E – quantity
+    { wch: 28 },
+    { wch: 50 },
+    { wch: 5 },
+    { wch: 5 },
+    { wch: 12 },
   ];
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Data');
 
+  // Use XLSX.write + Blob to avoid any browser atob/writeFile issues
+  const wbout: ArrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([new Uint8Array(wbout)], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
   const safeName = projectName.replace(/[^a-zA-Z0-9_\-]/g, '_');
-  XLSX.writeFile(
-    wb,
-    `Oberon_${safeName}_${new Date().toISOString().slice(0, 10)}.xlsx`
-  );
+  a.download = `Oberon_${safeName}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
