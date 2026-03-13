@@ -193,10 +193,10 @@ export interface PumpOption {
 }
 
 export const PUMP_TABLE: PumpOption[] = [
-  { code: 'NORMIST_PUMP_AR50',  name: 'AR50 with Control Unit PLC TOUCH SCREEN',  maxFlow: 50,  pressure: 70 },
-  { code: 'NORMIST_PUMP_AR60',  name: 'AR60 with Control Unit PLC TOUCH SCREEN',  maxFlow: 60,  pressure: 70 },
-  { code: 'NORMIST_PUMP_AR70',  name: 'AR70 with Control Unit PLC TOUCH SCREEN',  maxFlow: 70,  pressure: 70 },
-  { code: 'NORMIST_PUMP_AR100', name: 'AR100 with Control Unit PLC TOUCH SCREEN', maxFlow: 100, pressure: 70 },
+  { code: 'NORMIST_PUMP_AR50',  name: 'AR50 with Control Unit PLC TOUCH SCREEN 11kW',  maxFlow: 50,  pressure: 70 },
+  { code: 'NORMIST_PUMP_AR60',  name: 'AR60 with Control Unit PLC TOUCH SCREEN 15kW',  maxFlow: 60,  pressure: 70 },
+  { code: 'NORMIST_PUMP_AR70',  name: 'AR70 with Control Unit PLC TOUCH SCREEN 15kW',  maxFlow: 70,  pressure: 70 },
+  { code: 'NORMIST_PUMP_AR100', name: 'AR100 with Control Unit PLC TOUCH SCREEN 22kW', maxFlow: 100, pressure: 70 },
 ];
 
 export function selectPump(zoneFlowMlH: number): PumpOption | null {
