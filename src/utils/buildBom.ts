@@ -130,7 +130,7 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
       add(sec, '0013910012.01', 'Prepoj hl. vedenie → rovný spoj (compressed)', 1, 'ks', getStockPrice('0013910012.01'));
     }
     // CYSY kábel - nahradzuje MVEMKCS2X1PVCW
-    if (zone.drainMagnet) {
+    if (zone.hasMagnet) {
       add(sec, 'KOH000000606', 'Kábel H05VV-F 2x1 PVC biely', Math.ceil(calc.cysyLength), 'm', getStockPrice('KOH000000606'));
     }
 

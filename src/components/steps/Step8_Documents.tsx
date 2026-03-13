@@ -16,8 +16,9 @@ export function Step8_Documents() {
   const orderRef = useRef<HTMLDivElement>(null);
 
   const totalFlowMlH = zoneCalcs.reduce((sum, c) => sum + (c?.zoneFlow ?? 0), 0);
-  const etnaCapacity = calcETNACapacity(totalFlowMlH);
-  const maxivaremInfo = selectMaxivarem(etnaCapacity, globalParams.osmoticWater);
+  const totalFlowM1H = totalFlowMlH / 1e6;
+  const etnaCapacity = totalFlowM1H;
+  const maxivaremInfo = selectMaxivarem(totalFlowM1H, globalParams.osmoticWater);
   const transpCost = getTransportCost(project.country);
   const pmCost = getPMCost(costInputs.projectArea);
   const osmoticSS = globalParams.osmoticWater;
