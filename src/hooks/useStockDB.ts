@@ -118,9 +118,12 @@ export function useStockMutations(reload: () => void) {
         code: item.code,
         name: item.nameSk,
         additional_text: item.nameEn,
+        name_en: item.nameEn,
         price: item.price ?? 0,
         group: item.warehouse,
         supplier: item.warehouse,
+        bom_condition: item.bomCondition ?? null,
+        bom_qty_logic: item.bomQtyLogic ?? null,
         created_by: currentUser.id,
         updated_by: currentUser.id,
       });
@@ -152,9 +155,12 @@ export function useStockMutations(reload: () => void) {
         .update({
           name: changes.nameSk,
           additional_text: changes.nameEn,
+          name_en: changes.nameEn,
           price: changes.price ?? 0,
           group: changes.warehouse,
           supplier: changes.warehouse,
+          bom_condition: changes.bomCondition ?? null,
+          bom_qty_logic: changes.bomQtyLogic ?? null,
           updated_by: currentUser.id,
         })
         .eq('code', code);

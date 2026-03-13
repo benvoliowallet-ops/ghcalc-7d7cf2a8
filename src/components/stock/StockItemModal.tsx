@@ -22,6 +22,8 @@ export function StockItemModal({ mode, item, allItems, onClose }: Props) {
   const [unitSk, setUnitSk] = useState(item?.unitSk ?? 'ks');
   const [price, setPrice] = useState(item?.price?.toString() ?? '');
   const [warehouse, setWarehouse] = useState<'ATTI' | 'NORMIST'>(item?.warehouse ?? 'ATTI');
+  const [bomCondition, setBomCondition] = useState(item?.bomCondition ?? '');
+  const [bomQtyLogic, setBomQtyLogic] = useState(item?.bomQtyLogic ?? '');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -52,12 +54,14 @@ export function StockItemModal({ mode, item, allItems, onClose }: Props) {
         unitSk: unitSk.trim() || 'ks',
         price: priceNum,
         warehouse,
+        bomCondition: bomCondition.trim() || undefined,
+        bomQtyLogic: bomQtyLogic.trim() || undefined,
       });
       if (!result.ok) { setSaving(false); return setError(result.error ?? 'Chyba'); }
     } else {
       const result = await updateItem(
         item!.code,
-        { nameSk: nameSk.trim(), nameEn: nameEn.trim(), unit: unit.trim(), unitSk: unitSk.trim(), price: priceNum, warehouse },
+        { nameSk: nameSk.trim(), nameEn: nameEn.trim(), unit: unit.trim(), unitSk: unitSk.trim(), price: priceNum, warehouse, bomCondition: bomCondition.trim() || undefined, bomQtyLogic: bomQtyLogic.trim() || undefined },
         item!
       );
       if (!result.ok) { setSaving(false); return setError(result.error ?? 'Chyba'); }
@@ -131,6 +135,34 @@ export function StockItemModal({ mode, item, allItems, onClose }: Props) {
             <label className="block text-xs font-semibold text-muted-foreground mb-1">Cena (€) — prázdne = neznáma</label>
             <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} step="0.001" min="0" placeholder="0.000" className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring" />
           </div>
+
+          {currentUser?.role === 'admin' && (
+            <>
+              <div className="border-t border-border pt-4">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">BOM metadata</p>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-1">BOM podmienka <span className="font-normal">(bom_condition)</span></label>
+                    <input
+                      value={bomCondition}
+                      onChange={(e) => setBomCondition(e.target.value)}
+                      placeholder='napr. "vždy", "ak UV systém", "ak prietok ≤ 25 m³/h"'
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-1">BOM množstvo <span className="font-normal">(bom_qty_logic)</span></label>
+                    <input
+                      value={bomQtyLogic}
+                      onChange={(e) => setBomQtyLogic(e.target.value)}
+                      placeholder='napr. "1 ks vždy", "numNozzles na zónu", "celkové dni montáže"'
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
           {error && (
             <div className="px-3 py-2 bg-destructive/10 border border-destructive/30 rounded-lg text-xs text-destructive flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />{error}</div>
