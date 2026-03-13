@@ -246,7 +246,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
     setOberonExporting(true);
     try {
       await exportToOberon(
-        prepareBomForOberon(attiLines.map((l) => ({ code: l.code, qty: l.qty }))),
+        prepareBomForOberon(attiLines.map((l) => ({ code: l.code, name: l.name, qty: l.qty }))),
         project.quoteNumber
       );
     } catch (e) {
