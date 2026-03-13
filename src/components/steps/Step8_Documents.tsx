@@ -6,12 +6,13 @@ import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { PUMP_TABLE, selectMaxivarem, getTransportCost, getPMCost, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from '../../utils/calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../../data/stockItems';
 import { buildBomLines } from '../../utils/buildBom';
-import { useNormistChecker } from '../../hooks/useSupabaseItems';
+import { STOCK_ITEMS } from '../../data/stockItems';
 import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
 
 export function Step8_Documents() {
   const { project, globalParams, zones, zoneCalcs, normistPrice, costInputs, uvSystemCode, ssFilter30, uvSystemNazli, cad, ropeOverrides, preOrderState } = useProjectStore();
-  const { isNormist } = useNormistChecker();
+  const normistCodes = new Set(STOCK_ITEMS.filter(s => s.warehouse === 'NORMIST').map(s => s.code));
+  const isNormist = (code: string) => normistCodes.has(code);
   const bomRef = useRef<HTMLDivElement>(null);
   const orderRef = useRef<HTMLDivElement>(null);
 
