@@ -256,11 +256,14 @@ export type Database = {
       stock_items: {
         Row: {
           additional_text: string
+          bom_condition: string | null
+          bom_qty_logic: string | null
           code: string
           created_at: string
           created_by: string | null
           group: string
           name: string
+          name_en: string | null
           price: number
           supplier: string | null
           updated_at: string
@@ -268,11 +271,14 @@ export type Database = {
         }
         Insert: {
           additional_text?: string
+          bom_condition?: string | null
+          bom_qty_logic?: string | null
           code: string
           created_at?: string
           created_by?: string | null
           group?: string
           name: string
+          name_en?: string | null
           price?: number
           supplier?: string | null
           updated_at?: string
@@ -280,11 +286,14 @@ export type Database = {
         }
         Update: {
           additional_text?: string
+          bom_condition?: string | null
+          bom_qty_logic?: string | null
           code?: string
           created_at?: string
           created_by?: string | null
           group?: string
           name?: string
+          name_en?: string | null
           price?: number
           supplier?: string | null
           updated_at?: string
