@@ -100,7 +100,7 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
       add(sec, 'NOR 0311002-180', 'Fitting Ni 180°', calc.numPipes10mmTotal + 1, 'ks', getStockPrice('NOR 0311002-180'));
     }
 
-    const endPlugQty = (zone.connectionType === 'T-kus') ? 2 : 1;
+    const endPlugQty = (zone.connectionType === 'T-kus') ? calc.numEndPlug * 2 : calc.numEndPlug;
     if (osmoticSS) {
       add(sec, 'NOR 0311008SS', 'End plug 10mm SS', endPlugQty, 'ks', getStockPrice('NOR 0311008SS'));
     } else {
