@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useMatch } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useMatch, useParams } from 'react-router-dom';
 import { Save, RotateCcw, Loader2, Check } from 'lucide-react';
 import { useProjectStore } from './store/projectStore';
 import { useAuthStore } from './store/authStore';
