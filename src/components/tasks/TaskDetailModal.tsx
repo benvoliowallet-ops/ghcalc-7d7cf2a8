@@ -52,6 +52,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
   const canEditFull = isCreator;
   const canEditStatus = isCreator || isAssigned;
 
+  // Reset stack + form only when task ID changes (new task opened)
   useEffect(() => {
     if (task) {
       setTitle(task.title);
@@ -61,7 +62,14 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
       setLocalStatus(task.status);
       setTaskStack([]);
     }
-  }, [task]);
+  }, [task?.id]);
+
+  // Sync localStatus when main task status updates (but don't reset stack)
+  useEffect(() => {
+    if (task && taskStack.length === 0) {
+      setLocalStatus(task.status);
+    }
+  }, [task?.status]);
 
   if (!task) return null;
 
