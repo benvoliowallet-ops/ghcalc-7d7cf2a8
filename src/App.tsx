@@ -213,7 +213,7 @@ function AdminGuard({ children }: { children: React.ReactNode }) {
 }
 
 function AppInner() {
-  const { loadProject, resetProject, saveCurrentProject, openProjectId } = useProjectStore();
+  const { loadProject, resetProject } = useProjectStore();
   const { currentUser, loading, setCurrentUser, setLoading, loadProfile } = useAuthStore();
   const navigate = useNavigate();
   const confirm = useConfirm();
