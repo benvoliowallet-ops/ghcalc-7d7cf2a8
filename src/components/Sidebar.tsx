@@ -67,10 +67,17 @@ export function Sidebar({ view, setView, onNewProject, isAdmin }: SidebarProps) 
               style={{ borderRadius: '2px' }}
               title={label}>
               
-              <Icon
-                size={18}
-                strokeWidth={isActive ? 2.5 : 1.75}
-                className={`shrink-0 ${isActive ? 'text-teal' : 'text-white/55 group-hover:text-white/70'}`} />
+              <div className="relative shrink-0">
+                <Icon
+                  size={18}
+                  strokeWidth={isActive ? 2.5 : 1.75}
+                  className={`shrink-0 ${isActive ? 'text-teal' : 'text-white/55 group-hover:text-white/70'}`} />
+                {target === 'tasks' && taskBadge > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold px-0.5 leading-none">
+                    {taskBadge > 99 ? '99+' : taskBadge}
+                  </span>
+                )}
+              </div>
               
               <span className="text-xs font-semibold tracking-wide uppercase whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 delay-75">
                 {label}
