@@ -75,28 +75,89 @@ export function useProjectSaver() {
   const lastSavedRef = useRef<ProjectState | null>(null);
 
   function computeDiff(prev: ProjectState, next: ProjectState): string[] {
-    const changes: string[] = [];
-    const p = prev.project;
-    const n = next.project;
+    const changes: string[] = []
+    const p = prev.project
+    const n = next.project
+
+    // ── Project-level fields ──────────────────────────────────────────────────
     if (p.customerName !== n.customerName)
-      changes.push(`Zákazník: ${p.customerName} → ${n.customerName}`);
+      changes.push(`Zákazník: ${p.customerName} → ${n.customerName}`)
     if (p.projectAddress !== n.projectAddress)
-      changes.push(`Adresa: ${p.projectAddress} → ${n.projectAddress}`);
+      changes.push(`Adresa: ${p.projectAddress} → ${n.projectAddress}`)
     if (p.country !== n.country)
-      changes.push(`Krajina: ${p.country} → ${n.country}`);
-    if ((prev.zones?.length ?? 0) !== (next.zones?.length ?? 0))
-      changes.push(`Zóny: ${prev.zones?.length} → ${next.zones?.length}`);
-    if (prev.currentStep !== next.currentStep)
-      changes.push(`Krok: ${prev.currentStep} → ${next.currentStep}`);
-    if (JSON.stringify(prev.zones) !== JSON.stringify(next.zones))
-      changes.push("Zmenené parametre zón");
-    if (JSON.stringify(prev.globalParams) !== JSON.stringify(next.globalParams))
-      changes.push("Zmenené globálne parametre");
+      changes.push(`Krajina: ${p.country} → ${n.country}`)
+
+    // ── Zone count ────────────────────────────────────────────────────────────
+    const prevZones = prev.zones ?? []
+    const nextZones = next.zones ?? []
+    if (prevZones.length !== nextZones.length)
+      changes.push(`Počet zón: ${prevZones.length} → ${nextZones.length}`)
+
+    // ── Per-zone field diff ───────────────────────────────────────────────────
+    const zoneLabels: Record<string, string> = {
+      name:                   'Názov',
+      length:                 'Dĺžka (m)',
+      width:                  'Šírka (m)',
+      height:                 'Výška (m)',
+      numNaves:               'Počet lodí',
+      trellisPitch:           'Rozostup kratovníc (m)',
+      controlType:            'Typ riadenia',
+      hasMagnet:              'Drain magnet',
+      elevation:              'Prevýšenie (m)',
+      elevationLength:        'Dĺžka prevýšenia (m)',
+      hydraulicHoseEnabled:   'Hydraulická hadica',
+      hydraulicHoseLength:    'Dĺžka hadice (m)',
+      hydraulicHoseConnectors:'Konektory hadice',
+      connectionType:         'Napojenie',
+      nozzleOrifice:          'Tryska (mm)',
+      nozzleFlow:             'Prietok trysky (l/h)',
+      nozzleSpacing:          'Rozostup trysiek (mm)',
+    }
+    const maxZones = Math.max(prevZones.length, nextZones.length)
+    for (let i = 0; i < maxZones; i++) {
+      const pz = prevZones[i]
+      const nz = nextZones[i]
+      if (!pz || !nz) continue // added/removed zone already caught above
+      const zoneName = nz.name || `Zóna ${i + 1}`
+      for (const key of Object.keys(zoneLabels)) {
+        const pv = (pz as Record<string, unknown>)[key]
+        const nv = (nz as Record<string, unknown>)[key]
+        if (pv !== nv) {
+          const label = zoneLabels[key]
+          const fmtVal = (v: unknown) => v === true ? 'áno' : v === false ? 'nie' : String(v ?? '—')
+          changes.push(`${zoneName} – ${label}: ${fmtVal(pv)} → ${fmtVal(nv)}`)
+        }
+      }
+    }
+
+    // ── Global params ─────────────────────────────────────────────────────────
+    const globalLabels: Record<string, string> = {
+      numberOfZones:    'Počet zón',
+      fogCapacity:      'Výkon zvlhčovania (g/h)',
+      systemPressure:   'Tlak systému (bar)',
+      pumpLocation:     'Stav čerpadla',
+      osmoticWater:     'Osmotická voda',
+      steelRope:        'Typ lana',
+      trellisSpacing:   'Rozostup kratovníc (m)',
+    }
+    const pg = prev.globalParams as Record<string, unknown> | undefined
+    const ng = next.globalParams as Record<string, unknown> | undefined
+    if (pg && ng) {
+      for (const key of Object.keys(globalLabels)) {
+        if (pg[key] !== ng[key]) {
+          const fmtVal = (v: unknown) => v === true ? 'áno' : v === false ? 'nie' : String(v ?? '—')
+          changes.push(`${globalLabels[key]}: ${fmtVal(pg[key])} → ${fmtVal(ng[key])}`)
+        }
+      }
+    }
+
+    // ── Cost inputs ───────────────────────────────────────────────────────────
     if (JSON.stringify(prev.costInputs) !== JSON.stringify(next.costInputs))
-      changes.push("Zmenené náklady");
+      changes.push('Zmenené náklady')
     if (prev.normistPrice !== next.normistPrice)
-      changes.push(`Cena NORMIST: ${prev.normistPrice} → ${next.normistPrice}`);
-    return changes;
+      changes.push(`Cena NORMIST: ${prev.normistPrice} → ${next.normistPrice}`)
+
+    return changes
   }
 
 
