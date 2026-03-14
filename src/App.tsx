@@ -189,6 +189,17 @@ function ProjectWizard() {
   );
 }
 
+function ProjectSummaryPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  return (
+    <ProjectSummary
+      onOpenWizard={() => navigate(`/projects/${id}`)}
+      onBack={() => navigate('/')}
+    />
+  );
+}
+
 function AdminGuard({ children }: { children: React.ReactNode }) {
   const { currentUser } = useAuthStore();
   if (currentUser?.role !== 'admin') {
