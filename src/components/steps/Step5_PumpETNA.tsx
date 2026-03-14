@@ -76,25 +76,6 @@ export function Step5_PumpETNA() {
             </div>
 
             <div className="border-t pt-3 mt-2 space-y-3">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground mb-1">UV systém</p>
-                <select
-                  value={uvSystemCode ?? ''}
-                  onChange={(e) => setUVSystemCode(e.target.value || null)}
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <option value="">– bez UV systému –</option>
-                  {uvItems.map((item) => (
-                    <option key={item.code} value={item.code}>
-                      {item.nameSk}
-                    </option>
-                  ))}
-                </select>
-                {uvSystemCode && (
-                  <p className="text-xs text-teal mt-1 flex items-center gap-1"><Check className="w-3 h-3" />Vybrané: {uvSystemCode}</p>
-                )}
-              </div>
-
               <Toggle
                 checked={uvSystemNazli}
                 onChange={setUVSystemNazli}
