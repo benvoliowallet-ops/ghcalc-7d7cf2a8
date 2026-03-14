@@ -163,8 +163,8 @@ export function useProjectSaver() {
       accommodationCost: 'Ubytovanie (€)', mountingMaterial: 'Mont. materiál (€)',
       mountingMaterialStation: 'Mont. materiál stanica (€)',
     }
-    const pc = prev.costInputs as Record<string,unknown> | undefined
-    const nc = next.costInputs as Record<string,unknown> | undefined
+    const pc = prev.costInputs as unknown as Record<string,unknown> | undefined
+    const nc = next.costInputs as unknown as Record<string,unknown> | undefined
     if (pc && nc) {
       for (const key of Object.keys(costLabels)) {
         if (pc[key] !== nc[key]) changes.push(`${costLabels[key]}: ${fmt(pc[key])} → ${fmt(nc[key])}`)
