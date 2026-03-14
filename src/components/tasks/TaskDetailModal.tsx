@@ -43,6 +43,8 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
   const [commentText, setCommentText] = useState('');
   const [sendingComment, setSendingComment] = useState(false);
   const [savingStatus, setSavingStatus] = useState<string | null>(null);
+  const [taskStack, setTaskStack] = useState<Task[]>([]);
+  const activeTask = taskStack.length > 0 ? taskStack[taskStack.length - 1] : task;
   const [localStatus, setLocalStatus] = useState<string>(task?.status ?? 'todo');
 
   const isCreator = !!currentUser && !!task && currentUser.id === task.created_by;
@@ -57,27 +59,28 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
       setEditTitle(false);
       setEditDesc(false);
       setLocalStatus(task.status);
+      setTaskStack([]);
     }
   }, [task]);
 
   if (!task) return null;
 
   const handleSaveTitle = async () => {
-    if (title.trim() && title !== task.title) {
-      await updateTask(task.id, { title: title.trim() });
+    if (title.trim() && title !== activeTask.title) {
+      await updateTask(activeTask.id, { title: title.trim() });
     }
     setEditTitle(false);
   };
 
   const handleSaveDesc = async () => {
-    if (description !== (task.description ?? '')) {
-      await updateTask(task.id, { description: description || null });
+    if (description !== (activeTask.description ?? '')) {
+      await updateTask(activeTask.id, { description: description || null });
     }
     setEditDesc(false);
   };
 
   const handleFieldChange = async (field: keyof Task, value: unknown) => {
-    await updateTask(task.id, { [field]: value } as Partial<Task>);
+    await updateTask(activeTask.id, { [field]: value } as Partial<Task>);
     onRefresh();
   };
 
@@ -91,7 +94,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
 
   const handleDelete = async () => {
     if (!window.confirm('Naozaj chcete vymazať túto úlohu?')) return;
-    await deleteTask(task.id);
+    await deleteTask(activeTask.id);
     onClose();
     onRefresh();
   };
@@ -114,6 +117,14 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
+          {taskStack.length > 0 && (
+            <button
+              onClick={() => setTaskStack(s => s.slice(0, -1))}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-1"
+            >
+              ← Späť na nadúlohu
+            </button>
+          )}
           <div className="flex items-start justify-between gap-3 pr-8">
             {editTitle && canEditFull ? (
               <div className="flex-1 flex gap-2">
@@ -121,7 +132,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                   autoFocus
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') handleSaveTitle(); if (e.key === 'Escape') { setTitle(task.title); setEditTitle(false); } }}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSaveTitle(); if (e.key === 'Escape') { setTitle(activeTask.title); setEditTitle(false); } }}
                   className="flex-1 text-base font-bold px-2 py-1 rounded border border-teal bg-white dark:bg-muted text-foreground focus:outline-none"
                   style={{ borderRadius: 'var(--radius)' }}
                 />
@@ -132,7 +143,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                 className={`text-base font-bold leading-snug flex items-center gap-2 ${canEditFull ? 'cursor-pointer hover:text-teal transition-colors' : ''}`}
                 onClick={() => canEditFull && setEditTitle(true)}
               >
-                {task.title}
+                {activeTask.title}
                 {canEditFull && <Pencil className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100" />}
               </DialogTitle>
             )}
@@ -157,15 +168,15 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                   />
                   <div className="flex gap-2 mt-1">
                     <button onClick={handleSaveDesc} className="text-xs text-teal font-semibold">Uložiť</button>
-                    <button onClick={() => { setDescription(task.description ?? ''); setEditDesc(false); }} className="text-xs text-muted-foreground">Zrušiť</button>
+                    <button onClick={() => { setDescription(activeTask.description ?? ''); setEditDesc(false); }} className="text-xs text-muted-foreground">Zrušiť</button>
                   </div>
                 </div>
               ) : (
                 <p
-                  className={`text-sm text-foreground min-h-[2rem] ${canEditFull ? 'cursor-pointer hover:bg-muted/50 rounded p-1 -m-1 transition-colors' : ''} ${!task.description ? 'text-muted-foreground italic' : ''}`}
+                  className={`text-sm text-foreground min-h-[2rem] ${canEditFull ? 'cursor-pointer hover:bg-muted/50 rounded p-1 -m-1 transition-colors' : ''} ${!activeTask.description ? 'text-muted-foreground italic' : ''}`}
                   onClick={() => canEditFull && setEditDesc(true)}
                 >
-                  {task.description || (canEditFull ? 'Klikni pre pridanie popisu…' : '—')}
+                  {activeTask.description || (canEditFull ? 'Klikni pre pridanie popisu…' : '—')}
                 </p>
               )}
             </div>
@@ -199,10 +210,10 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
             <div>
               <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block mb-2">Podúlohy</label>
               <SubtaskTree
-                parentId={task.id}
+                parentId={activeTask.id}
                 allTasks={allTasks}
                 depth={0}
-                onTaskClick={() => {}}
+                onTaskClick={(t) => { setTaskStack(s => [...s, t]); setLocalStatus(t.status); }}
                 onRefresh={handleRefreshAll}
               />
             </div>
@@ -268,7 +279,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
               <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block mb-1">Priorita</label>
               {canEditFull ? (
                 <select
-                  value={task.priority}
+                  value={activeTask.priority}
                   onChange={e => handleFieldChange('priority', e.target.value)}
                   className="w-full px-2 py-1.5 text-sm rounded border border-border bg-white dark:bg-muted text-foreground focus:outline-none"
                   style={{ borderRadius: 'var(--radius)' }}
@@ -276,7 +287,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                   {PRIORITIES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                 </select>
               ) : (
-                <span className="text-foreground">{PRIORITIES.find(p => p.value === task.priority)?.label}</span>
+                <span className="text-foreground">{PRIORITIES.find(p => p.value === activeTask.priority)?.label}</span>
               )}
             </div>
 
@@ -285,7 +296,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
               <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block mb-1">Priradený</label>
               {canEditFull ? (
                 <select
-                  value={task.assigned_to ?? ''}
+                  value={activeTask.assigned_to ?? ''}
                   onChange={e => handleFieldChange('assigned_to', e.target.value || null)}
                   className="w-full px-2 py-1.5 text-sm rounded border border-border bg-white dark:bg-muted text-foreground focus:outline-none"
                   style={{ borderRadius: 'var(--radius)' }}
@@ -294,7 +305,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                   {profiles.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               ) : (
-                <span className="text-foreground">{task.assignee?.name ?? '—'}</span>
+                <span className="text-foreground">{activeTask.assignee?.name ?? '—'}</span>
               )}
             </div>
 
@@ -303,7 +314,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
               <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block mb-1">Projekt</label>
               {canEditFull ? (
                 <select
-                  value={task.project_id ?? ''}
+                  value={activeTask.project_id ?? ''}
                   onChange={e => handleFieldChange('project_id', e.target.value || null)}
                   className="w-full px-2 py-1.5 text-sm rounded border border-border bg-white dark:bg-muted text-foreground focus:outline-none"
                   style={{ borderRadius: 'var(--radius)' }}
@@ -312,7 +323,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                   {projects.map(p => <option key={p.id} value={p.id}>{p.quote_number} · {p.customer_name}</option>)}
                 </select>
               ) : (
-                <span className="text-foreground">{task.project ? `${task.project.quote_number} · ${task.project.customer_name}` : '—'}</span>
+                <span className="text-foreground">{activeTask.project ? `${activeTask.project.quote_number} · ${activeTask.project.customer_name}` : '—'}</span>
               )}
             </div>
 
@@ -322,13 +333,13 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
               {canEditFull ? (
                 <input
                   type="datetime-local"
-                  value={task.deadline ? task.deadline.slice(0, 16) : ''}
+                  value={activeTask.deadline ? activeTask.deadline.slice(0, 16) : ''}
                   onChange={e => handleFieldChange('deadline', e.target.value ? new Date(e.target.value).toISOString() : null)}
                   className="w-full px-2 py-1.5 text-sm rounded border border-border bg-white dark:bg-muted text-foreground focus:outline-none"
                   style={{ borderRadius: 'var(--radius)' }}
                 />
               ) : (
-                <span className="text-foreground">{task.deadline ? format(new Date(task.deadline), 'dd.MM.yyyy HH:mm') : '—'}</span>
+                <span className="text-foreground">{activeTask.deadline ? format(new Date(activeTask.deadline), 'dd.MM.yyyy HH:mm') : '—'}</span>
               )}
             </div>
 
@@ -336,16 +347,16 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
             <div className="border-t border-border pt-3 space-y-2">
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block">Vytvoril</label>
-                <span className="text-sm text-foreground">{task.creator?.name ?? '—'}</span>
+                <span className="text-sm text-foreground">{activeTask.creator?.name ?? '—'}</span>
               </div>
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block">Vytvorené</label>
                 <span className="text-sm text-foreground">{format(new Date(task.created_at), 'dd.MM.yyyy HH:mm')}</span>
               </div>
-              {task.completed_at && (
+              {activeTask.completed_at && (
                 <div>
                   <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block">Dokončené</label>
-                  <span className="text-sm text-foreground">{format(new Date(task.completed_at), 'dd.MM.yyyy HH:mm')}</span>
+                  <span className="text-sm text-foreground">{format(new Date(activeTask.completed_at), 'dd.MM.yyyy HH:mm')}</span>
                 </div>
               )}
             </div>
