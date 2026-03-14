@@ -33,6 +33,12 @@ export function TaskRow({ task, subtaskCount, onClick }: TaskRowProps) {
   const overdue = isOverdue(task);
   const status = STATUS_CONFIG[task.status] ?? STATUS_CONFIG.todo;
   const deadlineDate = task.deadline ? new Date(task.deadline) : null;
+  const completedLate = task.status === 'done' && task.completed_at && task.deadline
+    ? new Date(task.completed_at) > new Date(task.deadline)
+    : false;
+  const daysLate = completedLate && task.completed_at && task.deadline
+    ? Math.ceil((new Date(task.completed_at).getTime() - new Date(task.deadline).getTime()) / 86400000)
+    : 0;
 
   return (
     <div
@@ -97,6 +103,16 @@ export function TaskRow({ task, subtaskCount, onClick }: TaskRowProps) {
           >
             <Clock className="w-3 h-3" />
             {format(deadlineDate, 'dd.MM.yyyy')}
+          </span>
+        )}
+        {completedLate && (
+          <span
+            className="text-xs flex items-center gap-0.5 font-semibold"
+            style={{ color: 'hsl(30 90% 55%)' }}
+            title={`Splnené ${daysLate} ${daysLate === 1 ? 'deň' : 'dní'} po termíne`}
+          >
+            <Clock className="w-3 h-3" />
+            +{daysLate}d
           </span>
         )}
         <span
