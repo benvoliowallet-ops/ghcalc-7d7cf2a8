@@ -43,6 +43,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
   const [commentText, setCommentText] = useState('');
   const [sendingComment, setSendingComment] = useState(false);
   const [savingStatus, setSavingStatus] = useState<string | null>(null);
+  const [localStatus, setLocalStatus] = useState<string>(task?.status ?? 'todo');
 
   const isCreator = !!currentUser && !!task && currentUser.id === task.created_by;
   const isAssigned = !!currentUser && !!task && currentUser.id === task.assigned_to;
@@ -55,6 +56,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
       setDescription(task.description ?? '');
       setEditTitle(false);
       setEditDesc(false);
+      setLocalStatus(task.status);
     }
   }, [task]);
 
@@ -80,6 +82,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
   };
 
   const handleStatusChange = async (newStatus: string) => {
+    setLocalStatus(newStatus);
     setSavingStatus(newStatus);
     await updateTaskStatus(task, newStatus as 'todo' | 'in_progress' | 'done');
     onRefresh();
@@ -177,7 +180,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                     disabled={!canEditStatus || savingStatus !== null}
                     onClick={() => handleStatusChange(opt.value)}
                     className={`px-3 py-1.5 text-xs font-semibold rounded border transition-all flex items-center gap-1.5 ${
-                      task.status === opt.value
+                      localStatus === opt.value
                         ? 'bg-teal text-white border-teal'
                         : savingStatus === opt.value
                           ? 'border-teal text-teal bg-teal/10'
