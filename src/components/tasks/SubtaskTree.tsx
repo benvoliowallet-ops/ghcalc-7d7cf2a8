@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Plus, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import { Task, useTaskMutations, useProfiles } from '@/hooks/useTasks';
 import { TaskRow } from './TaskRow';
+import { TaskDetailModal } from './TaskDetailModal';
 import { useAuthStore } from '@/store/authStore';
 
 interface SubtaskTreeProps {
@@ -21,6 +22,7 @@ export function SubtaskTree({ parentId, allTasks, depth = 0, onTaskClick, onRefr
   const [addingTo, setAddingTo] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [saving, setSaving] = useState(false);
+  const [selectedSubtask, setSelectedSubtask] = useState<Task | null>(null);
 
   const subtasks = allTasks.filter(t => t.parent_task_id === parentId);
 
@@ -68,7 +70,7 @@ export function SubtaskTree({ parentId, allTasks, depth = 0, onTaskClick, onRefr
                 <TaskRow
                   task={subtask}
                   subtaskCount={allTasks.filter(t => t.parent_task_id === subtask.id).length}
-                  onClick={onTaskClick}
+                  onClick={(t) => setSelectedSubtask(t)}
                 />
                 {isExpanded && (
                   <SubtaskTree
@@ -121,6 +123,13 @@ export function SubtaskTree({ parentId, allTasks, depth = 0, onTaskClick, onRefr
           <Plus className="w-3.5 h-3.5" /> Pridať podúlohu
         </button>
       )}
+
+      <TaskDetailModal
+        task={selectedSubtask}
+        open={!!selectedSubtask}
+        onClose={() => setSelectedSubtask(null)}
+        onRefresh={() => { setSelectedSubtask(null); onRefresh(); }}
+      />
     </div>
   );
 }
