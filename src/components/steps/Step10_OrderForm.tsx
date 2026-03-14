@@ -87,7 +87,7 @@ export function Step10_OrderForm() {
   const exportOrderOberon = async () => {
     setOberonExporting(true);
     try {
-  const attiLines = processedBomLines.filter((l) => !l.code.startsWith('NORMIST_PUMP_') && STOCK_ITEMS.find(s => s.code === l.code)?.warehouse !== 'NORMIST');
+  const attiLines = processedLines.filter(l => !l.isNormistRef);
       await exportToOberon(prepareBomForOberon(attiLines.map(l => ({ code: l.code, name: l.name, qty: l.qty }))), project.quoteNumber);
     } catch (e) { alert(String(e)); } finally { setOberonExporting(false); }
   };
