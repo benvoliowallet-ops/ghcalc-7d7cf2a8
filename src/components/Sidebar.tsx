@@ -27,6 +27,8 @@ const NAV_ITEMS: NavItem[] = [
 
 export function Sidebar({ view, setView, onNewProject, isAdmin }: SidebarProps) {
   const { currentUser, logout } = useAuthStore();
+  const { tasks: openTasks } = useTasks({ assignedTo: currentUser?.id });
+  const taskBadge = openTasks.length;
 
   const allItems = isAdmin ?
   [...NAV_ITEMS, { target: 'users' as AppView, icon: Users, label: 'Používatelia' }] :
