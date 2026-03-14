@@ -603,6 +603,34 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
           <InlineProjectComments projectId={openProjectId} />
         </div>
       )}
+
+      {/* História zmien */}
+      {openProjectId && projectChanges.length > 0 && (
+        <div className="mt-6">
+          <div className="bg-card border border-border rounded-lg overflow-hidden">
+            <div className="px-4 py-3 border-b border-border flex items-center gap-2">
+              <span className="text-sm font-semibold text-foreground">História zmien</span>
+            </div>
+            <div className="divide-y divide-border">
+              {projectChanges.map((c) => (
+                <div key={c.id} className="px-4 py-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(c.changedAt).toLocaleString('sk-SK')}
+                    </span>
+                    <span className="text-xs font-medium text-foreground">{c.changedByEmail}</span>
+                  </div>
+                  <ul className="space-y-0.5">
+                    {c.reason.split(';').map((r, i) => r.trim()).filter(Boolean).map((r, i) => (
+                      <li key={i} className="text-xs text-muted-foreground">• {r}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
