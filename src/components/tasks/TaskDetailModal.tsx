@@ -87,7 +87,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
   const handleStatusChange = async (newStatus: string) => {
     setLocalStatus(newStatus);
     setSavingStatus(newStatus);
-    await updateTaskStatus(task, newStatus as 'todo' | 'in_progress' | 'done');
+    await updateTaskStatus(activeTask, newStatus as 'todo' | 'in_progress' | 'done');
     onRefresh();
     setSavingStatus(null);
   };
@@ -102,7 +102,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
   const handleSendComment = async () => {
     if (!commentText.trim()) return;
     setSendingComment(true);
-    await addTaskComment(task, commentText);
+    await addTaskComment(activeTask, commentText);
     setCommentText('');
     refetchComments();
     setSendingComment(false);
@@ -351,7 +351,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
               </div>
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block">Vytvorené</label>
-                <span className="text-sm text-foreground">{format(new Date(task.created_at), 'dd.MM.yyyy HH:mm')}</span>
+                <span className="text-sm text-foreground">{format(new Date(activeTask.created_at), 'dd.MM.yyyy HH:mm')}</span>
               </div>
               {activeTask.completed_at && (
                 <div>
