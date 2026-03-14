@@ -1,19 +1,16 @@
 import { useProjectStore } from '../../store/projectStore';
-import { Check, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, CalcRow, Toggle } from '../ui/FormField';
 import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, fmtN } from '../../utils/calculations';
-import { useItemsByGroup } from '../../hooks/useSupabaseItems';
 
 export function Step5_PumpETNA() {
   const {
     globalParams,
     zoneCalcs,
     zones,
-    uvSystemCode,
     ssFilter30,
     uvSystemNazli,
-    setUVSystemCode,
     setSSFilter,
     setUVSystemNazli,
   } = useProjectStore();
@@ -28,8 +25,6 @@ export function Step5_PumpETNA() {
   const etnaLabel = osmoticSS
     ? 'HF KI-ST 32/2-30 SS variant (snfg.001.0021)'
     : 'HF KI-ST 32/2-30 ŠTANDARD (snfg.001.0021)';
-
-  const uvItems = useItemsByGroup('UV Lampy');
 
   return (
     <StepLayout
@@ -81,25 +76,6 @@ export function Step5_PumpETNA() {
             </div>
 
             <div className="border-t pt-3 mt-2 space-y-3">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground mb-1">UV systém</p>
-                <select
-                  value={uvSystemCode ?? ''}
-                  onChange={(e) => setUVSystemCode(e.target.value || null)}
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <option value="">– bez UV systému –</option>
-                  {uvItems.map((item) => (
-                    <option key={item.code} value={item.code}>
-                      {item.nameSk}
-                    </option>
-                  ))}
-                </select>
-                {uvSystemCode && (
-                  <p className="text-xs text-teal mt-1 flex items-center gap-1"><Check className="w-3 h-3" />Vybrané: {uvSystemCode}</p>
-                )}
-              </div>
-
               <Toggle
                 checked={uvSystemNazli}
                 onChange={setUVSystemNazli}
