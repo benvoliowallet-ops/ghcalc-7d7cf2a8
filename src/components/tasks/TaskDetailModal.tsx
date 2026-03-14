@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Loader2, Pencil, Check, Trash2, Send } from 'lucide-react';
 import { Task, useTaskMutations, useTaskComments, useProfiles, useProjectList, useAllTasks } from '@/hooks/useTasks';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { SubtaskTree } from './SubtaskTree';
@@ -43,6 +44,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
   const [commentText, setCommentText] = useState('');
   const [sendingComment, setSendingComment] = useState(false);
   const [savingStatus, setSavingStatus] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [taskStack, setTaskStack] = useState<Task[]>([]);
   const activeTask = taskStack.length > 0 ? taskStack[taskStack.length - 1] : task;
   const [localStatus, setLocalStatus] = useState<string>(task?.status ?? 'todo');
@@ -105,8 +107,8 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Naozaj chcete vymazať túto úlohu?')) return;
     await deleteTask(activeTask.id);
+    setConfirmDelete(false);
     onClose();
     onRefresh();
   };
@@ -385,6 +387,22 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
           </div>
         </div>
       </DialogContent>
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Vymazať úlohu?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Naozaj chcete vymazať úlohu <strong>{activeTask.title}</strong>? Táto akcia sa nedá vrátiť.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Zrušiť</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">
+              Vymazať
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
