@@ -76,86 +76,113 @@ export function useProjectSaver() {
 
   function computeDiff(prev: ProjectState, next: ProjectState): string[] {
     const changes: string[] = []
-    const p = prev.project
-    const n = next.project
+    const fmt = (v: unknown) => v === true ? 'áno' : v === false ? 'nie' : v == null ? '—' : String(v)
 
-    // ── Project-level fields ──────────────────────────────────────────────────
-    if (p.customerName !== n.customerName)
-      changes.push(`Zákazník: ${p.customerName} → ${n.customerName}`)
-    if (p.projectAddress !== n.projectAddress)
-      changes.push(`Adresa: ${p.projectAddress} → ${n.projectAddress}`)
-    if (p.country !== n.country)
-      changes.push(`Krajina: ${p.country} → ${n.country}`)
+    // ── Projekt ───────────────────────────────────────────────────────────────
+    const p = prev.project, n = next.project
+    if (p.customerName    !== n.customerName)    changes.push(`Zákazník: ${p.customerName} → ${n.customerName}`)
+    if (p.projectAddress  !== n.projectAddress)  changes.push(`Adresa: ${p.projectAddress} → ${n.projectAddress}`)
+    if (p.country         !== n.country)         changes.push(`Krajina: ${p.country} → ${n.country}`)
 
-    // ── Zone count ────────────────────────────────────────────────────────────
-    const prevZones = prev.zones ?? []
-    const nextZones = next.zones ?? []
-    if (prevZones.length !== nextZones.length)
-      changes.push(`Počet zón: ${prevZones.length} → ${nextZones.length}`)
+    // ── Počet zón ─────────────────────────────────────────────────────────────
+    const pz = prev.zones ?? [], nz = next.zones ?? []
+    if (pz.length !== nz.length) changes.push(`Počet zón: ${pz.length} → ${nz.length}`)
 
-    // ── Per-zone field diff ───────────────────────────────────────────────────
+    // ── Per-zóna ──────────────────────────────────────────────────────────────
     const zoneLabels: Record<string, string> = {
-      name:                   'Názov',
-      length:                 'Dĺžka (m)',
-      width:                  'Šírka (m)',
-      height:                 'Výška (m)',
-      numNaves:               'Počet lodí',
-      trellisPitch:           'Rozostup kratovníc (m)',
-      controlType:            'Typ riadenia',
-      hasMagnet:              'Drain magnet',
-      elevation:              'Prevýšenie (m)',
-      elevationLength:        'Dĺžka prevýšenia (m)',
-      hydraulicHoseEnabled:   'Hydraulická hadica',
-      hydraulicHoseLength:    'Dĺžka hadice (m)',
-      hydraulicHoseConnectors:'Konektory hadice',
-      connectionType:         'Napojenie',
-      nozzleOrifice:          'Tryska (mm)',
-      nozzleFlow:             'Prietok trysky (l/h)',
-      nozzleSpacing:          'Rozostup trysiek (mm)',
+      name: 'Názov', length: 'Dĺžka (m)', width: 'Šírka (m)', height: 'Výška (m)',
+      numNaves: 'Počet lodí', trellisPitch: 'Rozostup kratovníc (m)',
+      controlType: 'Typ riadenia', hasMagnet: 'Drain magnet',
+      elevation: 'Prevýšenie (m)', elevationLength: 'Dĺžka prevýšenia (m)',
+      hydraulicHoseEnabled: 'Hydraulická hadica', hydraulicHoseLength: 'Dĺžka hadice (m)',
+      hydraulicHoseConnectors: 'Konektory hadice', connectionType: 'Napojenie',
+      nozzleOrifice: 'Tryska (mm)', nozzleFlow: 'Prietok trysky (l/h)', nozzleSpacing: 'Rozostup trysiek (mm)',
     }
-    const maxZones = Math.max(prevZones.length, nextZones.length)
-    for (let i = 0; i < maxZones; i++) {
-      const pz = prevZones[i]
-      const nz = nextZones[i]
-      if (!pz || !nz) continue // added/removed zone already caught above
-      const zoneName = nz.name || `Zóna ${i + 1}`
+    for (let i = 0; i < Math.max(pz.length, nz.length); i++) {
+      const a = pz[i], b = nz[i]
+      if (!a || !b) continue
+      const label = b.name || `Zóna ${i + 1}`
       for (const key of Object.keys(zoneLabels)) {
-        const pv = (pz as Record<string, unknown>)[key]
-        const nv = (nz as Record<string, unknown>)[key]
-        if (pv !== nv) {
-          const label = zoneLabels[key]
-          const fmtVal = (v: unknown) => v === true ? 'áno' : v === false ? 'nie' : String(v ?? '—')
-          changes.push(`${zoneName} – ${label}: ${fmtVal(pv)} → ${fmtVal(nv)}`)
-        }
+        const av = (a as Record<string,unknown>)[key], bv = (b as Record<string,unknown>)[key]
+        if (av !== bv) changes.push(`${label} – ${zoneLabels[key]}: ${fmt(av)} → ${fmt(bv)}`)
       }
     }
 
-    // ── Global params ─────────────────────────────────────────────────────────
+    // ── Globálne parametre (krok 2) ───────────────────────────────────────────
     const globalLabels: Record<string, string> = {
-      numberOfZones:    'Počet zón',
-      fogCapacity:      'Výkon zvlhčovania (g/h)',
-      systemPressure:   'Tlak systému (bar)',
-      pumpLocation:     'Stav čerpadla',
-      osmoticWater:     'Osmotická voda',
-      steelRope:        'Typ lana',
-      trellisSpacing:   'Rozostup kratovníc (m)',
+      numberOfZones: 'Počet zón', fogCapacity: 'Výkon zvlhčovania (g/h)',
+      systemPressure: 'Tlak systému (bar)', pumpLocation: 'Stav čerpadla',
+      osmoticWater: 'Osmotická voda', steelRope: 'Typ lana', trellisSpacing: 'Rozostup kratovníc (m)',
     }
-    const pg = prev.globalParams as Record<string, unknown> | undefined
-    const ng = next.globalParams as Record<string, unknown> | undefined
+    const pg = prev.globalParams as Record<string,unknown> | undefined
+    const ng = next.globalParams as Record<string,unknown> | undefined
     if (pg && ng) {
       for (const key of Object.keys(globalLabels)) {
-        if (pg[key] !== ng[key]) {
-          const fmtVal = (v: unknown) => v === true ? 'áno' : v === false ? 'nie' : String(v ?? '—')
-          changes.push(`${globalLabels[key]}: ${fmtVal(pg[key])} → ${fmtVal(ng[key])}`)
-        }
+        if (pg[key] !== ng[key]) changes.push(`${globalLabels[key]}: ${fmt(pg[key])} → ${fmt(ng[key])}`)
       }
     }
 
-    // ── Cost inputs ───────────────────────────────────────────────────────────
-    if (JSON.stringify(prev.costInputs) !== JSON.stringify(next.costInputs))
-      changes.push('Zmenené náklady')
-    if (prev.normistPrice !== next.normistPrice)
-      changes.push(`Cena NORMIST: ${prev.normistPrice} → ${next.normistPrice}`)
+    // ── Výber čerpadla (krok 5) ───────────────────────────────────────────────
+    const pp = prev.pumpSelection, np = next.pumpSelection
+    if (JSON.stringify(pp) !== JSON.stringify(np)) {
+      if (!pp && np) changes.push(`Čerpadlo: (žiadne) → ${np.name} ×${np.quantity}`)
+      else if (pp && !np) changes.push(`Čerpadlo: ${pp.name} ×${pp.quantity} → (žiadne)`)
+      else if (pp && np) {
+        if (pp.code !== np.code) changes.push(`Čerpadlo: ${pp.name} → ${np.name}`)
+        if (pp.quantity !== np.quantity) changes.push(`Počet čerpadiel: ${pp.quantity} → ${np.quantity}`)
+      }
+    }
+
+    // ── ETNA konfig (krok 5) ──────────────────────────────────────────────────
+    const etnaLabels: Record<string, string> = {
+      capacityM3h: 'ETNA výkon (m³/h)', maxivarem: 'Maxivarem',
+      maxivareVariant: 'Maxivarem variant', etnaFilter: 'Filter',
+      etnaFilterVariant: 'Filter variant', normistPrice: 'Cena NORMIST',
+    }
+    const pe = prev.etnaConfig as Record<string,unknown> | undefined
+    const ne = next.etnaConfig as Record<string,unknown> | undefined
+    if (pe && ne) {
+      for (const key of Object.keys(etnaLabels)) {
+        if (pe[key] !== ne[key]) changes.push(`${etnaLabels[key]}: ${fmt(pe[key])} → ${fmt(ne[key])}`)
+      }
+    }
+
+    // ── UV / filter voľby ─────────────────────────────────────────────────────
+    if (prev.uvSystemCode   !== next.uvSystemCode)   changes.push(`UV systém: ${fmt(prev.uvSystemCode)} → ${fmt(next.uvSystemCode)}`)
+    if (prev.ssFilter30     !== next.ssFilter30)     changes.push(`SS filter 30μm: ${fmt(prev.ssFilter30)} → ${fmt(next.ssFilter30)}`)
+    if (prev.uvSystemNazli  !== next.uvSystemNazli)  changes.push(`UV systém NAZLI: ${fmt(prev.uvSystemNazli)} → ${fmt(next.uvSystemNazli)}`)
+
+    // ── Náklady (krok 6) ──────────────────────────────────────────────────────
+    const costLabels: Record<string, string> = {
+      installTechDays: 'Montáž tech. – dni', installTechCount: 'Montáž tech. – počet',
+      installGreenhouseDays: 'Montáž skleník – dni', installGreenhouseCount: 'Montáž skleník – počet',
+      diggingDays: 'Výkop – dni', diggingCount: 'Výkop – počet',
+      commissioningDays: 'Uvedenie do prevádzky – dni', commissioningCount: 'Uvedenie do prevádzky – počet',
+      inspectionFixed: 'Obhliadka (€)', designFixed: 'Projekt (€)', projectArea: 'Plocha projektu (m²)',
+      salesTrips: 'Obchodné cesty', techTrips: 'Tech. cesty', implTeamTrips: 'Montážne cesty',
+      accommodationCost: 'Ubytovanie (€)', mountingMaterial: 'Mont. materiál (€)',
+      mountingMaterialStation: 'Mont. materiál stanica (€)',
+    }
+    const pc = prev.costInputs as Record<string,unknown> | undefined
+    const nc = next.costInputs as Record<string,unknown> | undefined
+    if (pc && nc) {
+      for (const key of Object.keys(costLabels)) {
+        if (pc[key] !== nc[key]) changes.push(`${costLabels[key]}: ${fmt(pc[key])} → ${fmt(nc[key])}`)
+      }
+    }
+
+    // ── Pre-order (krok 9) ────────────────────────────────────────────────────
+    const pr = prev.preOrderState, nr = next.preOrderState
+    if (pr && nr) {
+      if (pr.etnaDistance   !== nr.etnaDistance)   changes.push(`ETNA vzdialenosť (m): ${pr.etnaDistance} → ${nr.etnaDistance}`)
+      if (pr.etnaCustomCost !== nr.etnaCustomCost) changes.push(`ETNA vlastná cena (€): ${pr.etnaCustomCost} → ${nr.etnaCustomCost}`)
+      if (JSON.stringify(pr.pumpConnectorMeters) !== JSON.stringify(nr.pumpConnectorMeters))
+        changes.push(`Dĺžky konektorov čerpadla: ${(pr.pumpConnectorMeters??[]).join(', ')} → ${(nr.pumpConnectorMeters??[]).join(', ')}`)
+    }
+
+    // ── Lano – manuálne prepisy ───────────────────────────────────────────────
+    if (JSON.stringify(prev.ropeOverrides) !== JSON.stringify(next.ropeOverrides))
+      changes.push(`Lano (prepisy): ${(prev.ropeOverrides??[]).join(', ')} → ${(next.ropeOverrides??[]).join(', ')}`)
 
     return changes
   }
