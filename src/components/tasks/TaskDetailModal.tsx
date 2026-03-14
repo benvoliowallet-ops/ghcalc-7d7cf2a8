@@ -42,6 +42,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
   const [editDesc, setEditDesc] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [sendingComment, setSendingComment] = useState(false);
+  const [savingStatus, setSavingStatus] = useState<string | null>(null);
 
   const isCreator = !!currentUser && !!task && currentUser.id === task.created_by;
   const isAssigned = !!currentUser && !!task && currentUser.id === task.assigned_to;
@@ -79,8 +80,10 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
   };
 
   const handleStatusChange = async (newStatus: string) => {
+    setSavingStatus(newStatus);
     await updateTaskStatus(task, newStatus as 'todo' | 'in_progress' | 'done');
     onRefresh();
+    setSavingStatus(null);
   };
 
   const handleDelete = async () => {
@@ -116,7 +119,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                   value={title}
                   onChange={e => setTitle(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') handleSaveTitle(); if (e.key === 'Escape') { setTitle(task.title); setEditTitle(false); } }}
-                  className="flex-1 text-base font-bold px-2 py-1 rounded border border-teal bg-background text-foreground focus:outline-none"
+                  className="flex-1 text-base font-bold px-2 py-1 rounded border border-teal bg-white dark:bg-muted text-foreground focus:outline-none"
                   style={{ borderRadius: 'var(--radius)' }}
                 />
                 <button onClick={handleSaveTitle} className="text-teal"><Check className="w-4 h-4" /></button>
@@ -146,7 +149,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                     value={description}
                     onChange={e => setDescription(e.target.value)}
                     rows={4}
-                    className="w-full px-3 py-2 text-sm rounded border border-teal bg-background text-foreground focus:outline-none resize-none"
+                    className="w-full px-3 py-2 text-sm rounded border border-teal bg-white dark:bg-muted text-foreground focus:outline-none resize-none"
                     style={{ borderRadius: 'var(--radius)' }}
                   />
                   <div className="flex gap-2 mt-1">
@@ -171,15 +174,18 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                 {STATUS_OPTIONS.map(opt => (
                   <button
                     key={opt.value}
-                    disabled={!canEditStatus}
+                    disabled={!canEditStatus || savingStatus !== null}
                     onClick={() => handleStatusChange(opt.value)}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded border transition-colors disabled:cursor-default ${
+                    className={`px-3 py-1.5 text-xs font-semibold rounded border transition-all flex items-center gap-1.5 ${
                       task.status === opt.value
                         ? 'bg-teal text-white border-teal'
-                        : 'border-border text-muted-foreground hover:border-teal hover:text-foreground'
+                        : savingStatus === opt.value
+                          ? 'border-teal text-teal bg-teal/10'
+                          : 'border-border text-muted-foreground hover:border-teal hover:text-foreground'
                     }`}
                     style={{ borderRadius: 'var(--radius)' }}
                   >
+                    {savingStatus === opt.value && <Loader2 className="w-3 h-3 animate-spin" />}
                     {opt.label}
                   </button>
                 ))}
@@ -237,7 +243,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                   onChange={e => setCommentText(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendComment(); } }}
                   placeholder="Napísať komentár…"
-                  className="flex-1 px-3 py-2 text-sm rounded border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-teal"
+                  className="flex-1 px-3 py-2 text-sm rounded border border-border bg-white dark:bg-muted text-foreground focus:outline-none focus:ring-1 focus:ring-teal"
                   style={{ borderRadius: 'var(--radius)' }}
                 />
                 <button
@@ -261,7 +267,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                 <select
                   value={task.priority}
                   onChange={e => handleFieldChange('priority', e.target.value)}
-                  className="w-full px-2 py-1.5 text-sm rounded border border-border bg-background text-foreground focus:outline-none"
+                  className="w-full px-2 py-1.5 text-sm rounded border border-border bg-white dark:bg-muted text-foreground focus:outline-none"
                   style={{ borderRadius: 'var(--radius)' }}
                 >
                   {PRIORITIES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
@@ -278,7 +284,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                 <select
                   value={task.assigned_to ?? ''}
                   onChange={e => handleFieldChange('assigned_to', e.target.value || null)}
-                  className="w-full px-2 py-1.5 text-sm rounded border border-border bg-background text-foreground focus:outline-none"
+                  className="w-full px-2 py-1.5 text-sm rounded border border-border bg-white dark:bg-muted text-foreground focus:outline-none"
                   style={{ borderRadius: 'var(--radius)' }}
                 >
                   <option value="">— Nepriradený —</option>
@@ -296,7 +302,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                 <select
                   value={task.project_id ?? ''}
                   onChange={e => handleFieldChange('project_id', e.target.value || null)}
-                  className="w-full px-2 py-1.5 text-sm rounded border border-border bg-background text-foreground focus:outline-none"
+                  className="w-full px-2 py-1.5 text-sm rounded border border-border bg-white dark:bg-muted text-foreground focus:outline-none"
                   style={{ borderRadius: 'var(--radius)' }}
                 >
                   <option value="">— Bez projektu —</option>
@@ -315,7 +321,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                   type="datetime-local"
                   value={task.deadline ? task.deadline.slice(0, 16) : ''}
                   onChange={e => handleFieldChange('deadline', e.target.value ? new Date(e.target.value).toISOString() : null)}
-                  className="w-full px-2 py-1.5 text-sm rounded border border-border bg-background text-foreground focus:outline-none"
+                  className="w-full px-2 py-1.5 text-sm rounded border border-border bg-white dark:bg-muted text-foreground focus:outline-none"
                   style={{ borderRadius: 'var(--radius)' }}
                 />
               ) : (
