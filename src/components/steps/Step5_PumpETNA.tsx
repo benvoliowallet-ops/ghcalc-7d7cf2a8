@@ -1,19 +1,16 @@
 import { useProjectStore } from '../../store/projectStore';
-import { Check, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, CalcRow, Toggle } from '../ui/FormField';
 import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, fmtN } from '../../utils/calculations';
-import { useItemsByGroup } from '../../hooks/useSupabaseItems';
 
 export function Step5_PumpETNA() {
   const {
     globalParams,
     zoneCalcs,
     zones,
-    uvSystemCode,
     ssFilter30,
     uvSystemNazli,
-    setUVSystemCode,
     setSSFilter,
     setUVSystemNazli,
   } = useProjectStore();
@@ -28,8 +25,6 @@ export function Step5_PumpETNA() {
   const etnaLabel = osmoticSS
     ? 'HF KI-ST 32/2-30 SS variant (snfg.001.0021)'
     : 'HF KI-ST 32/2-30 ŠTANDARD (snfg.001.0021)';
-
-  const uvItems = useItemsByGroup('UV Lampy');
 
   return (
     <StepLayout
