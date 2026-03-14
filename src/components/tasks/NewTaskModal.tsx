@@ -74,7 +74,7 @@ export function NewTaskModal({ open, onClose, onCreated, prefilledProjectId }: N
               value={title}
               onChange={e => { setTitle(e.target.value); setError(''); }}
               placeholder="Čo treba urobiť?"
-              className="w-full px-3 py-2 text-sm rounded border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-teal"
+              className="w-full px-3 py-2 text-sm rounded border border-border bg-white text-foreground focus:outline-none focus:ring-1 focus:ring-teal"
               style={{ borderRadius: 'var(--radius)' }}
             />
             {error && <p className="text-xs text-destructive mt-1">{error}</p>}
@@ -88,7 +88,7 @@ export function NewTaskModal({ open, onClose, onCreated, prefilledProjectId }: N
               onChange={e => setDescription(e.target.value)}
               rows={3}
               placeholder="Voliteľný popis..."
-              className="w-full px-3 py-2 text-sm rounded border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-teal resize-none"
+              className="w-full px-3 py-2 text-sm rounded border border-border bg-white text-foreground focus:outline-none focus:ring-1 focus:ring-teal resize-none"
               style={{ borderRadius: 'var(--radius)' }}
             />
           </div>
@@ -100,7 +100,7 @@ export function NewTaskModal({ open, onClose, onCreated, prefilledProjectId }: N
               <select
                 value={assignedTo}
                 onChange={e => setAssignedTo(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-teal"
+                className="w-full px-3 py-2 text-sm rounded border border-border bg-white text-foreground focus:outline-none focus:ring-1 focus:ring-teal"
                 style={{ borderRadius: 'var(--radius)' }}
               >
                 <option value="">— Nepriradený —</option>
@@ -115,7 +115,7 @@ export function NewTaskModal({ open, onClose, onCreated, prefilledProjectId }: N
                 value={projectId}
                 onChange={e => setProjectId(e.target.value)}
                 disabled={!!prefilledProjectId}
-                className="w-full px-3 py-2 text-sm rounded border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-teal disabled:opacity-60"
+                className="w-full px-3 py-2 text-sm rounded border border-border bg-white text-foreground focus:outline-none focus:ring-1 focus:ring-teal disabled:opacity-60"
                 style={{ borderRadius: 'var(--radius)' }}
               >
                 <option value="">— Bez projektu —</option>
@@ -144,7 +144,7 @@ export function NewTaskModal({ open, onClose, onCreated, prefilledProjectId }: N
               type="datetime-local"
               value={deadline}
               onChange={e => setDeadline(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-teal"
+              className="w-full px-3 py-2 text-sm rounded border border-border bg-white text-foreground focus:outline-none focus:ring-1 focus:ring-teal"
               style={{ borderRadius: 'var(--radius)' }}
             />
           </div>
