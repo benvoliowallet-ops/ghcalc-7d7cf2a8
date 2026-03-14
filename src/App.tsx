@@ -188,7 +188,7 @@ function AppInner() {
     switch (view) {
       case 'dashboard':return <Dashboard onOpenProject={handleOpenProject} onOpenSummary={handleOpenSummary} onNewProject={handleNewProject} />;
       case 'project':return <div className="max-w-7xl mx-auto px-4 py-6">{renderStep()}</div>;
-      case 'summary':return <ProjectSummary onOpenWizard={() => setView('project')} onBack={() => setView('dashboard')} />;
+      case 'summary':return <ProjectSummary key={openProjectId ?? 'summary'} onOpenWizard={() => setView('project')} onBack={() => setView('dashboard')} />;
       case 'stock':return <StockPage />;
       case 'changelog':return <ChangeLogPage />;
       case 'tasks':return <TasksPage />;
