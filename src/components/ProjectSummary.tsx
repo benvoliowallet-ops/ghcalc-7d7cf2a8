@@ -43,6 +43,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
   const [shareModal, setShareModal] = useState<{ link: string; password: string } | null>(null);
   const [pdfGenerating, setPdfGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [changesExpanded, setChangesExpanded] = useState(false);
 
   useEffect(() => { if (openProjectId) loadPortal(); }, [openProjectId, loadPortal]);
 
@@ -605,32 +606,42 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
       )}
 
       {/* História zmien */}
-      {openProjectId && projectChanges.length > 0 && (
-        <div className="mt-6">
-          <div className="bg-card border border-border rounded-lg overflow-hidden">
-            <div className="px-4 py-3 border-b border-border flex items-center gap-2">
-              <span className="text-sm font-semibold text-foreground">História zmien</span>
-            </div>
-            <div className="divide-y divide-border">
-              {projectChanges.map((c) => (
-                <div key={c.id} className="px-4 py-3">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(c.changedAt).toLocaleString('sk-SK')}
-                    </span>
-                    <span className="text-xs font-medium text-foreground">{c.changedByEmail}</span>
+      {openProjectId && projectChanges.length > 0 && (() => {
+        const CHANGES_PREVIEW = 3;
+        return (
+          <div className="mt-6">
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+                <span className="text-sm font-semibold text-foreground">História zmien</span>
+                {projectChanges.length > CHANGES_PREVIEW && (
+                  <button
+                    onClick={() => setChangesExpanded(v => !v)}
+                    className="text-xs text-primary hover:underline"
+                  >
+                  </button>
+                )}
+              </div>
+              <div className="divide-y divide-border">
+                {(changesExpanded ? projectChanges : projectChanges.slice(0, CHANGES_PREVIEW)).map((c) => (
+                  <div key={c.id} className="px-4 py-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(c.changedAt).toLocaleString('sk-SK')}
+                      </span>
+                      <span className="text-xs font-medium text-foreground">{c.changedByEmail}</span>
+                    </div>
+                    <ul className="space-y-0.5">
+                      {c.reason.split(';').map((r, i) => r.trim()).filter(Boolean).map((r, i) => (
+                        <li key={i} className="text-xs text-muted-foreground">• {r}</li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="space-y-0.5">
-                    {c.reason.split(';').map((r, i) => r.trim()).filter(Boolean).map((r, i) => (
-                      <li key={i} className="text-xs text-muted-foreground">• {r}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
@@ -641,6 +652,7 @@ function ProjectTasksSection({ projectId }: { projectId: string }) {
   const [showCompleted, setShowCompleted] = useState(false);
   const [newTaskOpen, setNewTaskOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [changesExpanded, setChangesExpanded] = useState(false);
 
   const { tasks, loading, refetch } = useTasks({ projectId, includeCompleted: showCompleted, parentTaskId: null });
   const { tasks: allTasks, refetch: refetchAll } = useAllTasks();
