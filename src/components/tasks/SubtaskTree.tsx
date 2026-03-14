@@ -128,7 +128,7 @@ export function SubtaskTree({ parentId, allTasks, depth = 0, onTaskClick, onRefr
         task={selectedSubtask}
         open={!!selectedSubtask}
         onClose={() => setSelectedSubtask(null)}
-        onRefresh={() => { setSelectedSubtask(null); onRefresh(); }}
+        onRefresh={() => { onRefresh(); }}
       />
     </div>
   );
