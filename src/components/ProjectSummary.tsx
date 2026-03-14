@@ -618,6 +618,7 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
                     onClick={() => setChangesExpanded(v => !v)}
                     className="text-xs text-primary hover:underline"
                   >
+                    {changesExpanded ? 'Skryť' : `Zobraziť všetky (${projectChanges.length})`}
                   </button>
                 )}
               </div>
@@ -652,7 +653,6 @@ function ProjectTasksSection({ projectId }: { projectId: string }) {
   const [showCompleted, setShowCompleted] = useState(false);
   const [newTaskOpen, setNewTaskOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [changesExpanded, setChangesExpanded] = useState(false);
 
   const { tasks, loading, refetch } = useTasks({ projectId, includeCompleted: showCompleted, parentTaskId: null });
   const { tasks: allTasks, refetch: refetchAll } = useAllTasks();
