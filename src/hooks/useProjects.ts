@@ -224,7 +224,7 @@ export function useProjectSaver() {
             supabase.from('project_changes').insert({
               project_id: prev.project.id,
               changed_by: currentUser?.id ?? null,
-              changed_by_email: currentUser?.email ?? 'unknown',
+              changed_by_email: (currentUser as any)?.user_metadata?.full_name ?? (currentUser as any)?.user_metadata?.name ?? currentUser?.name ?? currentUser?.email ?? 'unknown',
               reason: diffs.join('; '),
             }).then(({ error: chErr }) => {
               if (chErr) console.error('[Changes] insert error:', chErr.message);
