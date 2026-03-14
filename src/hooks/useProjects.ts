@@ -103,7 +103,7 @@ export function useProjectSaver() {
       if (!a || !b) continue
       const label = b.name || `Zóna ${i + 1}`
       for (const key of Object.keys(zoneLabels)) {
-        const av = (a as Record<string,unknown>)[key], bv = (b as Record<string,unknown>)[key]
+        const av = (a as unknown as Record<string,unknown>)[key], bv = (b as unknown as Record<string,unknown>)[key]
         if (av !== bv) changes.push(`${label} – ${zoneLabels[key]}: ${fmt(av)} → ${fmt(bv)}`)
       }
     }
@@ -114,8 +114,8 @@ export function useProjectSaver() {
       systemPressure: 'Tlak systému (bar)', pumpLocation: 'Stav čerpadla',
       osmoticWater: 'Osmotická voda', steelRope: 'Typ lana', trellisSpacing: 'Rozostup kratovníc (m)',
     }
-    const pg = prev.globalParams as Record<string,unknown> | undefined
-    const ng = next.globalParams as Record<string,unknown> | undefined
+    const pg = prev.globalParams as unknown as Record<string,unknown> | undefined
+    const ng = next.globalParams as unknown as Record<string,unknown> | undefined
     if (pg && ng) {
       for (const key of Object.keys(globalLabels)) {
         if (pg[key] !== ng[key]) changes.push(`${globalLabels[key]}: ${fmt(pg[key])} → ${fmt(ng[key])}`)
@@ -163,8 +163,8 @@ export function useProjectSaver() {
       accommodationCost: 'Ubytovanie (€)', mountingMaterial: 'Mont. materiál (€)',
       mountingMaterialStation: 'Mont. materiál stanica (€)',
     }
-    const pc = prev.costInputs as Record<string,unknown> | undefined
-    const nc = next.costInputs as Record<string,unknown> | undefined
+    const pc = prev.costInputs as unknown as Record<string,unknown> | undefined
+    const nc = next.costInputs as unknown as Record<string,unknown> | undefined
     if (pc && nc) {
       for (const key of Object.keys(costLabels)) {
         if (pc[key] !== nc[key]) changes.push(`${costLabels[key]}: ${fmt(pc[key])} → ${fmt(nc[key])}`)
@@ -224,7 +224,7 @@ export function useProjectSaver() {
             supabase.from('project_changes').insert({
               project_id: prev.project.id,
               changed_by: currentUser?.id ?? null,
-              changed_by_email: currentUser?.email ?? 'unknown',
+              changed_by_email: (currentUser as any)?.user_metadata?.full_name ?? (currentUser as any)?.user_metadata?.name ?? currentUser?.name ?? currentUser?.email ?? 'unknown',
               reason: diffs.join('; '),
             }).then(({ error: chErr }) => {
               if (chErr) console.error('[Changes] insert error:', chErr.message);
