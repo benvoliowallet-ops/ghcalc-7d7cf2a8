@@ -46,7 +46,7 @@ export function Step10_OrderForm() {
   const processedLines: OrderLine[] = bomLines.map(l => {
     const isNormistRef = l.code === 'NORMIST' || l.code.startsWith('NORMIST_PUMP_') || (() => { const r = LEGACY_CODE_MAP[l.code] ?? l.code; return !!STOCK_ITEMS.find(s => s.code === r && s.warehouse === 'NORMIST'); })();
     const priceUnit = isNormistRef ? 0 : l.price;
-    return { code: l.code, name: l.name, qty: l.qty, unit: l.unit, priceUnit, total: l.qty * priceUnit, isNormistRef };
+    const resolvedCode = LEGACY_CODE_MAP[l.code] ?? l.code; const resolvedName = isNormistRef ? (STOCK_ITEMS.find(s => s.code === resolvedCode)?.nameEn ?? l.name) : l.name; return { code: l.code, name: resolvedName, qty: l.qty, unit: l.unit, priceUnit, total: l.qty * priceUnit, isNormistRef };
   });
 
   const grandTotal = processedLines.reduce((s, l) => s + l.total, 0);
