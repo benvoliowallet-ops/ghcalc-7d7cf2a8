@@ -90,6 +90,10 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
     await updateTaskStatus(activeTask, newStatus as 'todo' | 'in_progress' | 'done');
     onRefresh();
     setSavingStatus(null);
+    // Sync activeTask in stack with updated status
+    if (taskStack.length > 0) {
+      setTaskStack(s => s.map(t => t.id === activeTask.id ? { ...t, status: newStatus as 'todo' | 'in_progress' | 'done' } : t));
+    }
   };
 
   const handleDelete = async () => {
