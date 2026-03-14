@@ -83,7 +83,7 @@ export async function markProjectCompleted(projectId: string): Promise<{ error: 
 export async function reopenProject(
   projectId: string,
   reason: string,
-  currentUser: { id: string; email: string },
+  currentUser: { id: string; email: string; name?: string },
 ): Promise<{ error: string | null }> {
   const { error: updateError } = await supabase
     .from('projects')
@@ -97,7 +97,7 @@ export async function reopenProject(
     .insert({
       project_id: projectId,
       changed_by: currentUser.id,
-      changed_by_email: currentUser.email,
+      changed_by_email: currentUser.name ?? currentUser.email,
       reason,
     });
 
