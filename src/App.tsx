@@ -281,14 +281,7 @@ function AppInner() {
           <Routes>
             <Route path="/" element={<Dashboard onOpenProject={handleOpenProject} onOpenSummary={handleOpenSummary} onNewProject={handleNewProject} />} />
             <Route path="/projects/:id" element={<ProjectWizard />} />
-            <Route path="/projects/:id/summary" element={
-              <ProjectSummary
-                onOpenWizard={() => {
-                  navigate(`/projects/${openProjectId}`);
-                }}
-                onBack={() => navigate('/')}
-              />
-            } />
+            <Route path="/projects/:id/summary" element={<ProjectSummaryPage />} />
             <Route path="/tasks" element={<TasksPage />} />
             <Route path="/stock" element={<StockPage />} />
             <Route path="/changelog" element={<ChangeLogPage />} />
