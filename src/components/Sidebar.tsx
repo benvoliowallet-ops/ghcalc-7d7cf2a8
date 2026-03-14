@@ -1,7 +1,7 @@
 import React from 'react';
 import { FolderOpen, Package, ScrollText, Users, Plus, LogOut, CheckSquare } from 'lucide-react';
-import sanfogLogoWhite from '../assets/sanfog-logo-white.svg';
 import { useAuthStore } from '../store/authStore';
+import { useTasks } from '../hooks/useTasks';
 
 type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary' | 'tasks';
 
@@ -27,6 +27,8 @@ const NAV_ITEMS: NavItem[] = [
 
 export function Sidebar({ view, setView, onNewProject, isAdmin }: SidebarProps) {
   const { currentUser, logout } = useAuthStore();
+  const { tasks: openTasks } = useTasks({ assignedTo: currentUser?.id });
+  const taskBadge = openTasks.length;
 
   const allItems = isAdmin ?
   [...NAV_ITEMS, { target: 'users' as AppView, icon: Users, label: 'Používatelia' }] :

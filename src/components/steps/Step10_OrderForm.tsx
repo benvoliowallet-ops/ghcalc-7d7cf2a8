@@ -44,9 +44,10 @@ export function Step10_OrderForm() {
   // Transform BomLine → OrderLine (suppress price for NORMIST lines)
   type OrderLine = { code: string; name: string; qty: number; unit: string; priceUnit: number; total: number; isNormistRef: boolean };
   const processedLines: OrderLine[] = bomLines.map(l => {
-    const isNormistRef = l.code === 'NORMIST' || l.code.startsWith('NORMIST_PUMP_') || (() => { const r = LEGACY_CODE_MAP[l.code] ?? l.code; return !!STOCK_ITEMS.find(s => s.code === r && s.warehouse === 'NORMIST'); })();
+    const isNormistRef = l.code === 'NORMIST' || l.code.startsWith('NORMIST_PUMP_') || !!STOCK_ITEMS.find(s => s.code === l.code && s.warehouse === 'NORMIST');
     const priceUnit = isNormistRef ? 0 : l.price;
-    const resolvedCode = LEGACY_CODE_MAP[l.code] ?? l.code; const resolvedName = isNormistRef ? (STOCK_ITEMS.find(s => s.code === resolvedCode)?.nameEn ?? l.name) : l.name; return { code: l.code, name: resolvedName, qty: l.qty, unit: l.unit, priceUnit, total: l.qty * priceUnit, isNormistRef };
+    const resolvedName = isNormistRef ? (STOCK_ITEMS.find(s => s.code === l.code)?.nameEn ?? l.name) : l.name;
+    return { code: l.code, name: resolvedName, qty: l.qty, unit: l.unit, priceUnit, total: l.qty * priceUnit, isNormistRef };
   });
 
   const grandTotal = processedLines.reduce((s, l) => s + l.total, 0);
