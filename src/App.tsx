@@ -43,28 +43,6 @@ const STEPS = [
 { num: 10, label: 'Objednávka' }];
 
 
-function SaveIndicator() {
-  const saveStatus = useProjectStore((s) => s.saveStatus);
-  if (saveStatus === 'idle') return null;
-  return (
-    <div
-      className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium transition-all"
-      style={{
-        color:
-        saveStatus === 'saving' ? 'hsl(var(--white) / 0.5)' :
-        saveStatus === 'saved' ? 'hsl(var(--teal))' :
-        'hsl(0 80% 65%)'
-      }}>
-      {saveStatus === 'saving' && <Loader2 className="w-3 h-3 animate-spin" />}
-      {saveStatus === 'saved' && <Check className="w-3 h-3" />}
-      {saveStatus === 'error' && <AlertTriangle className="w-3 h-3" />}
-      <span>
-        {saveStatus === 'saving' ? 'Ukladám...' :
-        saveStatus === 'saved' ? 'Uložené' :
-        'Chyba ukladania'}
-      </span>
-    </div>);
-}
 
 function AutoSaveSubscriber({ view }: {view: AppView;}) {
   const { debouncedSave } = useAutoSave();
@@ -103,7 +81,7 @@ function AutoSaveSubscriber({ view }: {view: AppView;}) {
 }
 
 function AppInner() {
-  const { currentStep, setStep, project, resetProject, saveCurrentProject, loadProject, openProjectId } = useProjectStore();
+  const { currentStep, setStep, project, resetProject, saveCurrentProject, loadProject, openProjectId, saveStatus } = useProjectStore();
   const { currentUser, loading, setCurrentUser, setLoading, loadProfile } = useAuthStore();
   const [view, setView] = useState<AppView>('dashboard');
   const confirm = useConfirm();
@@ -226,7 +204,6 @@ function AppInner() {
                     {project.customerName && <span className="text-xs text-white/50">· {project.customerName}</span>}
                   </div>
               }
-                <SaveIndicator />
               </div>
 
               {/* Steps scroll */}
@@ -262,9 +239,16 @@ function AppInner() {
               <div className="flex items-center gap-2 shrink-0">
                 <button
                 onClick={handleSaveAndClose}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal hover:bg-teal/90 text-white transition-colors"
+                disabled={saveStatus === 'saving'}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal text-white rounded transition-opacity disabled:opacity-60"
                 style={{ borderRadius: 'var(--radius)' }}>
-                  <Save className="w-3.5 h-3.5" /> Uložiť
+                  {saveStatus === 'saving' ? (
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Ukladám...</>
+                  ) : saveStatus === 'saved' ? (
+                    <><Check className="w-3.5 h-3.5 text-white" /> Uložené</>
+                  ) : (
+                    <><Save className="w-3.5 h-3.5" /> Uložiť</>
+                  )}
                 </button>
                 <button
                 onClick={handleNewProject}
