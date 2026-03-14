@@ -1,7 +1,7 @@
 import React from 'react';
 import { FolderOpen, Package, ScrollText, Users, Plus, LogOut, CheckSquare } from 'lucide-react';
-import sanfogLogoWhite from '../assets/sanfog-logo-white.svg';
 import { useAuthStore } from '../store/authStore';
+import { useTasks } from '../hooks/useTasks';
 
 type AppView = 'dashboard' | 'project' | 'stock' | 'changelog' | 'users' | 'summary' | 'tasks';
 
