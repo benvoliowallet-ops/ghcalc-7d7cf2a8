@@ -13,23 +13,8 @@ export interface StockItem {
 
 // âââ Legacy code migration map âââââââââââââââââââââââââââââââââââââââââââââ
 export const LEGACY_CODE_MAP: Record<string, string> = {
-  'NORMIST 0311008': '0311008',
-  'NORMIST 0311001': 'NOR 0311001',
-  'NORMIST 0311001SS': 'NOR 0311001SS',
-  'NORMIST 0311002-180': 'NOR 0311002-180',
-  'NORMIST 0311002SS-180': 'NOR 0311002SS-180',
-  'NORMIST 0311008SS': 'NOR 0311008SS',
-  'NORMIST 0311033SS': 'NOR 0311033SS',
   'NORMIST_DANFOSS': 'DNFS22KW',
   'NORMIST_30SS_FILTER': 'MVVUAG2F51MHSSNS',
-  'NORMIST 0204013A': 'NOR 0204013A',
-  '0204013A': 'NOR 0204013A',
-  '204091': 'NOR 204091',
-  'NORMIST 204091': 'NOR 204091',
-  'NORMIST 204090': 'NOR 204090',
-  '0104003-kit': 'NOR 0104003-KIT',
-  'NORMIST 201142': 'NOR 201142',
-  'NORMIST 201142M': 'NOR 201142M',
   'snfg.0013910012.02': '0013910012.02',
   'NORMIST_UV_4LAMPS': 'snfg.001.0016',
   'NORMIST_UV_6OUTLETS': 'snfg.001.0017',
