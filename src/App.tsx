@@ -79,12 +79,13 @@ function AutoSaveSubscriber() {
 }
 
 function ProjectWizard() {
-  const { currentStep, setStep, project, resetProject, saveCurrentProject, saveStatus } = useProjectStore();
+  const { currentStep, setStep, project, resetProject, saveCurrentProject, saveStatus, savedProjects, openProjectId } = useProjectStore();
   const { currentUser: wizardUser } = useAuthStore();
   const SUPER_ADMIN = 'adam.halasz@sanfog.com';
-  const isReadOnly = project.status === 'completed'
+  const openSaved = savedProjects.find(p => p.id === openProjectId);
+  const isReadOnly = openSaved?.status === 'completed'
     && wizardUser?.email !== SUPER_ADMIN
-    && wizardUser?.id !== project.ownerId;
+    && wizardUser?.id !== openSaved?.ownerId;
   const navigate = useNavigate();
   const confirm = useConfirm();
 
