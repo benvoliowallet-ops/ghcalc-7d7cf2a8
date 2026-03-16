@@ -4,7 +4,7 @@ import { useProjectStore } from '../../store/projectStore';
 import { StepLayout } from '../ui/StepLayout';
 import { Card, Button, PrintIcon, DownloadIcon } from '../ui/FormField';
 import { PUMP_TABLE, selectMaxivarem, getTransportCost, getPMCost, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from '../../utils/calculations';
-import { STOCK_ITEMS } from '../../data/stockItems';
+import { STOCK_ITEMS, getStockNameEn } from '../../data/stockItems';
 import { buildBomLines } from '../../utils/buildBom';
 import { exportToOberon, prepareBomForOberon } from '../../utils/exportOberon';
 
@@ -42,7 +42,7 @@ export function Step8_Documents() {
     const m = new Map<string, { code: string; name: string; qty: number; unit: string }>();
     processedBomLines.filter((l) => isNormist(l.code) && l.code !== 'NORMIST').forEach((nl) => {
       const ex = m.get(nl.code);
-      const nameEn = STOCK_ITEMS.find(s => s.code === nl.code)?.nameEn ?? nl.name;
+      const nameEn = getStockNameEn(nl.code);
       ex ? (ex.qty += nl.qty) : m.set(nl.code, { code: nl.code, name: nameEn, qty: nl.qty, unit: nl.unit });
     });
     const lines = Array.from(m.values());
