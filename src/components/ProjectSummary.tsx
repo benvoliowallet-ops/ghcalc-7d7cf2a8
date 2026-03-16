@@ -81,6 +81,16 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
     return lines;
   })();
 
+  // Aggregated ATTI lines -- sum quantities by code across all zones
+  const aggregatedAttiLines = (() => {
+    const m = new Map();
+    attiLines.forEach(l => {
+      const ex = m.get(l.code);
+      ex ? (ex.qty += l.qty) : m.set(l.code, { code: l.code, name: l.name, qty: l.qty, unit: l.unit, price: l.price });
+    });
+    return Array.from(m.values());
+  })();
+
   // ── Document actions ──────────────────────────────────────────────────────
   const handleDownloadPDF = useCallback(async () => {
     setPdfGenerating(true);
@@ -221,28 +231,16 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
     if (!w) return;
     w.document.write(`<html><head><title>BOM – ${project.quoteNumber}</title><style>body{font-family:Arial;font-size:11px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:4px 6px}th{background:#f3f4f6}h2{font-size:14px;margin-top:16px}tfoot td{font-weight:bold}</style></head><body>`);
     w.document.write(`<h1>BOM – Objednávka pre Attiho</h1><p>Ponuka: ${project.quoteNumber} | Zákazník: ${project.customerName}</p>`);
-    const attiSections = [...new Set(attiLines.map((l) => l.section))];
-    attiSections.forEach((sec) => {
-      const lines = attiLines.filter((l) => l.section === sec);
-      const secTotal = lines.reduce((s, l) => s + l.qty * l.price, 0);
-      w.document.write(`<h2>${sec}</h2><table><thead><tr><th>Kód</th><th>Popis</th><th>Qty</th><th>MJ</th><th>Cena/MJ</th><th>Celkom</th></tr></thead><tbody>`);
-      lines.forEach((l) => w.document.write(`<tr><td>${l.code}</td><td>${l.name}</td><td>${fmtN(l.qty, 1)}</td><td>${l.unit}</td><td>${fmtN(l.price, 2)} €</td><td>${fmtN(l.qty * l.price, 2)} €</td></tr>`));
-      w.document.write(`</tbody><tfoot><tr><td colspan="5">SPOLU ${sec}</td><td>${fmtN(secTotal, 2)} €</td></tr></tfoot></table>`);
-    });
-    w.document.write(`<h2>TOTAL: ${fmtE(attiLines.reduce((s, l) => s + l.qty * l.price, 0))}</h2></body></html>`);
-    w.document.close(); w.print();
-  };
-
-  const exportNazliXLSX = () => {
-    const rows = aggregatedNazliLines.map((nl, i) => ({ '#': i + 1, CODE: nl.code, DESCRIPTION: nl.name, QTY: nl.qty, UNIT: nl.unit }));
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Order NAZLI');
+    const total = aggregatedAttiLines.reduce((s, l) => s + l.qty * l.price, 0);
+    w.document.write('<table><thead><tr><th>#</th><th>Kód</th><th>Popis</th><th>Qty</th><th>MJ</th><th>Cena/MJ</th><th>Celkom</th></tr></thead><tbody>');
+    aggregatedAttiLines.forEach((l, i) => w.document.write('<tr><td>' + (i+1) + '</td><td>' + l.code + '</td><td>' + l.name + '</td><td>' + fmtN(l.qty, 1) + '</td><td>' + l.unit + '</td><td>' + fmtE(l.price) + '</td><td>' + fmtE(l.qty * l.price) + '</td></tr>'));
+    w.document.write('</tbody><tfoot><tr><td colspan="6">SPOLU</td><td>' + fmtE(total) + '</td></tr></tfoot></table>');
+    w.document.write('<h2>TOTAL: ' + fmtE(total) + '</h2></body></html>');
     XLSX.writeFile(wb, `OrderNAZLI_${project.quoteNumber}.xlsx`);
   };
 
   const exportAttiBOMXLSX = () => {
-    const rows = attiLines.map((l, i) => ({ '#': i + 1, Sekcia: l.section, Kód: l.code, Popis: l.name, Qty: l.qty, MJ: l.unit, 'Cena/MJ': l.price, Celkom: +(l.qty * l.price).toFixed(2) }));
+    const rows = aggregatedAttiLines.map((l, i) => ({ '#': i + 1, Kód: l.code, Popis: l.name, Qty: l.qty, MJ: l.unit, 'Cena/MJ': l.price, Celkom: +(l.qty * l.price).toFixed(2) }));
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'BOM Atti');
