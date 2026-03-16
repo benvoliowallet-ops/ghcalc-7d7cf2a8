@@ -6,7 +6,7 @@ import { useProjectStore } from '../store/projectStore';
 import { PUMP_TABLE, selectMaxivarem, fmtN, fmtE, NOZZLE_BY_ORIFICE, detectConcurrentPipes, getTransportCost, getPMCost } from '../utils/calculations';
 import { getPipe10mmForSpacing, getStockPrice } from '../data/stockItems';
 import { buildBomLines } from '../utils/buildBom';
-import { STOCK_ITEMS, LEGACY_CODE_MAP } from '../data/stockItems';
+import { STOCK_ITEMS } from '../data/stockItems';
 import { usePortal } from '../hooks/usePortal';
 import { ProjectPDF } from './pdf/ProjectPDF';
 import { InlineProjectComments } from './comments/ProjectComments';
@@ -32,12 +32,9 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
 
   const projectChanges = useProjectChanges(openProjectId);
 
-  const normistCodes = new Set(STOCK_ITEMS.filter(s => s.warehouse === 'NORMIST').map(s => s.code));
   const isNormist = (code: string) => {
-    if (code === 'NORMIST') return true;
     if (code.startsWith('NORMIST_PUMP_')) return true;
-    const resolved = LEGACY_CODE_MAP[code] ?? code;
-    return normistCodes.has(resolved);
+    return !!STOCK_ITEMS.find(s => s.code === code && s.warehouse === 'NORMIST');
   };
 
   const { portal, loading: portalLoading, loadPortal, createPortal, revokePortal } = usePortal(openProjectId ?? null);
