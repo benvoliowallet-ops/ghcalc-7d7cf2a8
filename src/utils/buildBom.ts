@@ -60,9 +60,9 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
   add('ETNA', 'ETNA_MONTAZ', getStockNameSk('ETNA_MONTAZ'), 1, 'hod', getStockPrice('ETNA_MONTAZ'));
 
   // ── Pump accessories (per zone) ─────────────────────────────────────────────
-  add('Čerpadlo', 'NOR 0204013A', getStockNameSk('NOR 0204013A'), N, 'ks', getStockPrice('NOR 0204013A'));
-  add('Čerpadlo', 'NOR 0104003-KIT', getStockNameSk('NOR 0104003-KIT'), N, 'ks', getStockPrice('NOR 0104003-KIT'));
-  add('Čerpadlo', 'NOR 204091', getStockNameSk('NOR 204091'), N, 'ks', getStockPrice('NOR 204091'));
+  add('Čerpadlo', '0204013A', getStockNameSk('0204013A'), N, 'ks', getStockPrice('0204013A'));
+  add('Čerpadlo', '0104003-kit', getStockNameSk('0104003-kit'), N, 'ks', getStockPrice('0104003-kit'));
+  add('Čerpadlo', '204091', getStockNameSk('204091'), N, 'ks', getStockPrice('204091'));
   add('Čerpadlo', '4072000024', getStockNameSk('4072000024'), N, 'ks', getStockPrice('4072000024'));
   add('Čerpadlo', '60.0525.00', getStockNameSk('60.0525.00'), N, 'ks', getStockPrice('60.0525.00'));
   add('Čerpadlo', 'snfg.06.0001', getStockNameSk('snfg.06.0001'), 1, 'ks', getStockPrice('snfg.06.0001'));
