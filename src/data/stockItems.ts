@@ -349,6 +349,16 @@ export function getStockNameEn(code: string): string {
   );
 }
 
+export function getStockNameSk(code: string): string {
+  const canonical = LEGACY_CODE_MAP[code] ?? code;
+  return (
+    STOCK_ITEMS.find(s => s.code === canonical)?.nameSk ??
+    STOCK_ITEMS.find(s => s.code === code)?.nameSk ??
+    STOCK_ITEMS.find(s => s.code === canonical)?.nameEn ??
+    code
+  );
+}
+
 export function getPipe10mmForSpacing(spacingCm: number): { code: string; name: string; price: number } {
   const codes: Record<string, string> = {
     '200': 'NOR 0311016', '250': 'NOR 0311017', '300': 'NOR 0311018',
