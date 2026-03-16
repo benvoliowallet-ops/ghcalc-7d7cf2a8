@@ -72,9 +72,9 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
   add('Systém', 'BPONG-005-P2PWE', getStockNameSk('BPONG-005-P2PWE'), 1, 'ks', getStockPrice('BPONG-005-P2PWE'));
   add('Systém', 'NOR EGE', getStockNameSk('NOR EGE'), N * 5, 'm', getStockPrice('NOR EGE'));
   add('Systém', 'NOR 204090', getStockNameSk('NOR 204090'), N, 'ks', getStockPrice('NOR 204090'));
-  add('Systém', 'NORMIST_DANFOSS', getStockNameSk('NORMIST_DANFOSS'), 1, 'ks', getStockPrice('NORMIST_DANFOSS'));
+  add('Systém', 'DNFS22KW', getStockNameSk('DNFS22KW'), 1, 'ks', getStockPrice('DNFS22KW'));
   if (uvSystemCode) add('Systém', uvSystemCode, getStockNameSk(uvSystemCode), 1, 'ks', getStockPrice(uvSystemCode));
-  if (ssFilter30) add('Systém', 'NORMIST_30SS_FILTER', getStockNameSk('NORMIST_30SS_FILTER'), 1, 'ks', getStockPrice('NORMIST_30SS_FILTER'));
+  if (ssFilter30) add('Systém', 'MVVUAG2F51MHSSNS', getStockNameSk('MVVUAG2F51MHSSNS'), 1, 'ks', getStockPrice('MVVUAG2F51MHSSNS'));
 
   // ── Per-zone items ───────────────────────────────────────────────────────────
   zoneCalcs.forEach((calc, i) => {
