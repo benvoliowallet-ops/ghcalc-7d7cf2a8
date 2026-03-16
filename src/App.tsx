@@ -168,10 +168,9 @@ function ProjectWizard() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleSaveAndClose}
-              style={{ display: isReadOnly ? 'none' : undefined }}
               disabled={saveStatus === 'saving'}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal text-white rounded transition-opacity disabled:opacity-60"
-              style={{ borderRadius: 'var(--radius)' }}
+              style={{ display: isReadOnly ? 'none' : undefined, borderRadius: 'var(--radius)' }}
             >
               {saveStatus === 'saving' ? (
                 <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Ukladám...</>
