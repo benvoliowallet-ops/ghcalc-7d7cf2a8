@@ -79,12 +79,13 @@ function AutoSaveSubscriber() {
 }
 
 function ProjectWizard() {
-  const { currentStep, setStep, project, resetProject, saveCurrentProject, saveStatus } = useProjectStore();
+  const { currentStep, setStep, project, resetProject, saveCurrentProject, saveStatus, savedProjects, openProjectId } = useProjectStore();
   const { currentUser: wizardUser } = useAuthStore();
   const SUPER_ADMIN = 'adam.halasz@sanfog.com';
-  const isReadOnly = project.status === 'completed'
+  const openSaved = savedProjects.find(p => p.id === openProjectId);
+  const isReadOnly = openSaved?.status === 'completed'
     && wizardUser?.email !== SUPER_ADMIN
-    && wizardUser?.id !== project.ownerId;
+    && wizardUser?.id !== openSaved?.ownerId;
   const navigate = useNavigate();
   const confirm = useConfirm();
 
@@ -167,10 +168,9 @@ function ProjectWizard() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleSaveAndClose}
-              style={{ display: isReadOnly ? 'none' : undefined }}
               disabled={saveStatus === 'saving'}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal text-white rounded transition-opacity disabled:opacity-60"
-              style={{ borderRadius: 'var(--radius)' }}
+              style={{ display: isReadOnly ? 'none' : undefined, borderRadius: 'var(--radius)' }}
             >
               {saveStatus === 'saving' ? (
                 <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Ukladám...</>
