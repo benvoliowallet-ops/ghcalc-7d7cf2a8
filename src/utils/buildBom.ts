@@ -113,8 +113,8 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
 
     add(sec, 'MVUZTLN400MMAKNS', getStockNameEn('MVUZTLN400MMAKNS'), calc.numHangers, 'ks', getStockPrice('MVUZTLN400MMAKNS'));
     add(sec, 'Gripple Plus Medium', getStockNameEn('Gripple Plus Medium'), calc.numGripple, 'ks', getStockPrice('Gripple Plus Medium'));
-    add(sec, 'NORMIST 201142', getStockNameEn('NORMIST 201142'), calc.numNozzleHangers, 'ks', getStockPrice('NORMIST 201142'));
-    add(sec, 'NORMIST 201142M', getStockNameEn('NORMIST 201142M'), calc.numPipeHangers, 'ks', getStockPrice('NORMIST 201142M'));
+    add(sec, 'NOR 201142', getStockNameEn('NOR 201142'), calc.numNozzleHangers, 'ks', getStockPrice('NOR 201142'));
+    add(sec, 'NOR 201142M', getStockNameEn('NOR 201142M'), calc.numPipeHangers, 'ks', getStockPrice('NOR 201142M'));
     add(sec, 'ITALINOX', getStockNameEn('ITALINOX'), Math.ceil(calc.inoxPipeLength), 'm', getStockPrice('ITALINOX'));
     add(sec, '183022000', getStockNameEn('183022000'), calc.numInoxConnectors, 'ks', getStockPrice('183022000'));
     add(sec, '189102022', getStockNameEn('189102022'), calc.numTJunctions, 'ks', getStockPrice('189102022'));
