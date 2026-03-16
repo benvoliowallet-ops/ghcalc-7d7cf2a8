@@ -355,9 +355,22 @@ export function getStockPrice(code: string): number {
   return STOCK_ITEMS.find(i => i.code === resolved)?.price ?? 0;
 }
 
+export function getStockNameEn(code: string): string {
+  const canonical = LEGACY_CODE_MAP[code] ?? code;
+  return (
+    STOCK_ITEMS.find(s => s.code === canonical)?.nameEn ??
+    STOCK_ITEMS.find(s => s.code === code)?.nameEn ??
+    code
+  );
+}
+
 export function getPipe10mmForSpacing(spacingCm: number): { code: string; name: string; price: number } {
-  if (spacingCm <= 200) { const c = 'NOR 0311016'; return { code: c, name: 'Rura D10x1.5-2000 AK', price: getStockPrice(c) }; }
-  if (spacingCm <= 250) { const c = 'NOR 0311017'; return { code: c, name: 'Rura D10x1.5-2500 AK', price: getStockPrice(c) }; }
-  if (spacingCm <= 300) { const c = 'NOR 0311018'; return { code: c, name: 'Rura D10x1.5-3000 AK', price: getStockPrice(c) }; }
-  const c = 'NOR 0311019'; return { code: c, name: 'Rura D10x1.5-4000 AK', price: getStockPrice(c) };
+  const codes: Record<string, string> = {
+    '200': 'NOR 0311016', '250': 'NOR 0311017', '300': 'NOR 0311018',
+  };
+  const c = spacingCm <= 200 ? 'NOR 0311016'
+    : spacingCm <= 250 ? 'NOR 0311017'
+    : spacingCm <= 300 ? 'NOR 0311018'
+    : 'NOR 0311019';
+  return { code: c, name: getStockNameEn(c), price: getStockPrice(c) };
 }
