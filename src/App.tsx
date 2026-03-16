@@ -80,6 +80,11 @@ function AutoSaveSubscriber() {
 
 function ProjectWizard() {
   const { currentStep, setStep, project, resetProject, saveCurrentProject, saveStatus } = useProjectStore();
+  const { currentUser: wizardUser } = useAuthStore();
+  const SUPER_ADMIN = 'adam.halasz@sanfog.com';
+  const isReadOnly = project.status === 'completed'
+    && wizardUser?.email !== SUPER_ADMIN
+    && wizardUser?.id !== project.ownerId;
   const navigate = useNavigate();
   const confirm = useConfirm();
 
@@ -162,6 +167,7 @@ function ProjectWizard() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleSaveAndClose}
+              style={{ display: isReadOnly ? 'none' : undefined }}
               disabled={saveStatus === 'saving'}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-teal text-white rounded transition-opacity disabled:opacity-60"
               style={{ borderRadius: 'var(--radius)' }}
@@ -184,7 +190,18 @@ function ProjectWizard() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">{renderStep()}</div>
+      {isReadOnly && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 flex items-center gap-2 text-amber-800 text-sm">
+          <span>&#128274;</span>
+          <span><strong>Read-only</strong> &ndash; Dokončený projekt môže upraviť iba jeho vlastník.</span>
+        </div>
+      )}
+      <div className="max-w-7xl mx-auto px-4 py-6" style={{ position: 'relative' }}>
+        {isReadOnly && (
+          <div style={{ position: 'absolute', inset: 0, zIndex: 50, cursor: 'not-allowed' }} />
+        )}
+        {renderStep()}
+      </div>
     </>
   );
 }
