@@ -108,7 +108,6 @@ export function Step8_Documents() {
     }));
     rows.push({
       '#': rows.length + 1,
-      Sekcia: 'Lano',
       Kod: 'INFO',
       Popis: `Lano zaokruhlene nahor na 500 m: ${fmtN(ropeCeiled, 0)} m = ${ropeSpools} x cievka 500 m`,
       Qty: ropeCeiled,

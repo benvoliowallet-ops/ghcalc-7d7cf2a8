@@ -236,6 +236,14 @@ export function ProjectSummary({ onOpenWizard, onBack }: ProjectSummaryProps) {
     aggregatedAttiLines.forEach((l, i) => w.document.write('<tr><td>' + (i+1) + '</td><td>' + l.code + '</td><td>' + l.name + '</td><td>' + fmtN(l.qty, 1) + '</td><td>' + l.unit + '</td><td>' + fmtE(l.price) + '</td><td>' + fmtE(l.qty * l.price) + '</td></tr>'));
     w.document.write('</tbody><tfoot><tr><td colspan="6">SPOLU</td><td>' + fmtE(total) + '</td></tr></tfoot></table>');
     w.document.write('<h2>TOTAL: ' + fmtE(total) + '</h2></body></html>');
+    w.document.close(); w.print();
+  };
+
+  const exportNazliXLSX = () => {
+    const rows = aggregatedNazliLines.map((nl, i) => ({ '#': i + 1, CODE: nl.code, DESCRIPTION: nl.name, QTY: nl.qty, UNIT: nl.unit }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Order NAZLI');
     XLSX.writeFile(wb, `OrderNAZLI_${project.quoteNumber}.xlsx`);
   };
 
