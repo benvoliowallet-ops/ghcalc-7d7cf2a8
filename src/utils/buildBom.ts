@@ -1,6 +1,6 @@
 import type { Project, GlobalParams, ZoneParams, ZoneCalc, CostInputs, CADDrawing } from '../types';
 import { PUMP_TABLE, calcETNACapacity, selectMaxivarem, NOZZLE_BY_ORIFICE, detectConcurrentPipes } from './calculations';
-import { getPipe10mmForSpacing, getStockPrice, getStockNameEn } from '../data/stockItems';
+import { getPipe10mmForSpacing, getStockPrice, getStockNameSk } from '../data/stockItems';
 
 export interface BomSnapshot {
   project: Project;
@@ -50,31 +50,31 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
   const cadHasPipes = cad.segments.some(s => s.lineType === 'pipe');
 
   // ── System / Station ────────────────────────────────────────────────────────
-  add('Balné', 'SNFG.00001', getStockNameEn('SNFG.00001'), 1, 'ks', getStockPrice('SNFG.00001'));
+  add('Balné', 'SNFG.00001', getStockNameSk('SNFG.00001'), 1, 'ks', getStockPrice('SNFG.00001'));
   if (normistPrice > 0) add('FOGSYSTEM NORMIST', 'NORMIST', `FOGSYSTEM NORMIST (${osmoticSS ? 'SS' : 'STD'})`, 1, 'ks', normistPrice);
   add('ETNA', etnaResult.pumpCode, `${etnaResult.pumpName} ${osmoticSS ? '[SS]' : '[ŠTANDARD]'}`, 1, 'ks', getStockPrice(etnaResult.pumpCode));
   add('ETNA', maxivaremInfo.code, maxivaremInfo.label, 1, 'ks', maxivaremInfo.price);
-  add('ETNA', 'ETNA_ACC', getStockNameEn('ETNA_ACC'), 1, 'ks', getStockPrice('ETNA_ACC'));
-  add('ETNA', 'ETNA_VODA', getStockNameEn('ETNA_VODA'), 1, 'ks', getStockPrice('ETNA_VODA'));
-  add('ETNA', 'SNFG.TLK.001', getStockNameEn('SNFG.TLK.001'), 1, 'ks', getStockPrice('SNFG.TLK.001'));
-  add('ETNA', 'ETNA_MONTAZ', getStockNameEn('ETNA_MONTAZ'), 1, 'hod', getStockPrice('ETNA_MONTAZ'));
+  add('ETNA', 'ETNA_ACC', getStockNameSk('ETNA_ACC'), 1, 'ks', getStockPrice('ETNA_ACC'));
+  add('ETNA', 'ETNA_VODA', getStockNameSk('ETNA_VODA'), 1, 'ks', getStockPrice('ETNA_VODA'));
+  add('ETNA', 'SNFG.TLK.001', getStockNameSk('SNFG.TLK.001'), 1, 'ks', getStockPrice('SNFG.TLK.001'));
+  add('ETNA', 'ETNA_MONTAZ', getStockNameSk('ETNA_MONTAZ'), 1, 'hod', getStockPrice('ETNA_MONTAZ'));
 
   // ── Pump accessories (per zone) ─────────────────────────────────────────────
-  add('Čerpadlo', '0204013A', getStockNameEn('0204013A'), N, 'ks', getStockPrice('0204013A'));
-  add('Čerpadlo', '0104003-kit', getStockNameEn('0104003-kit'), N, 'ks', getStockPrice('0104003-kit'));
-  add('Čerpadlo', '204091', getStockNameEn('204091'), N, 'ks', getStockPrice('204091'));
-  add('Čerpadlo', '4072000024', getStockNameEn('4072000024'), N, 'ks', getStockPrice('4072000024'));
-  add('Čerpadlo', '60.0525.00', getStockNameEn('60.0525.00'), N, 'ks', getStockPrice('60.0525.00'));
-  add('Čerpadlo', 'snfg.06.0001', getStockNameEn('snfg.06.0001'), 1, 'ks', getStockPrice('snfg.06.0001'));
+  add('Čerpadlo', '0204013A', getStockNameSk('0204013A'), N, 'ks', getStockPrice('0204013A'));
+  add('Čerpadlo', '0104003-kit', getStockNameSk('0104003-kit'), N, 'ks', getStockPrice('0104003-kit'));
+  add('Čerpadlo', '204091', getStockNameSk('204091'), N, 'ks', getStockPrice('204091'));
+  add('Čerpadlo', '4072000024', getStockNameSk('4072000024'), N, 'ks', getStockPrice('4072000024'));
+  add('Čerpadlo', '60.0525.00', getStockNameSk('60.0525.00'), N, 'ks', getStockPrice('60.0525.00'));
+  add('Čerpadlo', 'snfg.06.0001', getStockNameSk('snfg.06.0001'), 1, 'ks', getStockPrice('snfg.06.0001'));
 
   // ── System extras ────────────────────────────────────────────────────────────
-  add('Systém', 'TELTONIKA_GSM', getStockNameEn('TELTONIKA_GSM'), 1, 'ks', getStockPrice('TELTONIKA_GSM'));
-  add('Systém', 'BPONG-005-P2PWE', getStockNameEn('BPONG-005-P2PWE'), 1, 'ks', getStockPrice('BPONG-005-P2PWE'));
-  add('Systém', 'NOR EGE', getStockNameEn('NOR EGE'), N * 5, 'm', getStockPrice('NOR EGE'));
-  add('Systém', 'NOR 204090', getStockNameEn('NOR 204090'), N, 'ks', getStockPrice('NOR 204090'));
-  add('Systém', 'NORMIST_DANFOSS', getStockNameEn('NORMIST_DANFOSS'), 1, 'ks', getStockPrice('NORMIST_DANFOSS'));
-  if (uvSystemCode) add('Systém', uvSystemCode, getStockNameEn(uvSystemCode), 1, 'ks', getStockPrice(uvSystemCode));
-  if (ssFilter30) add('Systém', 'NORMIST_30SS_FILTER', getStockNameEn('NORMIST_30SS_FILTER'), 1, 'ks', getStockPrice('NORMIST_30SS_FILTER'));
+  add('Systém', 'TELTONIKA_GSM', getStockNameSk('TELTONIKA_GSM'), 1, 'ks', getStockPrice('TELTONIKA_GSM'));
+  add('Systém', 'BPONG-005-P2PWE', getStockNameSk('BPONG-005-P2PWE'), 1, 'ks', getStockPrice('BPONG-005-P2PWE'));
+  add('Systém', 'NOR EGE', getStockNameSk('NOR EGE'), N * 5, 'm', getStockPrice('NOR EGE'));
+  add('Systém', 'NOR 204090', getStockNameSk('NOR 204090'), N, 'ks', getStockPrice('NOR 204090'));
+  add('Systém', 'NORMIST_DANFOSS', getStockNameSk('NORMIST_DANFOSS'), 1, 'ks', getStockPrice('NORMIST_DANFOSS'));
+  if (uvSystemCode) add('Systém', uvSystemCode, getStockNameSk(uvSystemCode), 1, 'ks', getStockPrice(uvSystemCode));
+  if (ssFilter30) add('Systém', 'NORMIST_30SS_FILTER', getStockNameSk('NORMIST_30SS_FILTER'), 1, 'ks', getStockPrice('NORMIST_30SS_FILTER'));
 
   // ── Per-zone items ───────────────────────────────────────────────────────────
   zoneCalcs.forEach((calc, i) => {
@@ -88,68 +88,68 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
     if (zonePump) add(sec, zonePump.code, zonePump.name, 1, 'ks', 0);
 
     const nCode = NOZZLE_BY_ORIFICE[zone.nozzleOrifice];
-    add(sec, nCode, getStockNameEn(nCode), calc.numNozzles, 'ks', getStockPrice(nCode));
-    add(sec, 'NOR 301188', getStockNameEn('NOR 301188'), calc.numSwivel, 'ks', getStockPrice('NOR 301188'));
+    add(sec, nCode, getStockNameSk(nCode), calc.numNozzles, 'ks', getStockPrice(nCode));
+    add(sec, 'NOR 301188', getStockNameSk('NOR 301188'), calc.numSwivel, 'ks', getStockPrice('NOR 301188'));
 
     const pipe10mm = getPipe10mmForSpacing(zone.nozzleSpacing);
     add(sec, pipe10mm.code, pipe10mm.name, calc.numPipes10mmTotal, 'ks', pipe10mm.price);
 
     if (osmoticSS) {
-      add(sec, 'NOR 0311002SS-180', getStockNameEn('NOR 0311002SS-180'), calc.numPipes10mmTotal + 1, 'ks', getStockPrice('NOR 0311002SS-180'));
+      add(sec, 'NOR 0311002SS-180', getStockNameSk('NOR 0311002SS-180'), calc.numPipes10mmTotal + 1, 'ks', getStockPrice('NOR 0311002SS-180'));
     } else {
-      add(sec, 'NOR 0311002-180', getStockNameEn('NOR 0311002-180'), calc.numPipes10mmTotal + 1, 'ks', getStockPrice('NOR 0311002-180'));
+      add(sec, 'NOR 0311002-180', getStockNameSk('NOR 0311002-180'), calc.numPipes10mmTotal + 1, 'ks', getStockPrice('NOR 0311002-180'));
     }
 
     const endPlugQty = ((zone.connectionType ?? 'T-kus') === 'T-kus') ? calc.numEndPlug * 2 : calc.numEndPlug;
     if (osmoticSS) {
-      add(sec, 'NOR 0311008SS', getStockNameEn('NOR 0311008SS'), endPlugQty, 'ks', getStockPrice('NOR 0311008SS'));
+      add(sec, 'NOR 0311008SS', getStockNameSk('NOR 0311008SS'), endPlugQty, 'ks', getStockPrice('NOR 0311008SS'));
     } else {
-      add(sec, '0311008', getStockNameEn('0311008'), endPlugQty, 'ks', getStockPrice('0311008'));
+      add(sec, '0311008', getStockNameSk('0311008'), endPlugQty, 'ks', getStockPrice('0311008'));
     }
 
     const ropeCode = globalParams.steelRope === 'SS_NEREZ' ? 'SVX_SS_NEREZ' : 'SVX 201143';
     const ropeQty = ropeOverrides[i] ?? calc.ropeLength;
-    add(sec, ropeCode, getStockNameEn(ropeCode), ropeQty, 'm', getStockPrice(ropeCode));
+    add(sec, ropeCode, getStockNameSk(ropeCode), ropeQty, 'm', getStockPrice(ropeCode));
 
-    add(sec, 'MVUZTLN400MMAKNS', getStockNameEn('MVUZTLN400MMAKNS'), calc.numHangers, 'ks', getStockPrice('MVUZTLN400MMAKNS'));
-    add(sec, 'Gripple Plus Medium', getStockNameEn('Gripple Plus Medium'), calc.numGripple, 'ks', getStockPrice('Gripple Plus Medium'));
-    add(sec, 'NOR 201142', getStockNameEn('NOR 201142'), calc.numNozzleHangers, 'ks', getStockPrice('NOR 201142'));
-    add(sec, 'NOR 201142M', getStockNameEn('NOR 201142M'), calc.numPipeHangers, 'ks', getStockPrice('NOR 201142M'));
-    add(sec, 'ITALINOX', getStockNameEn('ITALINOX'), Math.ceil(calc.inoxPipeLength), 'm', getStockPrice('ITALINOX'));
-    add(sec, '183022000', getStockNameEn('183022000'), calc.numInoxConnectors, 'ks', getStockPrice('183022000'));
-    add(sec, '189102022', getStockNameEn('189102022'), calc.numTJunctions, 'ks', getStockPrice('189102022'));
-    add(sec, 'snfg.05.0002', getStockNameEn('snfg.05.0002'), calc.numDilations, 'ks', getStockPrice('snfg.05.0002'));
-    add(sec, 'snfg.05.0014', getStockNameEn('snfg.05.0014'), calc.numDrainAssemblies, 'ks', getStockPrice('snfg.05.0014'));
+    add(sec, 'MVUZTLN400MMAKNS', getStockNameSk('MVUZTLN400MMAKNS'), calc.numHangers, 'ks', getStockPrice('MVUZTLN400MMAKNS'));
+    add(sec, 'Gripple Plus Medium', getStockNameSk('Gripple Plus Medium'), calc.numGripple, 'ks', getStockPrice('Gripple Plus Medium'));
+    add(sec, 'NOR 201142', getStockNameSk('NOR 201142'), calc.numNozzleHangers, 'ks', getStockPrice('NOR 201142'));
+    add(sec, 'NOR 201142M', getStockNameSk('NOR 201142M'), calc.numPipeHangers, 'ks', getStockPrice('NOR 201142M'));
+    add(sec, 'ITALINOX', getStockNameSk('ITALINOX'), Math.ceil(calc.inoxPipeLength), 'm', getStockPrice('ITALINOX'));
+    add(sec, '183022000', getStockNameSk('183022000'), calc.numInoxConnectors, 'ks', getStockPrice('183022000'));
+    add(sec, '189102022', getStockNameSk('189102022'), calc.numTJunctions, 'ks', getStockPrice('189102022'));
+    add(sec, 'snfg.05.0002', getStockNameSk('snfg.05.0002'), calc.numDilations, 'ks', getStockPrice('snfg.05.0002'));
+    add(sec, 'snfg.05.0014', getStockNameSk('snfg.05.0014'), calc.numDrainAssemblies, 'ks', getStockPrice('snfg.05.0014'));
     if (calc.numDrainAssemblies > 0) {
-      add(sec, 'snfg.004.002', getStockNameEn('snfg.004.002'), calc.numDrainAssemblies, 'ks', getStockPrice('snfg.004.002'));
+      add(sec, 'snfg.004.002', getStockNameSk('snfg.004.002'), calc.numDrainAssemblies, 'ks', getStockPrice('snfg.004.002'));
     }
 
     // Prepoj na napájacie potrubie - rovný alebo T-kus
     if ((zone.connectionType ?? 'T-kus') === 'T-kus') {
-      add(sec, '0013910012.02', getStockNameEn('0013910012.02'), 1, 'ks', getStockPrice('0013910012.02'));
+      add(sec, '0013910012.02', getStockNameSk('0013910012.02'), 1, 'ks', getStockPrice('0013910012.02'));
     } else {
-      add(sec, '0013910012.01', getStockNameEn('0013910012.01'), 1, 'ks', getStockPrice('0013910012.01'));
+      add(sec, '0013910012.01', getStockNameSk('0013910012.01'), 1, 'ks', getStockPrice('0013910012.01'));
     }
 
     if (zone.hasMagnet) {
-      add(sec, 'KOH000000606', getStockNameEn('KOH000000606'), Math.ceil(calc.cysyLength), 'm', getStockPrice('KOH000000606'));
+      add(sec, 'KOH000000606', getStockNameSk('KOH000000606'), Math.ceil(calc.cysyLength), 'm', getStockPrice('KOH000000606'));
     }
 
-    add(sec, 'EKR000001481', getStockNameEn('EKR000001481'), calc.numJunctionBoxes, 'ks', getStockPrice('EKR000001481'));
-    add(sec, 'ESV000001630', getStockNameEn('ESV000001630'), calc.numWago, 'ks', getStockPrice('ESV000001630'));
+    add(sec, 'EKR000001481', getStockNameSk('EKR000001481'), calc.numJunctionBoxes, 'ks', getStockPrice('EKR000001481'));
+    add(sec, 'ESV000001630', getStockNameSk('ESV000001630'), calc.numWago, 'ks', getStockPrice('ESV000001630'));
 
-    if (zone.hydraulicHoseLength > 0) add(sec, 'snfg.004.0017', getStockNameEn('snfg.004.0017'), Math.ceil(zone.hydraulicHoseLength), 'm', getStockPrice('snfg.004.0017'));
-    if (zone.hydraulicHoseConnectors > 0) add(sec, 'snfg.004.00016', getStockNameEn('snfg.004.00016'), zone.hydraulicHoseConnectors, 'ks', getStockPrice('snfg.004.00016'));
+    if (zone.hydraulicHoseLength > 0) add(sec, 'snfg.004.0017', getStockNameSk('snfg.004.0017'), Math.ceil(zone.hydraulicHoseLength), 'm', getStockPrice('snfg.004.0017'));
+    if (zone.hydraulicHoseConnectors > 0) add(sec, 'snfg.004.00016', getStockNameSk('snfg.004.00016'), zone.hydraulicHoseConnectors, 'ks', getStockPrice('snfg.004.00016'));
 
     if (zone.controlType === 'Snímač') {
-      add(sec, 'KDP000003519', getStockNameEn('KDP000003519'), Math.ceil(calc.supplyPipeLength), 'm', getStockPrice('KDP000003519'));
-      add(sec, 'AS109R', getStockNameEn('AS109R'), 1, 'ks', getStockPrice('AS109R'));
+      add(sec, 'KDP000003519', getStockNameSk('KDP000003519'), Math.ceil(calc.supplyPipeLength), 'm', getStockPrice('KDP000003519'));
+      add(sec, 'AS109R', getStockNameSk('AS109R'), 1, 'ks', getStockPrice('AS109R'));
     }
   });
 
   // ── Bracket BOM (from CAD concurrent pipes) ─────────────────────────────────
   if (cadHasPipes) {
-    bracketBOM.forEach(b => add('Držiaky', b.code, getStockNameEn(b.code), b.qty, 'ks', getStockPrice(b.code)));
+    bracketBOM.forEach(b => add('Držiaky', b.code, getStockNameSk(b.code), b.qty, 'ks', getStockPrice(b.code)));
   }
 
   // ── Installation & costs ─────────────────────────────────────────────────────
@@ -178,18 +178,18 @@ export function buildBomLines(snap: BomSnapshot): BomLine[] {
     : 'SANFOG_PREPRAVA_SK';
   add('Doprava', prepravaCode, `Preprava tovaru (${project.country})`, 1, 'ks', getStockPrice(prepravaCode));
 
-  add('Ostatné', 'SANFOG_PROJEKTO', getStockNameEn('SANFOG_PROJEKTO'), 1, 'ks', getStockPrice('SANFOG_PROJEKTO'));
+  add('Ostatné', 'SANFOG_PROJEKTO', getStockNameSk('SANFOG_PROJEKTO'), 1, 'ks', getStockPrice('SANFOG_PROJEKTO'));
 
   if (costInputs.projectArea <= 2) {
-    add('Ostatné', 'SANFOG_PM_2Ha', getStockNameEn('SANFOG_PM_2Ha'), 1, 'ks', getStockPrice('SANFOG_PM_2Ha'));
+    add('Ostatné', 'SANFOG_PM_2Ha', getStockNameSk('SANFOG_PM_2Ha'), 1, 'ks', getStockPrice('SANFOG_PM_2Ha'));
   } else if (costInputs.projectArea <= 4) {
-    add('Ostatné', 'SANFOG_PM_4Ha', getStockNameEn('SANFOG_PM_4Ha'), 1, 'ks', getStockPrice('SANFOG_PM_4Ha'));
+    add('Ostatné', 'SANFOG_PM_4Ha', getStockNameSk('SANFOG_PM_4Ha'), 1, 'ks', getStockPrice('SANFOG_PM_4Ha'));
   } else {
-    add('Ostatné', 'SANFOG_PM_6Ha', getStockNameEn('SANFOG_PM_6Ha'), 1, 'ks', getStockPrice('SANFOG_PM_6Ha'));
+    add('Ostatné', 'SANFOG_PM_6Ha', getStockNameSk('SANFOG_PM_6Ha'), 1, 'ks', getStockPrice('SANFOG_PM_6Ha'));
   }
 
-  add('Ostatné', 'SANFOG_MAT', getStockNameEn('SANFOG_MAT'), 1, 'ks', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
-  add('Ostatné', 'SANFOG_COLNICA', getStockNameEn('SANFOG_COLNICA'), 1, 'ks', getStockPrice('SANFOG_COLNICA'));
+  add('Ostatné', 'SANFOG_MAT', getStockNameSk('SANFOG_MAT'), 1, 'ks', Number(costInputs.mountingMaterial) + Number(costInputs.mountingMaterialStation));
+  add('Ostatné', 'SANFOG_COLNICA', getStockNameSk('SANFOG_COLNICA'), 1, 'ks', getStockPrice('SANFOG_COLNICA'));
 
   return lines;
 }
