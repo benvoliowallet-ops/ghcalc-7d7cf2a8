@@ -45,7 +45,8 @@ export function Step8_Documents() {
     const m = new Map<string, { code: string; name: string; qty: number; unit: string }>();
     processedBomLines.filter((l) => isNormist(l.code) && l.code !== 'NORMIST').forEach((nl) => {
       const ex = m.get(nl.code);
-      ex ? (ex.qty += nl.qty) : m.set(nl.code, { code: nl.code, name: nl.name, qty: nl.qty, unit: nl.unit });
+      const nameEn = STOCK_ITEMS.find(s => s.code === nl.code)?.nameEn ?? nl.name;
+      ex ? (ex.qty += nl.qty) : m.set(nl.code, { code: nl.code, name: nameEn, qty: nl.qty, unit: nl.unit });
     });
     const lines = Array.from(m.values());
     if (uvSystemNazli) lines.push({ code: 'UV_SYSTEM', name: 'UV System', qty: 1, unit: 'ks' });
