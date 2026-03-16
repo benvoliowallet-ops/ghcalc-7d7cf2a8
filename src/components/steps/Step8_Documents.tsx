@@ -45,7 +45,10 @@ export function Step8_Documents() {
     const m = new Map<string, { code: string; name: string; qty: number; unit: string }>();
     processedBomLines.filter((l) => isNormist(l.code) && l.code !== 'NORMIST').forEach((nl) => {
       const ex = m.get(nl.code);
-      const nameEn = STOCK_ITEMS.find(s => s.code === nl.code)?.nameEn ?? nl.name;
+      const canonicalCode = LEGACY_CODE_MAP[nl.code] ?? nl.code;
+      const nameEn = STOCK_ITEMS.find(s => s.code === canonicalCode)?.nameEn
+        ?? STOCK_ITEMS.find(s => s.code === nl.code)?.nameEn
+        ?? nl.name;
       ex ? (ex.qty += nl.qty) : m.set(nl.code, { code: nl.code, name: nameEn, qty: nl.qty, unit: nl.unit });
     });
     const lines = Array.from(m.values());
