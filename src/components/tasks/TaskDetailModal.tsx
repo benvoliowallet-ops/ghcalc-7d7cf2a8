@@ -250,7 +250,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-semibold text-foreground">{c.author?.name}</span>
-                        <span className="text-xs text-muted-foreground">{format(new Date(c.created_at), 'dd.MM. HH:mm')}</span>
+                        <span className="text-xs text-muted-foreground">{formatSK(c.created_at, 'dd.MM. HH:mm')}</span>
                         {currentUser?.id === c.created_by && (
                           <button
                             onClick={async () => { await deleteTaskComment(c.id); refetchComments(); }}
