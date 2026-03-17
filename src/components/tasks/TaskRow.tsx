@@ -102,7 +102,7 @@ export function TaskRow({ task, subtaskCount, onClick }: TaskRowProps) {
             }}
           >
             <Clock className="w-3 h-3" />
-            {format(deadlineDate, 'dd.MM.yyyy')}
+            {formatSK(deadlineDate, 'dd.MM.yyyy')}
           </span>
         )}
         {completedLate && (
