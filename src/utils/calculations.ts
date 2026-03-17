@@ -212,13 +212,13 @@ export function calcETNACapacity(totalFlowM1H: number): {
   pumpCode: string; pumpName: string; capacityWarning: boolean;
 } {
   if (totalFlowM1H <= 15) {
-    return { pumpCode: '0881490000B', pumpName: 'HF KI-ST 16/3-30 (15mÃÂ³/h)', capacityWarning: false };
+    return { pumpCode: '0881490000B', pumpName: 'HF KI-ST 16/3-30 (15m³/h)', capacityWarning: false };
   } else if (totalFlowM1H <= 25) {
-    return { pumpCode: 'snfg.001.0021', pumpName: 'HF KI-ST 32/2-30 (25mÃÂ³/h)', capacityWarning: false };
+    return { pumpCode: 'snfg.001.0021', pumpName: 'HF KI-ST 32/2-30 (25m³/h)', capacityWarning: false };
   } else if (totalFlowM1H <= 35) {
-    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35mÃÂ³/h)', capacityWarning: false };
+    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35m³/h)', capacityWarning: false };
   } else {
-    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35mÃÂ³/h)', capacityWarning: true };
+    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35m³/h)', capacityWarning: true };
   }
 }
 
@@ -269,7 +269,7 @@ export function getRacmetBracketCode(nPipes: number): string {
   }
 }
 
-// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Greedy largest-first bracket decomposition Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// ─── Greedy largest-first bracket decomposition ───────────────────────────────
 const TRELLIS_VARIANTS = [
   { pipes: 6, code: 'snfg.05.0018' },
   { pipes: 4, code: 'snfg.05.0006' },
@@ -450,7 +450,7 @@ export function fmtN(n: number, decimals = 0): string {
 }
 
 export function fmtE(n: number): string {
-  return `${fmtN(n, 2)} Ã¢ÂÂ¬`;
+  return `${fmtN(n, 2)} €`;
 }
 
 export function fmtM(n: number): string {
