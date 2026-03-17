@@ -111,7 +111,7 @@ function buildHtml(type: NotifType, payload: HtmlPayload): string {
   } else if (type === 'comment') {
     headline = 'Novy komentar k vasej ulohe';
     body = '<strong style="color:#0d9488">' + recipientName + '</strong>, ' + senderName + ' pridal/a komentar.';
-    bannerColor = '#f38f00';
+    bannerColor = '#0f766e';
     icon = '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>';
   } else {
     headline = 'Aktualizacia ulohy';
@@ -143,7 +143,7 @@ function buildHtml(type: NotifType, payload: HtmlPayload): string {
     + '<div style="color:#fff;font-size:14px;font-weight:700;letter-spacing:.02em">GreenHouse Calc</div>'
     + '<div style="color:rgba(255,255,255,.45);font-size:11px;margin-top:1px">Task Notification</div>'
     + '</div></div>'
-
+    + '<img src="' + fullUri + '" height="30" alt="sanfog" style="display:block"/>'
     + '</div>'
 
     // ── Banner ──
