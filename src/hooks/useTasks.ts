@@ -244,10 +244,12 @@ export function useTaskMutations(refetch?: () => void) {
 
   const addTaskComment = useCallback(async (task: Task, content: string) => {
     if (!currentUser || !content.trim()) return;
+    const trimmed = content.trim();
+    const now = new Date().toISOString();
     const { data } = await supabase.from('task_comments').insert({
       task_id: task.id,
       created_by: currentUser.id,
-      content: content.trim(),
+      content: trimmed,
     }).select().single();
 
     if (data) {
@@ -255,7 +257,11 @@ export function useTaskMutations(refetch?: () => void) {
       const recipients = new Set<string>();
       if (task.created_by !== currentUser.id) recipients.add(task.created_by);
       if (task.assigned_to && task.assigned_to !== currentUser.id) recipients.add(task.assigned_to);
-      recipients.forEach(r => triggerNotification('comment', task.id, r));
+      recipients.forEach(r => triggerNotification('comment', task.id, r, {
+        commentText: trimmed,
+        commentAuthor: currentUser.name,
+        commentAt: now,
+      }));
     }
   }, [currentUser]);
 
@@ -267,10 +273,15 @@ export function useTaskMutations(refetch?: () => void) {
   return { createTask, updateTask, updateTaskStatus, deleteTask, addTaskComment, deleteTaskComment };
 }
 
-async function triggerNotification(type: 'assigned' | 'completed' | 'comment', taskId: string, recipientId: string) {
+async function triggerNotification(
+  type: 'assigned' | 'completed' | 'comment',
+  taskId: string,
+  recipientId: string,
+  extra?: { commentText?: string; commentAuthor?: string; commentAt?: string },
+) {
   try {
     await supabase.functions.invoke('send-task-notification', {
-      body: { type, taskId, recipientId },
+      body: { type, taskId, recipientId, ...extra },
     });
   } catch {
     // Notifications are best-effort; don't block UI
