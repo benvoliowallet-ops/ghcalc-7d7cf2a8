@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, CheckSquare, Filter } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
 import { useTasks, useAllTasks, useProfiles, Task } from '@/hooks/useTasks';
 import { TaskList } from '@/components/tasks/TaskList';
 import { TaskDetailModal } from '@/components/tasks/TaskDetailModal';
@@ -16,7 +15,6 @@ const PRIORITIES = [
 
 export default function TasksPage() {
   const profiles = useProfiles();
-  const [searchParams] = useSearchParams();
 
   const [filterAssignedTo, setFilterAssignedTo] = useState('');
   const [filterPriority, setFilterPriority] = useState('');
@@ -31,17 +29,6 @@ export default function TasksPage() {
   });
 
   const { tasks: allTasks, refetch: refetchAll } = useAllTasks();
-
-  // Deep-link: auto-open task from ?taskId= URL param
-  useEffect(() => {
-    const taskId = searchParams.get('taskId');
-    if (!taskId || loading) return;
-    const found = allTasks.find(t => t.id === taskId) ?? tasks.find(t => t.id === taskId);
-    if (found && (!selectedTask || selectedTask.id !== taskId)) {
-      setShowCompleted(true); // ensure completed tasks are also found
-      setSelectedTask(found);
-    }
-  }, [searchParams, allTasks, loading]);
 
   const filteredTasks = filterPriority
     ? tasks.filter(t => t.priority === filterPriority)
