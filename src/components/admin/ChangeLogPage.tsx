@@ -177,7 +177,7 @@ export function ChangeLogPage() {
                           key={entry.id}
                           className={`border-b border-border hover:bg-muted/50 transition-colors ${idx % 2 === 1 ? 'bg-muted/20' : ''}`}>
                           <td className="px-4 py-2.5 text-xs text-muted-foreground whitespace-nowrap">
-                            {new Date(entry.timestamp).toLocaleString('sk-SK', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            {new Date(entry.timestamp).toLocaleString('sk-SK', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bratislava' })}
                           </td>
                           <td className="px-4 py-2.5 text-foreground font-medium text-xs whitespace-nowrap">{entry.userName}</td>
                           <td className="px-4 py-2.5">
