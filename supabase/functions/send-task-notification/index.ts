@@ -22,191 +22,199 @@ interface HtmlPayload {
   recipientName:   string;
   projectRef:      string;
   projectName:     string;
+  commentText?:    string | null;
+  commentAuthor?:  string | null;
+  commentAt?:      string | null;
 }
 
-// ─── Real brand SVGs (inlined from project assets) ───────────────────────────
-
-// Piktogram only — crop to the globe/waves icon area of the full logo SVG
-const SANFOG_PIKT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="30 34 45 43" width="40" height="40">
-  <rect x="30" y="34" width="45" height="43" rx="8" fill="#0a2236"/>
-  <path fill="#ffffff" d="M44.29,51.52a7.88,7.88,0,0,1,15.29-.13,19.66,19.66,0,0,0,9.48-2.78,17.76,17.76,0,0,0-34.24.08,19.69,19.69,0,0,0,9.47,2.84"/>
-  <path fill="#ffffff" d="M59.71,54.8a7.89,7.89,0,0,1-15.49.14,23.29,23.29,0,0,0-9.55,2.55,17.76,17.76,0,0,0,34.6-.16,23.3,23.3,0,0,0-9.56-2.54"/>
-</svg>`;
-
-// Full horizontal logo — white version (piktogram + sanfog wordmark)
-const SANFOG_FULL_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 239.38 109.13" width="130" height="30">
-  <path fill="#ffffff" d="M44.29,51.52a7.88,7.88,0,0,1,15.29-.13,19.66,19.66,0,0,0,9.48-2.78,17.76,17.76,0,0,0-34.24.08,19.69,19.69,0,0,0,9.47,2.84"/>
-  <path fill="#ffffff" d="M59.71,54.8a7.89,7.89,0,0,1-15.49.14,23.29,23.29,0,0,0-9.55,2.55,17.76,17.76,0,0,0,34.6-.16,23.3,23.3,0,0,0-9.56-2.54"/>
-  <path fill="#ffffff" d="M97.72,49.22a6.82,6.82,0,0,0-4.23-1.3c-1.7,0-2.57.61-2.57,1.48s.9,1.52,2.64,1.55c3.51.11,7.73.83,7.77,5.75,0,2.89-2.13,6-7.81,6a12.12,12.12,0,0,1-8.38-3L87.39,56a9.55,9.55,0,0,0,6.22,2.24c1.52,0,2.71-.58,2.67-1.52s-.61-1.52-3-1.59c-3.32-.15-7.48-1.52-7.48-5.71s3.83-5.75,7.7-5.75A9.87,9.87,0,0,1,100.29,46Z"/>
-  <path fill="#ffffff" d="M108.63,53.09a4.47,4.47,0,0,0,4.7,4.7,4.72,4.72,0,1,0,0-9.43,4.5,4.5,0,0,0-4.7,4.73m9.61-8.93h4.88V62h-4.7l-.29-2.24c-1.19,1.88-3.76,2.6-5.49,2.64-5.35,0-9.21-3.43-9.21-9.32s4.08-9.4,9.36-9.32c2.24,0,4.34.87,5.28,2.46Z"/>
-  <path fill="#ffffff" d="M140.39,62V52.58c0-2.75-1.19-4.16-3.69-4.16a4.14,4.14,0,0,0-4,4.37V62h-5.13V44.17h4.7l.18,2.28a6.73,6.73,0,0,1,5.78-2.71c4,0,7.44,1.88,7.44,8.82V62Z"/>
-  <path fill="#ffffff" d="M177.5,53.13a4.5,4.5,0,1,0-9,0A4.35,4.35,0,0,0,173,57.79c3.18,0,4.52-2.31,4.52-4.66m-14.27,0c0-5.38,3.83-9.36,9.76-9.36s9.79,4,9.79,9.36-3.72,9.29-9.79,9.29-9.76-3.9-9.76-9.29"/>
-  <path fill="#ffffff" d="M156.76,43.44a2.45,2.45,0,0,1,2.64-2.75,5.07,5.07,0,0,1,2.32.58V36.75a8.28,8.28,0,0,0-2.94-.5c-3.47,0-7.23,2-7.23,7.19v1h-3.14v4.37h3.14V62h5.2V48.86h4.95V44.49h-4.95Z"/>
-  <path fill="#ffffff" d="M194.93,48.43a4.41,4.41,0,0,1,4.52,4.7c0,2.35-1.34,4.66-4.52,4.66a4.35,4.35,0,0,1-4.48-4.66,4.4,4.4,0,0,1,4.48-4.7m6.7,11.79a9,9,0,0,0,3.1-7.09c0-5.38-3.83-9.36-9.79-9.36s-9.76,4-9.76,9.36a8.73,8.73,0,0,0,6,8.71,12,12,0,0,0,3.93.62c3.22,0,4.34,1.34,4.34,3.07,0,2.2-2.1,3.29-4.41,3.29s-4.3-.87-4.48-3.61h-4.84c-.07,5.13,3.14,8.2,9.32,8.2,4.91,0,9.68-2.57,9.68-7.88a5.62,5.62,0,0,0-3.12-5.31"/>
-</svg>`;
-
-// VORA wordmark — styled SVG text (no vector asset available)
-const VORA_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="72" height="30" viewBox="0 0 72 30">
-  <text x="0" y="13" font-family="Arial,sans-serif" font-size="11" font-weight="800" fill="#0a2236" letter-spacing="3">VORA</text>
-  <rect x="0" y="17" width="72" height="1.5" fill="#0d9488" rx="1"/>
-  <text x="0" y="28" font-family="Arial,sans-serif" font-size="8" fill="#64748b" letter-spacing="1.5">solutions</text>
-</svg>`;
+// ─── Logos (base64 PNG) ───────────────────────────────────────────────────────
+const SANFOG_PIKT_B64 = "data:image/png;base64,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";
+const VORA_B64        = "data:image/png;base64,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";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+const F = 'font-family:Arial,sans-serif;';
 
-function toDataUri(svg: string): string {
-  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-}
-
-function buildSubject(type: NotifType, taskTitle: string): string {
+function buildSubject(type: NotifType, taskTitle: string, senderName?: string): string {
   const map: Record<NotifType, string> = {
-    assigned:  'Nova uloha: '               + taskTitle,
-    completed: 'Uloha dokoncena: '          + taskTitle,
-    comment:   'Novy komentar k ulohe: '   + taskTitle,
+    assigned:  'Nová úloha: '                    + taskTitle,
+    completed: (senderName ?? 'Používateľ') + ' dokončil úlohu: ' + taskTitle,
+    comment:   'Nový komentár k úlohe: '         + taskTitle,
   };
-  return map[type] ?? 'Aktualizacia ulohy: ' + taskTitle;
+  return map[type] ?? 'Aktualizácia úlohy: ' + taskTitle;
 }
 
 function priorityLabel(p: Priority): string {
-  return ({ urgent: 'URGENTNA', high: 'VYSOKA', medium: 'STREDNA', low: 'NIZKA' } as Record<Priority, string>)[p] ?? 'STREDNA';
+  return ({ urgent: 'URGENTNÁ', high: 'VYSOKÁ', medium: 'STREDNÁ', low: 'NÍZKA' } as Record<Priority, string>)[p] ?? 'STREDNÁ';
 }
 function priorityColor(p: Priority): string {
-  return ({ urgent: '#dc2626', high: '#ea580c', medium: '#b45309', low: '#0d9488' } as Record<Priority, string>)[p] ?? '#b45309';
-}
-function priorityBg(p: Priority): string {
-  return ({ urgent: '#fef2f2', high: '#fff7ed', medium: '#fffbeb', low: '#f0fdfa' } as Record<Priority, string>)[p] ?? '#fffbeb';
+  return ({ urgent: '#dc2626', high: '#e53935', medium: '#b45309', low: '#0d9488' } as Record<Priority, string>)[p] ?? '#b45309';
 }
 function statusLabel(s: TaskStatus): string {
-  return ({ todo: 'Todo', in_progress: 'V rieseni', done: 'Dokoncene' } as Record<TaskStatus, string>)[s] ?? 'Todo';
+  return ({ todo: 'Todo', in_progress: 'V riešení', done: 'Dokončené' } as Record<TaskStatus, string>)[s] ?? 'Todo';
 }
 function statusColor(s: TaskStatus): string {
-  return ({ todo: '#94a3b8', in_progress: '#f59e0b', done: '#0d9488' } as Record<TaskStatus, string>)[s] ?? '#94a3b8';
+  return ({ todo: '#94a3b8', in_progress: '#f59e0b', done: '#1a6b2e' } as Record<TaskStatus, string>)[s] ?? '#94a3b8';
 }
 function formatDeadline(d: string | null): string {
   if (!d) return '&mdash;';
   const dt = new Date(d);
   const overdue = dt < new Date();
-  const fmt = dt.toLocaleDateString('sk-SK', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const fmt = dt.toLocaleDateString('sk-SK', { day: '2-digit', month: 'long', year: 'numeric' });
   return overdue
-    ? '<span style="color:#dc2626;font-weight:600">' + fmt + ' &middot; Oneskorene</span>'
+    ? '<span style="color:#dc2626;font-weight:600">' + fmt + ' &middot; Oneskorené</span>'
     : fmt;
 }
+function formatDateTime(d: string | null): string {
+  if (!d) return '';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('sk-SK', { day: '2-digit', month: 'long', year: 'numeric' }) +
+    ', ' + dt.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+}
 
+// ─── Template building blocks ─────────────────────────────────────────────────
+function hdr(accentColor: string): string {
+  return '<table width="100%" cellpadding="0" cellspacing="0" border="0">' +
+    '<tr><td style="background:#002a4c;padding:20px 28px;">' +
+      '<table cellpadding="0" cellspacing="0" border="0"><tr>' +
+        '<td style="vertical-align:middle;padding-right:18px"><img src="' + SANFOG_PIKT_B64 + '" height="50" width="50" style="display:block"/></td>' +
+        '<td style="vertical-align:middle;border-left:1px solid rgba(255,255,255,.2);padding-left:18px">' +
+          '<div style="font-size:9px;color:rgba(255,255,255,.5);letter-spacing:2.5px;text-transform:uppercase;' + F + 'margin-bottom:4px">Sanfog s.r.o.</div>' +
+          '<div style="font-size:20px;color:#fff;font-weight:700;letter-spacing:1px;' + F + '">GREENHOUSE CALC</div>' +
+        '</td>' +
+      '</tr></table>' +
+    '</td></tr>' +
+    '<tr><td style="background:' + accentColor + ';height:4px;font-size:1px">&nbsp;</td></tr>' +
+  '</table>';
+}
+
+function ftr(): string {
+  return '<table width="100%" cellpadding="0" cellspacing="0" border="0">' +
+    '<tr><td style="background:#002a4c;padding:16px 28px;text-align:center">' +
+      '<img src="' + VORA_B64 + '" height="44" style="display:inline-block;margin-bottom:6px"/>' +
+      '<div style="font-size:11px;color:rgba(255,255,255,.45);' + F + '">Automatizované notifikácie &nbsp;·&nbsp; Greenhouse Calc</div>' +
+      '<div style="font-size:11px;color:rgba(255,255,255,.25);' + F + 'margin-top:5px">Tento email bol vygenerovaný automaticky. Neodpovedajte naň priamo.</div>' +
+    '</td></tr>' +
+  '</table>';
+}
+
+function btn(label: string, color: string): string {
+  return '<table cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px"><tr><td style="background:' + color + ';border-radius:6px">' +
+    '<a href="https://ghcalc.lovable.app" style="display:inline-block;padding:13px 32px;color:#fff;font-weight:700;font-size:14px;text-decoration:none;' + F + 'letter-spacing:.5px">Zobraziť úlohu &rarr;</a>' +
+    '</td></tr></table>';
+}
+
+function row(label: string, value: string): string {
+  return '<tr><td style="padding:5px 0;font-size:13px;color:#999;width:130px;vertical-align:top;' + F + '">' + label + '</td>' +
+    '<td style="padding:5px 0;font-size:13px;color:#222;font-weight:600;' + F + '">' + value + '</td></tr>';
+}
+
+function badge(label: string, bg: string, color: string): string {
+  return '<div style="display:inline-block;background:' + bg + ';color:' + color + ';font-size:10px;font-weight:700;padding:4px 12px;border-radius:4px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;' + F + '">' + label + '</div>';
+}
+
+function box(content: string): string {
+  return '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f7f8fa;border-radius:8px;border:1px solid #e8eaed;margin-bottom:8px"><tr><td style="padding:18px 20px">' + content + '</td></tr></table>';
+}
+
+function dot(color: string): string {
+  return '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + color + ';margin-right:6px;vertical-align:middle"></span>';
+}
+
+function bodyWrap(content: string): string {
+  return '<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:32px 28px 28px">' + content + '</td></tr></table>';
+}
+
+function h1(text: string): string {
+  return '<h1 style="font-size:22px;color:#002a4c;margin:0 0 10px;font-weight:700;' + F + '">' + text + '</h1>';
+}
+
+function para(html: string): string {
+  return '<p style="font-size:15px;color:#555;margin:0 0 24px;' + F + 'line-height:1.65">' + html + '</p>';
+}
+
+// ─── Main HTML builder ────────────────────────────────────────────────────────
 function buildHtml(type: NotifType, payload: HtmlPayload): string {
   const {
     taskTitle, taskStatus, taskPriority, taskDeadline,
-    taskDescription, senderName, recipientName, projectRef, projectName,
+    senderName, recipientName, projectRef, projectName,
+    commentText, commentAuthor, commentAt,
   } = payload;
 
-  let headline = '', body = '', bannerColor = '#0d9488';
-  let icon = '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>';
+  const projLabel = projectRef + (projectName ? ' – ' + projectName : '');
 
   if (type === 'assigned') {
-    headline = 'Bola vam priradena nova uloha';
-    body = '<strong style="color:#0d9488">' + recipientName + '</strong>, ' + senderName + ' vam priradil/a novu ulohu v GreenHouse Calc.';
-  } else if (type === 'completed') {
-    headline = 'Uloha bola dokoncena';
-    body = '<strong style="color:#0d9488">' + recipientName + '</strong>, vasa uloha bola oznacena ako dokoncena.';
-    icon = '<polyline points="20 6 9 17 4 12"/>';
-  } else if (type === 'comment') {
-    headline = 'Novy komentar k vasej ulohe';
-    body = '<strong style="color:#0d9488">' + recipientName + '</strong>, ' + senderName + ' pridal/a komentar.';
-    bannerColor = '#0f766e';
-    icon = '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>';
-  } else {
-    headline = 'Aktualizacia ulohy';
-    body = 'Uloha <strong>' + taskTitle + '</strong> bola aktualizovana.';
+    const accentColor = '#f38f00';
+    return '<!DOCTYPE html><html lang="sk"><head><meta charset="UTF-8"/><title>Nová úloha</title></head><body style="margin:0;padding:0;background:#e8eaed">' +
+      '<div style="max-width:600px;margin:0 auto;background:#fff">' +
+      hdr(accentColor) +
+      bodyWrap(
+        badge('Nová úloha', '#fff5e6', '#b46c00') +
+        h1('Bola vám pridelená nová úloha') +
+        para('<strong style="color:#002a4c">' + senderName + '</strong> vám pridelil novú úlohu v projekte Greenhouse Calc.') +
+        box(
+          '<div style="font-size:16px;font-weight:700;color:#002a4c;margin-bottom:14px;' + F + '">' + taskTitle + '</div>' +
+          '<table cellpadding="0" cellspacing="0" border="0" width="100%">' +
+            row('Projekt:', projLabel || '—') +
+            row('Priorita:', dot(priorityColor(taskPriority)) + priorityLabel(taskPriority)) +
+            row('Termín:', formatDeadline(taskDeadline)) +
+            row('Pridelil/a:', senderName) +
+          '</table>'
+        ) +
+        btn('Zobraziť úlohu', accentColor)
+      ) +
+      ftr() +
+      '</div></body></html>';
   }
 
-  const descBlock = taskDescription
-    ? '<tr><td style="color:#94a3b8;padding:5px 0;width:90px;vertical-align:top;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">Popis</td>'
-      + '<td style="padding:5px 0"><div style="background:#f8fafc;border-left:2px solid #0d9488;padding:8px 10px;font-size:13px;color:#334155;line-height:1.6;border-radius:0 4px 4px 0">'
-      + taskDescription + '</div></td></tr>'
-    : '';
+  if (type === 'comment') {
+    const accentColor = '#00adc6';
+    return '<!DOCTYPE html><html lang="sk"><head><meta charset="UTF-8"/><title>Nový komentár</title></head><body style="margin:0;padding:0;background:#e8eaed">' +
+      '<div style="max-width:600px;margin:0 auto;background:#fff">' +
+      hdr(accentColor) +
+      bodyWrap(
+        badge('Nový komentár', '#e4f7fb', '#006e81') +
+        h1('Nový komentár k vašej úlohe') +
+        para('<strong style="color:#002a4c">' + (commentAuthor ?? senderName) + '</strong> okomentoval úlohu, ku ktorej ste priradený/á.') +
+        box(
+          '<div style="font-size:11px;color:#aaa;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;' + F + '">Úloha</div>' +
+          '<div style="font-size:15px;font-weight:700;color:#002a4c;margin-bottom:18px;' + F + '">' + taskTitle + '</div>' +
+          '<div style="border-left:3px solid #00adc6;padding-left:14px">' +
+            '<div style="font-size:12px;color:#888;margin-bottom:6px;' + F + '">' + (commentAuthor ?? senderName) + ' &nbsp;·&nbsp; ' + formatDateTime(commentAt) + '</div>' +
+            '<div style="font-size:14px;color:#333;line-height:1.65;font-style:italic;' + F + '">&ldquo;' + (commentText ?? '') + '&rdquo;</div>' +
+          '</div>'
+        ) +
+        btn('Zobraziť komentár', accentColor)
+      ) +
+      ftr() +
+      '</div></body></html>';
+  }
 
-  const projLabel = projectRef + (projectName ? ' &middot; ' + projectName : '');
-
-  const piktUri = toDataUri(SANFOG_PIKT_SVG);
-  const fullUri = toDataUri(SANFOG_FULL_SVG);
-  const voraUri = toDataUri(VORA_SVG);
-
-  return (
-    '<!DOCTYPE html><html lang="sk"><head><meta charset="UTF-8"/><title>' + headline + '</title></head>'
-    + '<body style="margin:0;padding:32px 16px;background:#f0f4f8;font-family:Segoe UI,system-ui,sans-serif">'
-    + '<div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08)">'
-
-    // ── Header ──
-    + '<div style="background:#0a2236;padding:18px 24px;display:flex;align-items:center;justify-content:space-between">'
-    + '<div style="display:flex;align-items:center;gap:12px">'
-    + '<img src="' + piktUri + '" width="40" height="40" alt="Sanfog" style="border-radius:8px;display:block"/>'
-    + '<div>'
-    + '<div style="color:#fff;font-size:14px;font-weight:700;letter-spacing:.02em">GreenHouse Calc</div>'
-    + '<div style="color:rgba(255,255,255,.45);font-size:11px;margin-top:1px">Task Notification</div>'
-    + '</div></div>'
-    + '<img src="' + fullUri + '" height="30" alt="sanfog" style="display:block"/>'
-    + '</div>'
-
-    // ── Banner ──
-    + '<div style="background:' + bannerColor + ';padding:12px 24px;display:flex;align-items:center;gap:10px">'
-    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">' + icon + '</svg>'
-    + '<span style="color:#fff;font-size:14px;font-weight:700">' + headline + '</span>'
-    + '</div>'
-
-    // ── Body ──
-    + '<div style="padding:24px">'
-    + '<p style="font-size:14px;color:#475569;margin:0 0 18px;line-height:1.6">Ahoj ' + body + '</p>'
-
-    // ── Task card ──
-    + '<div style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:18px">'
-    + '<div style="background:#f8fafc;padding:12px 16px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between">'
-    + '<span style="font-size:14px;font-weight:700;color:#0a2236">' + taskTitle + '</span>'
-    + '<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;background:'
-    + priorityBg(taskPriority) + ';color:' + priorityColor(taskPriority) + ';letter-spacing:.05em">'
-    + priorityLabel(taskPriority) + '</span>'
-    + '</div>'
-    + '<div style="padding:12px 16px"><table style="width:100%;border-collapse:collapse">'
-
-    // Project row
-    + '<tr><td style="color:#94a3b8;padding:5px 0;width:90px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">Projekt</td>'
-    + '<td style="padding:5px 0"><span style="display:inline-flex;align-items:center;gap:5px;background:#f0fdfa;border:1px solid #99f6e4;border-radius:5px;padding:3px 9px;font-size:12px;color:#0d9488;font-weight:600">'
-    + '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2.5"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'
-    + projLabel + '</span></td></tr>'
-
-    // Status row
-    + '<tr><td style="color:#94a3b8;padding:5px 0;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">Stav</td>'
-    + '<td style="padding:5px 0"><span style="display:inline-flex;align-items:center;gap:6px">'
-    + '<span style="width:7px;height:7px;border-radius:50%;background:' + statusColor(taskStatus) + ';display:inline-block"></span>'
-    + '<span style="font-size:13px;color:#1e293b">' + statusLabel(taskStatus) + '</span>'
-    + '</span></td></tr>'
-
-    // Deadline row
-    + '<tr><td style="color:#94a3b8;padding:5px 0;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">Deadline</td>'
-    + '<td style="padding:5px 0;font-size:13px;color:#1e293b">' + formatDeadline(taskDeadline) + '</td></tr>'
-
-    // Sender row
-    + '<tr><td style="color:#94a3b8;padding:5px 0;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">Priradil</td>'
-    + '<td style="padding:5px 0;color:#1e293b;font-size:13px">' + senderName + '</td></tr>'
-
-    + descBlock
-    + '</table></div></div>'
-
-    // CTA
-    + '<div style="text-align:center;margin:20px 0 4px">'
-    + '<a href="https://ghcalc.lovable.app" style="display:inline-block;background:#0d9488;color:#fff;font-size:13px;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;letter-spacing:.02em">Otvorit ulohu v aplikacii &rarr;</a>'
-    + '</div>'
-    + '</div>'
-
-    // ── Footer ──
-    + '<div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:14px 24px;display:flex;align-items:center;justify-content:space-between">'
-    + '<div style="font-size:11px;color:#94a3b8;line-height:1.7">'
-    + '<strong style="color:#64748b">GreenHouse Calc</strong> &middot; Sanfog s.r.o.<br>'
-    + 'Tato sprava bola vygenerovana automaticky. Neodpovedajte.'
-    + '</div>'
-    + '<img src="' + voraUri + '" height="30" alt="VORA" style="display:block"/>'
-    + '</div>'
-
-    + '</div></body></html>'
-  );
+  // completed
+  const accentColor = '#1a6b2e';
+  const completedAt = taskDeadline ? formatDateTime(taskDeadline) : formatDateTime(new Date().toISOString());
+  return '<!DOCTYPE html><html lang="sk"><head><meta charset="UTF-8"/><title>Úloha dokončená</title></head><body style="margin:0;padding:0;background:#e8eaed">' +
+    '<div style="max-width:600px;margin:0 auto;background:#fff">' +
+    hdr(accentColor) +
+    bodyWrap(
+      badge('Dokončené', '#e6f4ea', '#1a6b2e') +
+      h1('Úloha bola dokončená') +
+      para('<strong style="color:#002a4c">' + senderName + '</strong> označil vašu úlohu ako dokončenú.') +
+      box(
+        '<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr>' +
+          '<td><div style="font-size:16px;font-weight:700;color:#002a4c;margin-bottom:14px;' + F + '">' + taskTitle + '</div>' +
+            '<table cellpadding="0" cellspacing="0" border="0" width="100%">' +
+              row('Projekt:', projLabel || '—') +
+              row('Dokončil/a:', senderName) +
+              row('Čas:', formatDateTime(new Date().toISOString())) +
+            '</table></td>' +
+          '<td style="vertical-align:middle;text-align:right;padding-left:16px;width:60px">' +
+            '<div style="width:48px;height:48px;background:#1a6b2e;border-radius:50%;text-align:center;line-height:48px;font-size:26px;color:#fff;display:inline-block">&#10003;</div>' +
+          '</td></tr></table>'
+      ) +
+      btn('Zobraziť úlohu', accentColor)
+    ) +
+    ftr() +
+    '</div></body></html>';
 }
 
 // ─── Handler ─────────────────────────────────────────────────────────────────
@@ -231,11 +239,11 @@ Deno.serve(async (req: Request) => {
 
   const senderId = userData.user.id;
 
-  let body: { type?: string; taskId?: string; recipientId?: string };
+  let body: { type?: string; taskId?: string; recipientId?: string; commentText?: string; commentAuthor?: string; commentAt?: string };
   try { body = await req.json(); }
   catch { return new Response(JSON.stringify({ error: 'Invalid body' }), { status: 400, headers: corsHeaders }); }
 
-  const { type, taskId, recipientId } = body;
+  const { type, taskId, recipientId, commentText, commentAuthor, commentAt } = body;
   if (!type || !taskId || !recipientId)
     return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400, headers: corsHeaders });
 
@@ -255,17 +263,21 @@ Deno.serve(async (req: Request) => {
   }
 
   const notifType = type as NotifType;
-  const subject = buildSubject(notifType, task?.title ?? '');
+  const senderDisplayName = sender?.name ?? 'Používateľ';
+  const subject = buildSubject(notifType, task?.title ?? '', senderDisplayName);
   const html = buildHtml(notifType, {
-    taskTitle:       task?.title        ?? '(bez nazvu)',
+    taskTitle:       task?.title        ?? '(bez názvu)',
     taskStatus:      (task?.status      ?? 'todo')   as TaskStatus,
     taskPriority:    (task?.priority    ?? 'medium') as Priority,
     taskDeadline:    task?.deadline     ?? null,
     taskDescription: task?.description  ?? null,
-    senderName:      sender?.name       ?? 'Neznamy',
+    senderName:      senderDisplayName,
     recipientName:   recipient?.name    ?? 'Kolega',
     projectRef,
     projectName,
+    commentText:     commentText  ?? null,
+    commentAuthor:   commentAuthor ?? null,
+    commentAt:       commentAt    ?? null,
   });
 
   const resendKey = Deno.env.get('RESEND_API_KEY');
