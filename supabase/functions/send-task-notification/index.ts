@@ -5,7 +5,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const FROM = 'no-reply@no-repply.vora.sk';
+const FROM = 'no-reply@ghcalc.vora.sk';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type NotifType  = 'assigned' | 'completed' | 'comment';
