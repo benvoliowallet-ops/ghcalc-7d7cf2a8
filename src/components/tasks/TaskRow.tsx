@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertCircle, Clock, User, FolderOpen, GitBranch } from 'lucide-react';
 import { Task, isOverdue } from '@/hooks/useTasks';
-import { format, isPast } from 'date-fns';
+import { formatSK } from '@/lib/dateUtils';
 
 interface TaskRowProps {
   task: Task;

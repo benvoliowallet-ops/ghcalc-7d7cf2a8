@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { SubtaskTree } from './SubtaskTree';
 import { useAuthStore } from '@/store/authStore';
-import { format } from 'date-fns';
+import { formatSK } from '@/lib/dateUtils';
 
 interface TaskDetailModalProps {
   task: Task | null;

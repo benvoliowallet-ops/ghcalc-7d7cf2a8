@@ -15,9 +15,10 @@ const STEP_LABELS: Record<number, string> = {
 
 function formatDate(iso: string) {
   try {
-    return new Date(iso).toLocaleDateString('sk-SK', {
+    return new Date(iso).toLocaleString('sk-SK', {
       day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit'
+      hour: '2-digit', minute: '2-digit',
+      timeZone: 'Europe/Bratislava',
     });
   } catch {
     return iso.slice(0, 10);
