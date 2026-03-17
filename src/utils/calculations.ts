@@ -2,7 +2,7 @@ import type { ZoneParams, ZoneCalc, GlobalParams, CADDrawing, CADSegment, Nozzle
 import { NOZZLE_BY_ORIFICE, getStockPrice } from '../data/stockItems';
 export { NOZZLE_BY_ORIFICE };  // re-export for consumers
 
-// ─── Nozzle Flow Table (l/min) ────────────────────────────────────────────────
+// âââ Nozzle Flow Table (l/min) ââââââââââââââââââââââââââââââââââââââââââââââââ
 export const NOZZLE_FLOW_LPM: Record<number, Record<number, number>> = {
   0.15: { 50: 0.043, 60: 0.047, 70: 0.050, 80: 0.058, 90: 0.064, 100: 0.068, 110: 0.072 },
   0.20: { 50: 0.063, 60: 0.071, 70: 0.075, 80: 0.081, 90: 0.085, 100: 0.091, 110: 0.097 },
@@ -45,7 +45,9 @@ export function calcZone(
   const numSwivel = N * 3;
 
   const numPipes10mmPerNave = Math.max(0, nozzlesPerNave - 1); // 1 rurka medzi 2 susednymi drzjakmi; posledna rurka nesie 2 drzjaky
-  const numPipes10mmTotal = numPipes10mmPerNave * N;
+  const numPipes10mmBase = numPipes10mmPerNave * N;
+  const isRovnySpoj = zone.connectionType === 'rovny-spoj';
+  const numPipes10mmTotal = numPipes10mmBase + (isRovnySpoj ? 1 : 0);
   const numFitting180 = numHolders; // kazdy holder je double (180deg)
   const numEndPlug = N; // 1 zaslepka na koniec poslednej rurky per lod
 
@@ -56,7 +58,7 @@ export function calcZone(
   const numGripple = N * 2;
   const numNozzleHangers = numHolders;               // 1 hanger per holder
   const L_pipe = numPipes10mmPerNave > 0 ? effectiveLength / numPipes10mmPerNave : 0;
-  const numPipeHangers = L_pipe <= 3.5 ? numPipes10mmTotal * 1 : numPipes10mmTotal * 2;
+  const numPipeHangers = (L_pipe <= 3.5 ? numPipes10mmBase : numPipes10mmBase * 2) + (isRovnySpoj ? 2 : 0);
 
   const zoneSegments = cad.segments.filter(
     s => s.zoneIndex === zoneIndex && s.lineType === 'pipe'
@@ -210,13 +212,13 @@ export function calcETNACapacity(totalFlowM1H: number): {
   pumpCode: string; pumpName: string; capacityWarning: boolean;
 } {
   if (totalFlowM1H <= 15) {
-    return { pumpCode: '0881490000B', pumpName: 'HF KI-ST 16/3-30 (15m³/h)', capacityWarning: false };
+    return { pumpCode: '0881490000B', pumpName: 'HF KI-ST 16/3-30 (15mÂ³/h)', capacityWarning: false };
   } else if (totalFlowM1H <= 25) {
-    return { pumpCode: 'snfg.001.0021', pumpName: 'HF KI-ST 32/2-30 (25m³/h)', capacityWarning: false };
+    return { pumpCode: 'snfg.001.0021', pumpName: 'HF KI-ST 32/2-30 (25mÂ³/h)', capacityWarning: false };
   } else if (totalFlowM1H <= 35) {
-    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35m³/h)', capacityWarning: false };
+    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35mÂ³/h)', capacityWarning: false };
   } else {
-    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35m³/h)', capacityWarning: true };
+    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35mÂ³/h)', capacityWarning: true };
   }
 }
 
@@ -267,7 +269,7 @@ export function getRacmetBracketCode(nPipes: number): string {
   }
 }
 
-// ─── Greedy largest-first bracket decomposition ───────────────────────────────
+// âââ Greedy largest-first bracket decomposition âââââââââââââââââââââââââââââââ
 const TRELLIS_VARIANTS = [
   { pipes: 6, code: 'snfg.05.0018' },
   { pipes: 4, code: 'snfg.05.0006' },
@@ -397,7 +399,7 @@ export function detectConcurrentPipes(cad: CADDrawing): {
           numBrackets * piece.count,
           piece.pipes as 1 | 2 | 4 | 6,
           'racmet',
-          `Zabetónovaný držiak RACMET ${piece.pipes} vedení`
+          `ZabetÃ³novanÃ½ drÅ¾iak RACMET ${piece.pipes} vedenÃ­`
         );
       }
       if (iv.count > 1) outIntervals.push({ axisCoord, start: iv.start, end: iv.end, count: iv.count, direction: 'H' });
@@ -415,7 +417,7 @@ export function detectConcurrentPipes(cad: CADDrawing): {
           numBrackets * piece.count,
           piece.pipes as 1 | 2 | 4 | 6,
           'trellis',
-          `Drziak kratovnica ${piece.pipes} vedení`
+          `Drziak kratovnica ${piece.pipes} vedenÃ­`
         );
       }
       if (iv.count > 1) outIntervals.push({ axisCoord, start: iv.start, end: iv.end, count: iv.count, direction: 'V' });
@@ -440,7 +442,7 @@ export function generateQuoteNumber(): string {
 }
 
 export function fmtN(n: number, decimals = 0): string {
-  if (n == null || isNaN(n)) return '—';
+  if (n == null || isNaN(n)) return 'â';
   return n.toLocaleString('sk-SK', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
@@ -448,7 +450,7 @@ export function fmtN(n: number, decimals = 0): string {
 }
 
 export function fmtE(n: number): string {
-  return `${fmtN(n, 2)} €`;
+  return `${fmtN(n, 2)} â¬`;
 }
 
 export function fmtM(n: number): string {
