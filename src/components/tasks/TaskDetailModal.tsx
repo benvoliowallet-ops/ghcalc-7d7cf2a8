@@ -353,7 +353,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                   style={{ borderRadius: 'var(--radius)' }}
                 />
               ) : (
-                <span className="text-foreground">{activeTask.deadline ? format(new Date(activeTask.deadline), 'dd.MM.yyyy HH:mm') : '—'}</span>
+                <span className="text-foreground">{activeTask.deadline ? formatSK(activeTask.deadline, 'dd.MM.yyyy HH:mm') : '—'}</span>
               )}
             </div>
 
