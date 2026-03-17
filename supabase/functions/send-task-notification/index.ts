@@ -99,9 +99,10 @@ function ftr(): string {
   '</table>';
 }
 
-function btn(label: string, color: string): string {
+function btn(label: string, color: string, taskId: string): string {
+  const url = 'https://ghcalc.lovable.app/tasks?taskId=' + encodeURIComponent(taskId);
   return '<table cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px"><tr><td style="background:' + color + ';border-radius:6px">' +
-    '<a href="https://ghcalc.lovable.app" style="display:inline-block;padding:13px 32px;color:#fff;font-weight:700;font-size:14px;text-decoration:none;' + F + 'letter-spacing:.5px">Zobraziť úlohu &rarr;</a>' +
+    '<a href="' + url + '" style="display:inline-block;padding:13px 32px;color:#fff;font-weight:700;font-size:14px;text-decoration:none;' + F + 'letter-spacing:.5px">' + label + ' &rarr;</a>' +
     '</td></tr></table>';
 }
 
