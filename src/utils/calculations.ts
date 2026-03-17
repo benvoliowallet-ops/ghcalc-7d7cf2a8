@@ -2,7 +2,7 @@ import type { ZoneParams, ZoneCalc, GlobalParams, CADDrawing, CADSegment, Nozzle
 import { NOZZLE_BY_ORIFICE, getStockPrice } from '../data/stockItems';
 export { NOZZLE_BY_ORIFICE };  // re-export for consumers
 
-// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Nozzle Flow Table (l/min) Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// ─── Nozzle Flow Table (l/min) ────────────────────────────────────────────────
 export const NOZZLE_FLOW_LPM: Record<number, Record<number, number>> = {
   0.15: { 50: 0.043, 60: 0.047, 70: 0.050, 80: 0.058, 90: 0.064, 100: 0.068, 110: 0.072 },
   0.20: { 50: 0.063, 60: 0.071, 70: 0.075, 80: 0.081, 90: 0.085, 100: 0.091, 110: 0.097 },
