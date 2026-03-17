@@ -214,7 +214,7 @@ function buildHtml(type: NotifType, payload: HtmlPayload): string {
             '<div style="width:48px;height:48px;background:#1a6b2e;border-radius:50%;text-align:center;line-height:48px;font-size:26px;color:#fff;display:inline-block">&#10003;</div>' +
           '</td></tr></table>'
       ) +
-      btn('Zobraziť úlohu', accentColor)
+      btn('Zobraziť úlohu', accentColor, task?.id ?? '')
     ) +
     ftr() +
     '</div></body></html>';
