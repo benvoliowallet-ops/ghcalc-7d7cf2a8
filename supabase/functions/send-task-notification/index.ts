@@ -46,7 +46,11 @@ const SANFOG_FULL_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23
 </svg>`;
 
 // VORA wordmark — styled SVG text (no vector asset available)
-const VORA_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="90" height="28" viewBox="0 0 90 28"><polyline points="4,6 9,20 14,6" stroke="#FD7435" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="22" x2="14" y2="22" stroke="#8C8C8D" stroke-width="0.8"/><text x="20" y="16" font-family="Arial,sans-serif" font-size="11" font-weight="800" fill="#0a2236" letter-spacing="2">VORA</text><text x="20" y="24" font-family="Arial,sans-serif" font-size="6" fill="#8C8C8D" letter-spacing="1.2">AI SOLUTIONS</text></svg>`;
+const VORA_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="72" height="30" viewBox="0 0 72 30">
+  <text x="0" y="13" font-family="Arial,sans-serif" font-size="11" font-weight="800" fill="#0a2236" letter-spacing="3">VORA</text>
+  <rect x="0" y="17" width="72" height="1.5" fill="#0d9488" rx="1"/>
+  <text x="0" y="28" font-family="Arial,sans-serif" font-size="8" fill="#64748b" letter-spacing="1.5">solutions</text>
+</svg>`;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
