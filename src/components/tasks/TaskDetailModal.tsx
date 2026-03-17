@@ -365,12 +365,12 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
               </div>
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block">Vytvorené</label>
-                <span className="text-sm text-foreground">{format(new Date(activeTask.created_at), 'dd.MM.yyyy HH:mm')}</span>
+                <span className="text-sm text-foreground">{formatSK(activeTask.created_at, 'dd.MM.yyyy HH:mm')}</span>
               </div>
               {activeTask.completed_at && (
                 <div>
                   <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block">Dokončené</label>
-                  <span className="text-sm text-foreground">{format(new Date(activeTask.completed_at), 'dd.MM.yyyy HH:mm')}</span>
+                  <span className="text-sm text-foreground">{formatSK(activeTask.completed_at, 'dd.MM.yyyy HH:mm')}</span>
                 </div>
               )}
             </div>
