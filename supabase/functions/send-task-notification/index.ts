@@ -58,8 +58,9 @@ function statusColor(s: TaskStatus): string {
 function formatDeadline(d: string | null): string {
   if (!d) return '&mdash;';
   const dt = new Date(d);
+  const tz = 'Europe/Bratislava';
   const overdue = dt < new Date();
-  const fmt = dt.toLocaleDateString('sk-SK', { day: '2-digit', month: 'long', year: 'numeric' });
+  const fmt = dt.toLocaleDateString('sk-SK', { day: '2-digit', month: 'long', year: 'numeric', timeZone: tz });
   return overdue
     ? '<span style="color:#dc2626;font-weight:600">' + fmt + ' &middot; Oneskorené</span>'
     : fmt;
@@ -67,8 +68,9 @@ function formatDeadline(d: string | null): string {
 function formatDateTime(d: string | null): string {
   if (!d) return '';
   const dt = new Date(d);
-  return dt.toLocaleDateString('sk-SK', { day: '2-digit', month: 'long', year: 'numeric' }) +
-    ', ' + dt.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+  const tz = 'Europe/Bratislava';
+  return dt.toLocaleDateString('sk-SK', { day: '2-digit', month: 'long', year: 'numeric', timeZone: tz }) +
+    ', ' + dt.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit', timeZone: tz });
 }
 
 // ─── Template building blocks ─────────────────────────────────────────────────

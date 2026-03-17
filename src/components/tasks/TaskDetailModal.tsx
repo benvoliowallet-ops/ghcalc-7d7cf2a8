@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { SubtaskTree } from './SubtaskTree';
 import { useAuthStore } from '@/store/authStore';
-import { format } from 'date-fns';
+import { formatSK } from '@/lib/dateUtils';
 
 interface TaskDetailModalProps {
   task: Task | null;
@@ -250,7 +250,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-semibold text-foreground">{c.author?.name}</span>
-                        <span className="text-xs text-muted-foreground">{format(new Date(c.created_at), 'dd.MM. HH:mm')}</span>
+                        <span className="text-xs text-muted-foreground">{formatSK(c.created_at, 'dd.MM. HH:mm')}</span>
                         {currentUser?.id === c.created_by && (
                           <button
                             onClick={async () => { await deleteTaskComment(c.id); refetchComments(); }}
@@ -353,7 +353,7 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
                   style={{ borderRadius: 'var(--radius)' }}
                 />
               ) : (
-                <span className="text-foreground">{activeTask.deadline ? format(new Date(activeTask.deadline), 'dd.MM.yyyy HH:mm') : '—'}</span>
+                <span className="text-foreground">{activeTask.deadline ? formatSK(activeTask.deadline, 'dd.MM.yyyy HH:mm') : '—'}</span>
               )}
             </div>
 
@@ -365,12 +365,12 @@ export function TaskDetailModal({ task, open, onClose, onRefresh }: TaskDetailMo
               </div>
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block">Vytvorené</label>
-                <span className="text-sm text-foreground">{format(new Date(activeTask.created_at), 'dd.MM.yyyy HH:mm')}</span>
+                <span className="text-sm text-foreground">{formatSK(activeTask.created_at, 'dd.MM.yyyy HH:mm')}</span>
               </div>
               {activeTask.completed_at && (
                 <div>
                   <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground block">Dokončené</label>
-                  <span className="text-sm text-foreground">{format(new Date(activeTask.completed_at), 'dd.MM.yyyy HH:mm')}</span>
+                  <span className="text-sm text-foreground">{formatSK(activeTask.completed_at, 'dd.MM.yyyy HH:mm')}</span>
                 </div>
               )}
             </div>

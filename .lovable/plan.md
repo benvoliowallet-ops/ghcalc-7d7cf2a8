@@ -1,57 +1,41 @@
 
-## Problém: Časová zóna v aplikácii
+## Problém: Mojibake v `nameEn` poliach `stockItems.ts`
 
-### Čo sa deje
+Súbor `stockItems.ts` obsahuje UTF-8 znaky (ako `¼`, `°`, `…`, `Ø`) ktoré boli omylom double-encoded — t.j. uložené ako Latin-1 reprezentácia ich UTF-8 bytov. Prehliadač ich zobrazí ako `Â¼`, `Âº`, `â¦`, `Ã`.
 
-Databáza ukladá časy v UTC (ISO string napr. `2025-03-17T14:30:00Z`). Aplikácia zobrazuje časy pomocou `format(new Date(...))` z `date-fns` alebo `toLocaleDateString/toLocaleString` — tieto funkcie **používajú lokálnu časovú zónu prehliadača/servera**. 
+### Poškodené riadky (konkrétne `nameEn` hodnoty)
 
-Problem: **Deno edge function** beží na serveroch Supabase kde lokálna TZ je UTC, nie CET/CEST. Preto `formatDeadline` a `formatDateTime` v emailoch zobrazujú čas v UTC (napr. 13:00 namiesto 14:00 v lete).
+| Kód | Aktuálne (broken) | Správne |
+|-----|-------------------|---------|
+| `NOR EGE` | `1Â¼" EGE 7 Low Pressure Hose (7 BAR)` | `1¼" EGE 7 Low Pressure Hose (7 BAR)` |
+| `NOR 0311002-180` | `Nickel plated 180Âº` | `Nickel plated 180°` |
+| `NOR 204090` | `4â¦..20 mA` | `4…20 mA` |
+| `NOR 204091` | `4â¦..20 mA` | `4…20 mA` |
+| `NOR 0301005B` | `Ã25.5X19.5` | `Ø25.5X19.5` |
+| `snfg.001.0021` | `25 mÂ³/h` | `25 m³/h` |
+| Line 50: `ORFS214008049` | `1â³ hydraulic hose` | `1" hydraulic hose` |
+| Line 250-253 RACMET | `7 cm Ã 65 cm` | `7 cm × 65 cm` |
+| `snfg.004.002` nameEn | various `Ã` chars | fix accented chars |
 
-**React frontend**: `format(new Date(...))` používa TZ prehliadača — ak user má prehliadač nastavený na `Europe/Bratislava`, funguje správne. Ale je lepšie to urobiť explicitne a spoľahlivo.
+### Čo sa zmení
 
-### Rozsah zmien
+**1 súbor: `src/data/stockItems.ts`**
 
-**1. Edge function** (`send-task-notification/index.ts`) — KRITICKÉ
-- `formatDeadline()` a `formatDateTime()` — pridať `timeZone: 'Europe/Bratislava'` do `toLocaleDateString/toLocaleTimeString`
-- `formatDateTime(new Date().toISOString())` pri "Čas dokončenia" — rovnako
+Opravím iba poškodené `nameEn` hodnoty v NORMIST a ATTI sekciách. Presne tieto riadky:
+- Line 262: `NOR EGE` — `1Â¼"` → `1¼"`
+- Line 292: `NOR 204090` — `4â¦..20 mA` → `4…20 mA`
+- Line 293: `NOR 204091` — `4â¦..20 mA` → `4…20 mA`
+- Line 308: `NOR 0311002-180` — `180Âº` → `180°`
+- Line 270: `NOR 0301005B` — `Ã25.5` → `Ø25.5`
+- Line 99: `snfg.001.0021` — `25 mÂ³/h` → `25 m³/h`
+- Plus ostatné ATTI riadky kde sa vyskytuje `â³` (inch symbol), `Ã` (×/Ø), `Â³` (³)
 
-**2. Frontend** (`src/components/tasks/TaskDetailModal.tsx`) — OPRAVIŤ
-- Nainštalovať `date-fns-tz` (package `date-fns-tz` je kompatibilný s existujúcim `date-fns@3`)
-- `format(new Date(c.created_at), 'dd.MM. HH:mm')` → `formatInTimeZone(new Date(c.created_at), 'Europe/Bratislava', 'dd.MM. HH:mm')`
-- Všetky `format(new Date(activeTask.deadline/created_at/completed_at), ...)` → `formatInTimeZone`
+Keďže poškodenie je systematické (UTF-8 bytes read as Latin-1), použijem priamy search & replace konkrétnych escape sekvencií:
+- `Â¼` → `¼`  
+- `Âº` alebo `Â°` → `°`
+- `â¦` → `…`
+- `Ã` → `Ø` (kde je to priemer)
+- `â³` → `"`
+- `Â³` → `³`
 
-**3. Frontend** (`src/components/tasks/TaskRow.tsx`) — OPRAVIŤ
-- `format(deadlineDate, 'dd.MM.yyyy')` → `formatInTimeZone(deadlineDate, 'Europe/Bratislava', 'dd.MM.yyyy')`
-- `isOverdue` v `useTasks.ts` — porovnáva `new Date(task.deadline) < new Date()` — toto je správne (UTC porovnanie), nie treba meniť
-
-**4. Frontend ostatné** (`Dashboard.tsx`, `ChangeLogPage.tsx`, `PortalProjectView.tsx`) — OPRAVIŤ
-- Použiť `{ timeZone: 'Europe/Bratislava' }` v `toLocaleDateString/toLocaleString` volaniach — je to jednoduchý parameter navyše
-
-**5. `NewTaskModal` / `TaskDetailModal` deadline input** — OPRAVIŤ
-- `datetime-local` input zobrazuje lokálnu TZ prehliadača
-- Keď user zadá deadline, `new Date(e.target.value).toISOString()` správne konvertuje na UTC — **toto je správne**, nemenime
-
-### Plán implementácie
-
-**Krok 1:** Pridať `date-fns-tz` do `package.json` (kompatibilné s `date-fns@3`)
-
-**Krok 2:** Vytvoriť helper súbor `src/lib/dateUtils.ts` s funkciou `formatSK(date, formatStr)` — wrapper okolo `formatInTimeZone` s pevnou TZ `Europe/Bratislava`. Centralizovaný prístup — ak sa TZ zmení, mení sa na jednom mieste.
-
-**Krok 3:** Upraviť `TaskDetailModal.tsx` a `TaskRow.tsx` — nahradiť `format(new Date(...), ...)` za `formatSK(...)` 
-
-**Krok 4:** Upraviť `Dashboard.tsx` a `ChangeLogPage.tsx` — pridať `timeZone: 'Europe/Bratislava'` do existujúcich `toLocaleString` volaní (bez importu date-fns-tz, len natívny JS parameter)
-
-**Krok 5:** Upraviť edge function `send-task-notification/index.ts` — pridať `timeZone: 'Europe/Bratislava'` do `formatDeadline()` a `formatDateTime()`. Táto zmena je kritická pre email notifikácie.
-
-### Prečo `Europe/Bratislava` nie `Europe/Prague`
-
-Obe sú CET/CEST a identické pre DST pravidlá. `Europe/Bratislava` je správne IANA meno pre Slovensko. DST sa prepína automaticky podľa IANA TZ databázy (posledná nedeľa marca / posledná nedeľa októbra) — žiadna manuálna logika nie je potrebná.
-
-### Súbory na zmenu
-- `package.json` — pridať `date-fns-tz`
-- `src/lib/dateUtils.ts` — nový helper
-- `src/components/tasks/TaskRow.tsx`
-- `src/components/tasks/TaskDetailModal.tsx`
-- `src/components/Dashboard.tsx`
-- `src/components/admin/ChangeLogPage.tsx`
-- `supabase/functions/send-task-notification/index.ts`
+Zmeny sa dotknú **iba `nameEn` a `nameSk` textov** — žiadne kódy, ceny ani logika sa nemenia. Order Form NAZLI po oprave zobrazí správne znaky.

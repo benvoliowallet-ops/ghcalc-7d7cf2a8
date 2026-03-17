@@ -15,9 +15,10 @@ const STEP_LABELS: Record<number, string> = {
 
 function formatDate(iso: string) {
   try {
-    return new Date(iso).toLocaleDateString('sk-SK', {
+    return new Date(iso).toLocaleString('sk-SK', {
       day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit'
+      hour: '2-digit', minute: '2-digit',
+      timeZone: 'Europe/Bratislava',
     });
   } catch {
     return iso.slice(0, 10);
@@ -258,7 +259,7 @@ function ProjectCard({ project, currentUser, onOpen, onEdit, onDelete }: Project
               {changes.map((c) => (
                 <div key={c.id} className="border-l-2 border-border pl-2">
                   <p className="text-muted-foreground">
-                    {new Date(c.changedAt).toLocaleString('sk-SK', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    {new Date(c.changedAt).toLocaleString('sk-SK', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bratislava' })}
                     {' · '}<span className="font-medium text-foreground">{c.changedByEmail}</span>
                   </p>
                   <p className="text-foreground mt-0.5">{c.reason}</p>
