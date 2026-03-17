@@ -2,7 +2,7 @@ import type { ZoneParams, ZoneCalc, GlobalParams, CADDrawing, CADSegment, Nozzle
 import { NOZZLE_BY_ORIFICE, getStockPrice } from '../data/stockItems';
 export { NOZZLE_BY_ORIFICE };  // re-export for consumers
 
-// âââ Nozzle Flow Table (l/min) ââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Nozzle Flow Table (l/min) Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 export const NOZZLE_FLOW_LPM: Record<number, Record<number, number>> = {
   0.15: { 50: 0.043, 60: 0.047, 70: 0.050, 80: 0.058, 90: 0.064, 100: 0.068, 110: 0.072 },
   0.20: { 50: 0.063, 60: 0.071, 70: 0.075, 80: 0.081, 90: 0.085, 100: 0.091, 110: 0.097 },
@@ -212,13 +212,13 @@ export function calcETNACapacity(totalFlowM1H: number): {
   pumpCode: string; pumpName: string; capacityWarning: boolean;
 } {
   if (totalFlowM1H <= 15) {
-    return { pumpCode: '0881490000B', pumpName: 'HF KI-ST 16/3-30 (15mÂ³/h)', capacityWarning: false };
+    return { pumpCode: '0881490000B', pumpName: 'HF KI-ST 16/3-30 (15mÃÂ³/h)', capacityWarning: false };
   } else if (totalFlowM1H <= 25) {
-    return { pumpCode: 'snfg.001.0021', pumpName: 'HF KI-ST 32/2-30 (25mÂ³/h)', capacityWarning: false };
+    return { pumpCode: 'snfg.001.0021', pumpName: 'HF KI-ST 32/2-30 (25mÃÂ³/h)', capacityWarning: false };
   } else if (totalFlowM1H <= 35) {
-    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35mÂ³/h)', capacityWarning: false };
+    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35mÃÂ³/h)', capacityWarning: false };
   } else {
-    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35mÂ³/h)', capacityWarning: true };
+    return { pumpCode: '0881690000CX', pumpName: 'HF KI-ST 32/4-75 (35mÃÂ³/h)', capacityWarning: true };
   }
 }
 
@@ -269,7 +269,7 @@ export function getRacmetBracketCode(nPipes: number): string {
   }
 }
 
-// âââ Greedy largest-first bracket decomposition âââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ Greedy largest-first bracket decomposition Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 const TRELLIS_VARIANTS = [
   { pipes: 6, code: 'snfg.05.0018' },
   { pipes: 4, code: 'snfg.05.0006' },
@@ -399,7 +399,7 @@ export function detectConcurrentPipes(cad: CADDrawing): {
           numBrackets * piece.count,
           piece.pipes as 1 | 2 | 4 | 6,
           'racmet',
-          `ZabetÃ³novanÃ½ drÅ¾iak RACMET ${piece.pipes} vedenÃ­`
+          `Zabetónovaný držiak RACMET ${piece.pipes} vedení`
         );
       }
       if (iv.count > 1) outIntervals.push({ axisCoord, start: iv.start, end: iv.end, count: iv.count, direction: 'H' });
@@ -417,7 +417,7 @@ export function detectConcurrentPipes(cad: CADDrawing): {
           numBrackets * piece.count,
           piece.pipes as 1 | 2 | 4 | 6,
           'trellis',
-          `Drziak kratovnica ${piece.pipes} vedenÃ­`
+          `Drziak kratovnica ${piece.pipes} vedení`
         );
       }
       if (iv.count > 1) outIntervals.push({ axisCoord, start: iv.start, end: iv.end, count: iv.count, direction: 'V' });
@@ -442,7 +442,7 @@ export function generateQuoteNumber(): string {
 }
 
 export function fmtN(n: number, decimals = 0): string {
-  if (n == null || isNaN(n)) return 'â';
+  if (n == null || isNaN(n)) return 'Ã¢ÂÂ';
   return n.toLocaleString('sk-SK', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
@@ -450,7 +450,7 @@ export function fmtN(n: number, decimals = 0): string {
 }
 
 export function fmtE(n: number): string {
-  return `${fmtN(n, 2)} â¬`;
+  return `${fmtN(n, 2)} Ã¢ÂÂ¬`;
 }
 
 export function fmtM(n: number): string {
