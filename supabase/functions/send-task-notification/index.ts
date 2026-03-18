@@ -162,7 +162,7 @@ function buildHtml(type: NotifType, payload: HtmlPayload): string {
             row('Pridelil/a:', senderName) +
           '</table>'
         ) +
-        btn('Zobraziť úlohu', accentColor)
+        btn('Zobraziť úlohu', accentColor, task?.id ?? '')
       ) +
       ftr() +
       '</div></body></html>';
