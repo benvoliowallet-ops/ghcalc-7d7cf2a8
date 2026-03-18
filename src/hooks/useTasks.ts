@@ -255,7 +255,12 @@ export function useTaskMutations(refetch?: () => void) {
       const recipients = new Set<string>();
       if (task.created_by !== currentUser.id) recipients.add(task.created_by);
       if (task.assigned_to && task.assigned_to !== currentUser.id) recipients.add(task.assigned_to);
-      recipients.forEach(r => triggerNotification('comment', task.id, r));
+      const extras = {
+        commentText: content.trim(),
+        commentAuthor: currentUser.name,
+        commentAt: new Date().toISOString(),
+      };
+      recipients.forEach(r => triggerNotification('comment', task.id, r, extras));
     }
   }, [currentUser]);
 
