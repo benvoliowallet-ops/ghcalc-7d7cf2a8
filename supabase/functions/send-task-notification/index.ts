@@ -185,7 +185,7 @@ function buildHtml(type: NotifType, payload: HtmlPayload): string {
             '<div style="font-size:14px;color:#333;line-height:1.65;font-style:italic;' + F + '">&ldquo;' + (commentText ?? '') + '&rdquo;</div>' +
           '</div>'
         ) +
-        btn('Zobraziť komentár', accentColor)
+        btn('Zobraziť komentár', accentColor, task?.id ?? '')
       ) +
       ftr() +
       '</div></body></html>';
