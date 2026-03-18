@@ -267,10 +267,15 @@ export function useTaskMutations(refetch?: () => void) {
   return { createTask, updateTask, updateTaskStatus, deleteTask, addTaskComment, deleteTaskComment };
 }
 
-async function triggerNotification(type: 'assigned' | 'completed' | 'comment', taskId: string, recipientId: string) {
+async function triggerNotification(
+  type: 'assigned' | 'completed' | 'comment',
+  taskId: string,
+  recipientId: string,
+  extras?: { commentText?: string; commentAuthor?: string; commentAt?: string },
+) {
   try {
     await supabase.functions.invoke('send-task-notification', {
-      body: { type, taskId, recipientId },
+      body: { type, taskId, recipientId, ...extras },
     });
   } catch {
     // Notifications are best-effort; don't block UI
