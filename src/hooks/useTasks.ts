@@ -255,7 +255,12 @@ export function useTaskMutations(refetch?: () => void) {
       const recipients = new Set<string>();
       if (task.created_by !== currentUser.id) recipients.add(task.created_by);
       if (task.assigned_to && task.assigned_to !== currentUser.id) recipients.add(task.assigned_to);
-      recipients.forEach(r => triggerNotification('comment', task.id, r));
+      const extras = {
+        commentText: content.trim(),
+        commentAuthor: currentUser.name,
+        commentAt: new Date().toISOString(),
+      };
+      recipients.forEach(r => triggerNotification('comment', task.id, r, extras));
     }
   }, [currentUser]);
 
@@ -267,10 +272,15 @@ export function useTaskMutations(refetch?: () => void) {
   return { createTask, updateTask, updateTaskStatus, deleteTask, addTaskComment, deleteTaskComment };
 }
 
-async function triggerNotification(type: 'assigned' | 'completed' | 'comment', taskId: string, recipientId: string) {
+async function triggerNotification(
+  type: 'assigned' | 'completed' | 'comment',
+  taskId: string,
+  recipientId: string,
+  extras?: { commentText?: string; commentAuthor?: string; commentAt?: string },
+) {
   try {
     await supabase.functions.invoke('send-task-notification', {
-      body: { type, taskId, recipientId },
+      body: { type, taskId, recipientId, ...extras },
     });
   } catch {
     // Notifications are best-effort; don't block UI

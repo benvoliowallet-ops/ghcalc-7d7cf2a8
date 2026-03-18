@@ -300,6 +300,7 @@ function AppInner() {
             <Route path="/projects/:id" element={<ProjectWizard />} />
             <Route path="/projects/:id/summary" element={<ProjectSummaryPage />} />
             <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/tasks/:taskId" element={<TasksPage />} />
             <Route path="/stock" element={<StockPage />} />
             <Route path="/changelog" element={<ChangeLogPage />} />
             <Route path="/users" element={<AdminGuard><UsersPage /></AdminGuard>} />

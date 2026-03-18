@@ -99,9 +99,9 @@ function ftr(): string {
   '</table>';
 }
 
-function btn(label: string, color: string): string {
+function btn(label: string, color: string, taskId: string): string {
   return '<table cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px"><tr><td style="background:' + color + ';border-radius:6px">' +
-    '<a href="https://ghcalc.lovable.app" style="display:inline-block;padding:13px 32px;color:#fff;font-weight:700;font-size:14px;text-decoration:none;' + F + 'letter-spacing:.5px">Zobraziť úlohu &rarr;</a>' +
+    '<a href="https://ghcalc.lovable.app/tasks/' + taskId + '" style="display:inline-block;padding:13px 32px;color:#fff;font-weight:700;font-size:14px;text-decoration:none;' + F + 'letter-spacing:.5px">' + label + ' &rarr;</a>' +
     '</td></tr></table>';
 }
 
@@ -162,7 +162,7 @@ function buildHtml(type: NotifType, payload: HtmlPayload): string {
             row('Pridelil/a:', senderName) +
           '</table>'
         ) +
-        btn('Zobraziť úlohu', accentColor)
+        btn('Zobraziť úlohu', accentColor, task?.id ?? '')
       ) +
       ftr() +
       '</div></body></html>';
@@ -185,7 +185,7 @@ function buildHtml(type: NotifType, payload: HtmlPayload): string {
             '<div style="font-size:14px;color:#333;line-height:1.65;font-style:italic;' + F + '">&ldquo;' + (commentText ?? '') + '&rdquo;</div>' +
           '</div>'
         ) +
-        btn('Zobraziť komentár', accentColor)
+        btn('Zobraziť komentár', accentColor, task?.id ?? '')
       ) +
       ftr() +
       '</div></body></html>';
@@ -213,7 +213,7 @@ function buildHtml(type: NotifType, payload: HtmlPayload): string {
             '<div style="width:48px;height:48px;background:#1a6b2e;border-radius:50%;text-align:center;line-height:48px;font-size:26px;color:#fff;display:inline-block">&#10003;</div>' +
           '</td></tr></table>'
       ) +
-      btn('Zobraziť úlohu', accentColor)
+      btn('Zobraziť úlohu', accentColor, task?.id ?? '')
     ) +
     ftr() +
     '</div></body></html>';

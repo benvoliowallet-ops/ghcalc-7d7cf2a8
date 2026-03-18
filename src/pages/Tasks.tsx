@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, CheckSquare, Filter } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTasks, useAllTasks, useProfiles, Task } from '@/hooks/useTasks';
 import { TaskList } from '@/components/tasks/TaskList';
 import { TaskDetailModal } from '@/components/tasks/TaskDetailModal';
@@ -15,6 +16,8 @@ const PRIORITIES = [
 
 export default function TasksPage() {
   const profiles = useProfiles();
+  const { taskId: taskIdParam } = useParams<{ taskId?: string }>();
+  const navigate = useNavigate();
 
   const [filterAssignedTo, setFilterAssignedTo] = useState('');
   const [filterPriority, setFilterPriority] = useState('');
@@ -30,11 +33,36 @@ export default function TasksPage() {
 
   const { tasks: allTasks, refetch: refetchAll } = useAllTasks();
 
+  // Auto-open modal when taskId is in the URL
+  useEffect(() => {
+    if (!taskIdParam) return;
+    if (loading) return;
+
+    // Find in filtered tasks first, fallback to allTasks
+    const found =
+      tasks.find(t => t.id === taskIdParam) ??
+      allTasks.find(t => t.id === taskIdParam) ??
+      null;
+
+    if (found) {
+      setSelectedTask(found);
+    }
+  }, [taskIdParam, tasks, allTasks, loading]);
+
   const filteredTasks = filterPriority
     ? tasks.filter(t => t.priority === filterPriority)
     : tasks;
 
   const handleRefresh = () => { refetch(); refetchAll(); };
+
+  const handleTaskClick = (task: Task) => {
+    navigate(`/tasks/${task.id}`);
+  };
+
+  const handleModalClose = () => {
+    setSelectedTask(null);
+    navigate('/tasks');
+  };
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
@@ -102,7 +130,7 @@ export default function TasksPage() {
           tasks={filteredTasks}
           allTasks={allTasks}
           showCompleted={showCompleted}
-          onTaskClick={task => setSelectedTask(task)}
+          onTaskClick={handleTaskClick}
         />
       )}
 
@@ -115,7 +143,7 @@ export default function TasksPage() {
       <TaskDetailModal
         task={selectedTask}
         open={!!selectedTask}
-        onClose={() => setSelectedTask(null)}
+        onClose={handleModalClose}
         onRefresh={handleRefresh}
       />
     </div>
